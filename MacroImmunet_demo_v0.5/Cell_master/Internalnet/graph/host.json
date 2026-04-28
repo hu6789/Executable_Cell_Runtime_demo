@@ -1,0 +1,49 @@
+{
+  "graph_id": "host",
+
+  "nodes": [
+    "viral_load",
+    "pMHC",
+    "ATP",
+    "stress",
+    "damage"
+  ],
+
+  "edges": [
+    {
+      "source": "viral_load",
+      "target": "produce_pMHC",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.1 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "ATP",
+      "target": "produce_pMHC",
+      "type": "node-behavior",
+
+      "role": "mod",
+      "weight": 0.5
+    },
+
+    {
+      "source": "viral_load",
+      "target": "damage",
+      "type": "node-node",
+
+      "weight": 0.3
+    }
+
+  ],
+
+  "default_drive_normalize": true
+}

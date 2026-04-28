@@ -1,0 +1,66 @@
+{
+  "node_id": "Ca_flux",
+
+  "_meta": {
+    "description": "Transient calcium flux signal (recomputed every tick)",
+    "consumed_by": ["PassiveEngine", "StateUpdate"]
+  },
+  "writable_by": ["graph", "passive"],
+
+  "semantic_type": {
+    "value": "signal"
+  },
+
+  "functional_group": {
+    "value": "signaling"
+  },
+
+  "structural_type": {
+    "value": "internal"
+  },
+
+  "external_key": {
+    "value": null
+  },
+  "exposed_to_scan": {
+    "value": false
+  },
+
+  "passive_readable": {
+    "value": true
+  },
+
+  "hir_role": {
+    "value": "modulator"
+  },
+
+  "temporal_role": {
+    "value": "transient"
+  },
+
+  "readable_by": ["passive", "behavior"],
+
+  "base_value": {
+    "value": 0.0
+  },
+
+  "update_rule": {
+    "type": "weighted_sum"
+  },
+
+  "state_dynamics": {
+    "type": "instant",
+    "decay": 0.9,
+    "update_sources": ["passive"]
+  },
+
+  "decay": {
+    "enabled": false
+  },
+
+  "clamp": {
+    "enabled": true,
+    "min": 0.0,
+    "max": 1.0
+  }
+}

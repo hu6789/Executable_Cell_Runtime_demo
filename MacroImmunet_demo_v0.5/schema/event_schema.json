@@ -1,0 +1,29 @@
+{
+  "event_id": "string",
+
+  "type": "signal | effector | binding",
+
+  "topology": "cell-cell | cell-substance | substance-substance",
+
+  "mode": "contact | field | binding",
+
+  "field": "IL2 | perforin | pMHC",
+
+  "source": {
+    "type": "cell | substance | field",
+    "id": "int | string"
+  },
+
+  "target": {
+    "type": "cell | region | broadcast",
+    "id": "int | null"
+  },
+
+  "value": 0.0,
+
+  "meta": {
+    "position": [0, 0],
+    "distance": 0.0,
+    "tick": 0
+  }
+}

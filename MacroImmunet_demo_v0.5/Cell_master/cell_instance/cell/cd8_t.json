@@ -1,0 +1,59 @@
+{
+  "cell_type": "cd8_t",
+
+  "init_node_state": {
+    "ATP": 0.6,
+    "stress": 0.1,
+    "damage": 0.0,
+    "viral_load": 0.0,
+    "pMHC": 0.0,
+    "TCR_signal": 0.0,
+    "IL2_signal": 0.0,
+    "membrane": 1.0,
+    "Ca_flux": 0.0
+  },
+
+  "params": {
+    "feature": {
+      "energy_from_ATP": 1.0,
+      "stress_sensitivity": 1.2,
+      "damage_sensitivity": 1.0,
+      "viral_sensitivity": 1.5,
+      "TCR_sensitivity": 1.5,
+      "IL2R_sensitivity": 1.3
+    },
+
+    "receptor": {
+      
+    },
+
+    "behavior": {
+      "release_perforin": {
+        "sensitivity": 1.6,
+        "threshold_shift": -0.15,
+        "slope_scale": 1.5
+      },
+      "produce_pMHC": {
+        "sensitivity": 1.1
+      }
+    },
+
+    "node": {
+      "ATP": { "scale": 1.2 },
+      "stress": { "scale": 1.0 }
+    }
+  },
+
+  "state_flags": {
+    "alive": true
+  },
+
+  "execution_profile": {
+    "behavior_parallel_limit": 4
+  },
+
+  "spatial": {
+    "mobility": "mobile",
+    "interaction_radius": 2
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "perforin",
+  
+  "type": "effector",
+
+  "dynamics": {
+    "type": "effector",
+    "decay_tau": 0.02,
+    "diffusion": 0.05
+  },
+
+  "interaction": {
+    "kind": "membrane_damage",  
+    "targets": ["cell"],
+    "conversion": {
+      "scale": -0.5,
+      "threshold": 0.01
+    },
+    "filter": {
+      "cell_flags": ["infected"]
+    }
+  },
+
+  "master": {
+    "enabled": true,
+    "type": "perforin_master"
+  }
+}

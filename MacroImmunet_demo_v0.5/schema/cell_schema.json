@@ -1,0 +1,57 @@
+{
+  "cell_type": "cd8_t",
+
+  "_meta": {
+    "consumed_by": ["CellFactory", "InternalNet"],
+    "desc": "细胞实例模板（只定义参数，不包含graph/engine逻辑）"
+  },
+
+  "init_node_state": {
+    "ATP": 0.6,
+    "stress": 0.1,
+    "viral_load": 0.0,
+    "pMHC": 0.0,
+    "TCR_signal": 0.0,
+    "IL2_signal": 0.0
+  },
+
+  "state_flags": {
+    "alive": true
+  },
+
+  "hir_params": {
+    "energy_from_ATP": 1.0,
+    "stress_sensitivity": 1.2,
+    "damage_sensitivity": 1.0,
+    "viral_sensitivity": 1.5
+  },
+
+  "node_params": {
+    "ATP": {
+      "scale": 1.2
+    },
+    "stress": {
+      "scale": 1.0
+    }
+  },
+
+  "behavior_params": {
+    "release_perforin": {
+      "sensitivity": 1.5,
+      "threshold_shift": -0.1,
+      "slope_scale": 1.5
+    },
+    "produce_pMHC": {
+      "sensitivity": 1.2
+    }
+  },
+
+  "execution_profile": {
+    "behavior_parallel_limit": 4
+  },
+
+  "spatial": {
+    "mobility": "static",
+    "interaction_radius": 2
+  }
+}

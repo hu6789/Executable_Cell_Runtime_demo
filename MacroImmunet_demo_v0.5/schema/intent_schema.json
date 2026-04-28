@@ -1,0 +1,19 @@
+{
+  "intent_id": "uuid",
+
+  "type": "interaction | field | fate",
+
+  "source": "cell_id",
+
+  "target": "cell_id | null",
+
+  "payload": {
+    "kind": "damage | secretion | death | state_update",
+    "value": 0.3,
+    "field": "IL2"
+  },
+
+  "meta": {
+    "tick": 123
+  }
+}

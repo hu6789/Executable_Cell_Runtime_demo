@@ -1,0 +1,54 @@
+{
+  "node_id": "viral_load",
+
+  "_meta": {
+    "consumed_by": ["NodeEngine", "PassiveEngine", "HIR", "BehaviorEngine"]
+  },
+  "writable_by": ["passive", "external"],
+
+  "functional_group": {
+    "value": "viral"
+  },
+
+  "structural_type": {
+    "value": "internal"
+  },
+
+  "external_key": {
+    "value": null
+  },
+
+  "exposed_to_scan": {
+    "value": false
+  },
+
+  "passive_readable": {
+    "value": true
+  },
+
+  "hir_role": {
+    "value": "input"
+  },
+
+  "base_value": {
+    "value": 0.0
+  },
+
+  "update_rule": {
+    "type": "direct_input"
+  },
+
+  "state_dynamics": {
+    "type": "accumulative"
+  },
+
+  "decay": {
+    "enabled": false
+  },
+
+  "clamp": {
+    "enabled": true,
+    "min": 0.0,
+    "max": 1.0
+  }
+}

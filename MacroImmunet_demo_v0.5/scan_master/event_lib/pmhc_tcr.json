@@ -1,0 +1,11 @@
+{
+  "event_id": "pmhc_tcr",
+  "type": "binding",
+  "topology": "cell-cell",
+  "mode": "contact",
+  "field": "pMHC",
+  "source": {"type": "cell", "id": null},
+  "target": {"type": "cell", "id": null},
+  "value": 1.0,
+  "meta": {}
+}

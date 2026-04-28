@@ -1,0 +1,58 @@
+{
+  "node_id": "damage",
+
+  "_meta": {
+    "description": "Accumulated structural damage",
+    "consumed_by": ["HIR", "PassiveEngine", "StateUpdate"]
+  },
+  "writable_by": ["behavior", "passive"],
+
+  "functional_group": {
+    "value": "damage"
+  },
+
+  "structural_type": {
+    "value": "internal"
+  },
+
+  "external_key": {
+    "value": null
+  },
+  "exposed_to_scan": {
+    "value": false
+  },
+
+  "passive_readable": {
+    "value": true
+  },
+
+  "hir_role": {
+    "value": "critical"
+  },
+
+  "readable_by": ["passive", "behavior", "HIR"],
+
+  "base_value": {
+    "value": 0.0
+  },
+
+  "update_rule": {
+    "type": "weighted_sum"
+  },
+
+  "state_dynamics": {
+    "type": "accumulative",
+    "decay": 0.9,
+    "update_sources": ["passive", "behavior", "external"]
+  },
+
+  "decay": {
+    "enabled": false
+  },
+
+  "clamp": {
+    "enabled": true,
+    "min": 0.0,
+    "max": 1.0
+  }
+}

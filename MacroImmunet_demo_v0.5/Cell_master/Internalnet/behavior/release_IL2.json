@@ -1,0 +1,52 @@
+{
+  "behavior_id": "release_IL2",
+
+  "biological_group": "secretion",
+  "hir_group": "secretion",
+  "execution_group": "normal",
+  "stage": { "value": "active" },
+
+  "target_domain": { "value": "field" },
+  "effect_type": { "value": "generate" },
+  "temporal": { "value": "instant" },
+
+  "drive": { "type": "weighted_sum", "normalize": true },
+
+  "activation": {
+    "mode": "deterministic",
+    "threshold_base": 0.4,
+    "slope": 6.0
+  },
+
+  "gate": {
+    "conditions": [
+      { "node": "TCR_signal", "op": ">", "value": 0.5 },
+      { "node": "ATP", "op": ">", "value": 0.3 }
+    ],
+    "logic": "all"
+  },
+
+  "hir_interaction": {
+    "blockable": true,
+    "scalable": true
+  },
+
+  "output": {
+    "targets": [
+      {
+        "type": "internal_state",
+        "node": "ATP",
+        "mode": "add",
+        "value": -0.1,
+        "scale_by": "activation"
+      },
+      {
+        "type": "intent",
+        "intent_type": "add_field",
+        "field": "IL2",
+        "value": 1.0,
+        "scale_by": "drive"
+      }
+    ]
+  }
+}

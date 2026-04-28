@@ -1,0 +1,87 @@
+{
+  "passive_id": "membrane_leak",
+
+  "_meta": {
+    "description": "被动生理响应（自动发生，不走HIR）",
+    "consumed_by": ["PassiveEngine", "StateUpdate"]
+  },
+
+  "functional_group": {
+    "value": "homeostasis",
+    "_meta": {
+      "consumed_by": ["Analysis"],
+      "desc": "仅用于分类，不参与HIR"
+    }
+  },
+
+  "stage": {
+    "value": "intrinsic",
+    "_meta": {
+      "consumed_by": ["PassiveEngine"],
+      "desc": "执行阶段（通常是intrinsic，每tick运行）"
+    }
+  },
+
+  "priority": {
+    "value": 10,
+    "_meta": {
+      "consumed_by": ["PassiveEngine"],
+      "desc": "执行顺序（解决依赖，例如先membrane再Ca_flux）"
+    }
+  },
+
+  "gate": {
+    "type": "threshold",
+    "conditions": [
+      {
+        "node": "membrane",
+        "op": "<",
+        "value": 1.0
+      }
+    ],
+    "logic": "all",
+    "_meta": {
+      "consumed_by": ["PassiveEngine"],
+      "desc": "触发条件（支持反向门控）"
+    }
+  },
+
+  "compute": {
+    "type": "formula",
+    "expression": "(1 - membrane) * k1",
+    "params": {
+      "k1": 0.5
+    },
+    "_meta": {
+      "consumed_by": ["PassiveEngine"],
+      "desc": "计算逻辑（轻量表达式）"
+    }
+  },
+
+  "update": {
+    "type": "node_update",
+
+    "targets": [
+      {
+        "node": "Ca_flux",
+        "mode": "add",
+        "value_from": "compute",
+        "scale": ""
+      }
+    ],
+
+    "_meta": {
+      "consumed_by": ["StateUpdate"],
+      "desc": "如何写入 node_state"
+    }
+  },
+
+  "temporal": {
+    "value": "continuous",
+    "_meta": {
+      "consumed_by": ["PassiveEngine"],
+      "desc": "持续过程（区别于behavior的instant）"
+    }
+  }
+}
+

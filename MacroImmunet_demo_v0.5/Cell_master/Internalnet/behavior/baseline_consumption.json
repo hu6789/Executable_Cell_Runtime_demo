@@ -1,0 +1,39 @@
+{
+  "behavior_id": "baseline_consumption",
+
+  "biological_group": "metabolism",
+  "hir_group": "metabolism",
+  "execution_group": "normal",
+  "stage": { "value": "active" },
+
+  "target_domain": { "value": "self" },
+  "effect_type": { "value": "compute" },
+  "temporal": { "value": "instant" },
+
+  "drive": { "type": "weighted_sum" },
+
+  "activation": {
+    "mode": "deterministic",
+    "threshold_base": 0.05,
+    "slope": 6.0
+  },
+
+  "gate": { "conditions": [], "logic": "all" },
+
+  "hir_interaction": {
+    "blockable": false,
+    "scalable": false
+  },
+
+  "output": {
+    "targets": [
+      {
+        "type": "internal_state",
+        "node": "ATP",
+        "mode": "add",
+        "value": -0.05,
+        "scale_by": "activation"
+      }
+    ]
+  }
+}

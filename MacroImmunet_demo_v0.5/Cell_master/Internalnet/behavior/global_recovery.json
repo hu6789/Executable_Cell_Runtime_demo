@@ -1,0 +1,59 @@
+{
+  "behavior_id": "global_recovery",
+
+  "biological_group": "homeostasis",
+  "hir_group": "homeostasis",
+  "execution_group": "normal",
+  "stage": { "value": "active" },
+
+  "target_domain": { "value": "self" },
+  "effect_type": { "value": "compute" },
+  "temporal": { "value": "instant" },
+
+  "drive": { "type": "weighted_sum", "normalize": true },
+
+  "activation": {
+    "mode": "deterministic",
+    "threshold_base": 0.3,
+    "slope": 6.0
+  },
+
+  "gate": {
+    "conditions": [
+      { "node": "stress", "op": ">", "value": 0.4 },
+      { "node": "ATP", "op": ">", "value": 0.4 }
+    ],
+    "logic": "all"
+  },
+
+  "hir_interaction": {
+    "blockable": true,
+    "scalable": true
+  },
+
+  "output": {
+    "targets": [
+      {
+        "type": "internal_state",
+        "node": "stress",
+        "mode": "add",
+        "value": -0.2,
+        "scale_by": "activation"
+      },
+      {
+        "type": "internal_state",
+        "node": "damage",
+        "mode": "add",
+        "value": -0.2,
+        "scale_by": "activation"
+      },
+      {
+        "type": "internal_state",
+        "node": "ATP",
+        "mode": "add",
+        "value": -0.1,
+        "scale_by": "activation"
+      }
+    ]
+  }
+}

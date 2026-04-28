@@ -1,0 +1,55 @@
+{
+  "node_id": "pMHC",
+
+  "_meta": {
+    "consumed_by": ["NodeEngine", "ScanMaster", "BehaviorEngine"]
+  },
+  "writable_by": ["passive", "behavior"],
+  "functional_group": {
+    "value": "signaling"
+  },
+
+  "structural_type": {
+    "value": "internal"
+  },
+
+  "external_key": {
+    "value": null
+  },
+
+  "exposed_to_scan": {
+    "value": true
+  },
+
+  "passive_readable": {
+    "value": false
+  },
+
+  "hir_role": {
+    "value": "modulator"
+  },
+
+  "base_value": {
+    "value": 0.0
+  },
+
+  "update_rule": {
+    "type": "direct_input"
+  },
+
+  "state_dynamics": {
+    "type": "accumulative"
+  },
+
+  "decay": {
+    "enabled": true,
+    "tau": 5.0,
+    "mode": "exponential"
+  },
+
+  "clamp": {
+    "enabled": true,
+    "min": 0.0,
+    "max": 1.0
+  }
+}

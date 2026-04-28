@@ -1,0 +1,49 @@
+{
+  "graph_id": "",
+
+  "_meta": {
+    "description": "cell-specific causal graph（node传播 + behavior输入）",
+    "consumed_by": ["NodeEngine", "BehaviorEngine"]
+  },
+
+  "nodes": [],
+
+  "edges": [
+
+    {
+      "source": "node_id",
+      "target": "node_id",
+
+      "type": "node-node",
+      "weight": 0.5,
+
+      "_meta": {
+        "consumed_by": ["NodeEngine"]
+      }
+    },
+
+    {
+      "source": "node_id",
+      "target": "behavior_id",
+
+      "type": "node-behavior",
+
+      "role": "drive", 
+      "weight": 1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.3 }
+        ],
+        "logic": "all"
+      },
+
+      "_meta": {
+        "consumed_by": ["BehaviorEngine"]
+      }
+    }
+
+  ],
+
+  "default_drive_normalize": true
+}

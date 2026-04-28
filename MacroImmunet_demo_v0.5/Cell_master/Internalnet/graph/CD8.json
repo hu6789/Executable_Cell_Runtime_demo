@@ -1,0 +1,65 @@
+{
+  "graph_id": "CD8",
+
+  "nodes": [
+    "TCR_signal",
+    "IL2_signal",
+    "ATP",
+    "stress"
+  ],
+
+  "edges": [
+
+    {
+      "source": "TCR_signal",
+      "target": "release_perforin",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.2 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "IL2_signal",
+      "target": "release_perforin",
+      "type": "node-behavior",
+
+      "role": "mod",
+      "weight": 0.7
+    },
+
+    {
+      "source": "ATP",
+      "target": "release_perforin",
+      "type": "node-behavior",
+
+      "role": "mod",
+      "weight": 0.5
+    },
+
+    {
+      "source": "stress",
+      "target": "release_perforin",
+      "type": "node-behavior",
+
+      "role": "inhibit",
+      "weight": -0.6,
+
+      "gate": {
+        "conditions": [
+          { "op": "<", "value": 0.6 }
+        ],
+        "logic": "all"
+      }
+    }
+  ],
+
+  "default_drive_normalize": true
+}

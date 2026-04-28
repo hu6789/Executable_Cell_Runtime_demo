@@ -1,0 +1,48 @@
+{
+  "cell_type": "cd4_t",
+
+  "init_node_state": {
+    "ATP": 0.6,
+    "stress": 0.1,
+    "damage": 0.0,
+    "viral_load": 0.0,
+    "pMHC": 0.0,
+    "TCR_signal": 0.0
+  },
+
+  "params": {
+    "feature": {
+      "energy_from_ATP": 1.0,
+      "stress_sensitivity": 1.1,
+      "damage_sensitivity": 1.0,
+      "viral_sensitivity": 1.2,
+      "TCR_sensitivity": 1.3,
+      "IL2R_sensitivity": 1.2
+    },
+
+    "behavior": {
+      "release_IL2": {
+        "sensitivity": 1.5,
+        "threshold_shift": -0.1,
+        "slope_scale": 1.5
+      }
+    },
+
+    "node": {
+      "ATP": { "scale": 1.1 }
+    }
+  },
+
+  "state_flags": {
+    "alive": true
+  },
+
+  "execution_profile": {
+    "behavior_parallel_limit": 3
+  },
+
+  "spatial": {
+    "mobility": "mobile",
+    "interaction_radius": 2
+  }
+}

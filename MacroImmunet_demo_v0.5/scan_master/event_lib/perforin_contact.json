@@ -1,0 +1,12 @@
+{
+  "event_id": "perforin_contact",
+  "type": "effector",
+  "topology": "cell-substance",
+  "mode": "contact",
+  "field": "perforin",
+  "source": {"type": "substance", "id": "perforin"},
+  "target": {"type": "cell", "id": null},
+  "value": 1.0,
+  "meta": {}
+}
+

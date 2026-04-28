@@ -1,0 +1,136 @@
+{
+  "node_id": "ATP",
+  "writable_by": ["behavior", "passive", "external"],
+  "_meta": {
+    "description": "生理/信号节点定义（可复用库）",
+    "consumed_by": [
+      "InputBuilder",
+      "NodeEngine",
+      "HIR",
+      "StateUpdate",
+      "PassiveEngine",
+      "ScanMaster"
+    ]
+  },
+
+  // =========================
+  // 🧠 分类（语义层）
+  // =========================
+  "functional_group": {
+    "value": "metabolism",
+    "_meta": {
+      "consumed_by": ["HIR", "Analysis"],
+      "desc": "用于HIR特征分组（energy/stress等）"
+    }
+  },
+
+  "structural_type": {
+    "value": "internal",
+    "_meta": {
+      "consumed_by": ["NodeEngine", "InputBuilder"],
+      "desc": "internal / receptor / secreted / sensor"
+    }
+  },
+
+  // =========================
+  // 🌐 外界交互
+  // =========================
+  "external_key": {
+    "value": "ATP_external",
+    "channel": "local/gradient",
+    "_meta": {
+      "consumed_by": ["InputBuilder"],
+      "desc": "field → node 映射入口（receptor主要用）"
+    }
+  },
+
+  "exposed_to_scan": {
+    "value": false,
+    "_meta": {
+      "consumed_by": ["ScanMaster"],
+      "desc": "是否作为cell surface信号被扫描（如pMHC）"
+    }
+  },
+
+  "passive_readable": {
+    "value": true,
+    "_meta": {
+      "consumed_by": ["PassiveEngine"],
+      "desc": "是否允许passive读取（性能控制）"
+    }
+  },
+
+  // =========================
+  // ⚖️ HIR相关
+  // =========================
+  "hir_role": {
+    "value": "input",
+    "_meta": {
+      "consumed_by": ["HIR"],
+      "desc": "input / critical / modulator / none"
+    }
+  },
+
+  // =========================
+  // 🧬 初始状态
+  // =========================
+  "base_value": {
+    "value": 0.5,
+    "_meta": {
+      "consumed_by": ["CellFactory"],
+      "desc": "默认初始值（可被cell覆盖）"
+    }
+  },
+
+  // =========================
+  // 🔗 Node计算规则（graph用）
+  // =========================
+  "update_rule": {
+    "type": "weighted_sum". "direct_input"
+    "_meta": {
+      "consumed_by": ["NodeEngine"],
+      "desc": "node-node传播方式"
+    }
+  },
+
+  // =========================
+  // ⏱ 动态属性（StateUpdate用）
+  // =========================
+  "state_dynamics": {
+    "type": "accumulative",
+    "decay": ,
+    "_meta": {
+      "consumed_by": ["StateUpdate"],
+      "desc": "transient / accumulative / stable"
+    }
+  },
+
+  "decay": {
+    "enabled": true,
+    "tau": 10.0,
+    "mode": "exponential",
+    "_meta": {
+      "consumed_by": ["StateUpdate"],
+      "desc": "baseline回归"
+    }
+  },
+
+  // =========================
+  // 🛡 安全限制
+  // =========================
+  "clamp": {
+    "enabled": true,
+    "min": 0.0,
+    "max": 1.0,
+    "_meta": {
+      "consumed_by": ["StateUpdate"],
+      "desc": "数值安全限制"
+    }
+  }
+}
+# "receptor": {
+#  "type": "sigmoid",
+#  "sensitivity": 1.2,
+#  "threshold": 0.3,
+#  "slope": 5.0
+#}

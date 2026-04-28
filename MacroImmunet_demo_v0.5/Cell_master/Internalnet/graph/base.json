@@ -1,0 +1,147 @@
+{
+  "graph_id": "base",
+
+  "_meta": {
+    "description": "基础生理行为输入图",
+    "consumed_by": ["BehaviorEngine"]
+  },
+
+  "nodes": [
+    "ATP",
+    "stress",
+    "damage",
+    "membrane",
+    "Ca_flux"
+  ],
+
+  "edges": [
+    {
+      "source": "membrane",
+      "target": "Ca_flux",
+      "type": "node-node",
+      "weight": -1.0,
+      "gate": {
+        "conditions": [
+          { "op": "<", "value": 0.8 }
+        ]
+      }
+    },
+
+    {
+      "source": "stress",
+      "target": "metabolism",
+      "type": "node-behavior",
+
+      "role": "inhibit",
+      "weight": -0.5,
+
+      "gate": {
+        "conditions": [
+          { "op": "<", "value": 0.8 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "ATP",
+      "target": "baseline_consumption",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 0.2
+    },
+
+    {
+      "source": "ATP",
+      "target": "membrane_repair",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.3 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "membrane",
+      "target": "membrane_repair",
+      "type": "node-behavior",
+
+      "role": "inhibit",
+      "weight": -1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": "<", "value": 1.0 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "stress",
+      "target": "membrane_repair",
+      "type": "node-behavior",
+
+      "role": "inhibit",
+      "weight": -0.5
+    },
+
+    {
+      "source": "stress",
+      "target": "global_recovery",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.5 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "damage",
+      "target": "global_recovery",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.5 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "ATP",
+      "target": "global_recovery",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 0.5,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.3 }
+        ],
+        "logic": "all"
+      }
+    }
+
+  ],
+
+  "default_drive_normalize": true
+}

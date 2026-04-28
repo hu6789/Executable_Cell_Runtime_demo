@@ -1,0 +1,16 @@
+{
+  "field_stimulus": {
+    "fields": {
+      "IL2_field": { "0,0": 1.0 }
+    },
+    "cells": [
+      { "type": "cd4_t", "position": [0, 0] },
+      { "type": "cd8_t", "position": [1, 0] }
+    ]
+  },
+  "contact_scenario": {
+    "contacts": [
+      { "source": "cd4_t", "target": "cd8_t", "signals": { "IL2_signal": 0.8 } }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "passive_id": "viral_replication",
+
+  "_meta": {
+    "description": "Viral replication increases viral load",
+    "consumed_by": ["PassiveEngine", "StateUpdate"]
+  },
+
+  "functional_group": {
+    "value": "viral"
+  },
+
+  "stage": {
+    "value": "intrinsic"
+  },
+
+  "priority": {
+    "value": 20
+  },
+
+  "gate": {
+    "type": "threshold",
+    "conditions": [
+      {
+        "node": "viral_load",
+        "op": ">",
+        "value": 0.0
+      }
+    ],
+    "logic": "all"
+  },
+
+  "compute": {
+    "type": "formula",
+    "expression": "viral_load * (1 - viral_load) * k_rep",
+    "params": {
+      "k_rep": 0.8
+    }
+  },
+
+  "update": {
+    "type": "node_update",
+    "targets": [
+      {
+        "node": "viral_load",
+        "mode": "add",
+        "value_from": "compute"
+      }
+    ]
+  },
+
+  "temporal": {
+    "value": "continuous"
+  }
+}

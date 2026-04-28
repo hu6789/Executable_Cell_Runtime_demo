@@ -1,0 +1,88 @@
+{
+  "features": {
+    "energy": "ATP",
+    "stress": "stress",
+    "damage": "damage",
+    "viral_load": "viral_load",
+    "membrane": "membrane",
+    "Ca_flux": "Ca_flux"
+  },
+
+  "fates": {
+    "normal": {
+      "weights": {
+        "energy": 0.6,
+        "stress": -0.4,
+        "damage": -0.3
+      }
+    },
+
+    "stressed": {
+      "weights": {
+        "stress": 0.8,
+        "damage": 0.3,
+        "energy": -0.2
+      },
+      "thresholds": {
+        "score": 0.4
+      }
+    },
+
+    "dying_lysis": {
+      "weights": {
+        "viral_load": 0.9,
+        "damage": 0.5,
+        "stress": 0.4
+      },
+      "thresholds": {
+        "score": 0.6,
+        "viral_load": 0.5
+      }
+    },
+
+    "dying_perforin": {
+      "conditions": [
+        { "node": "membrane", "op": "<", "value": 0.3 },
+        { "node": "Ca_flux", "op": ">", "value": 0.6 }
+      ],
+      "logic": "all"
+    }
+  },
+
+  "groups": {
+    "metabolism": {
+      "formula": "energy - 0.6*stress - 0.4*viral_load",
+      "min": 0.0
+    },
+
+    "effector": {
+      "formula": "0.6*energy - 0.5*stress - 0.3*damage",
+      "min": 0.0
+    },
+
+    "cytokine": {
+      "formula": "0.7*viral_load + 0.2 - 0.4*stress",
+      "min": 0.0
+    },
+
+    "repair": {
+      "formula": "0.5*energy - 0.5*damage - 0.3*stress",
+      "min": 0.0
+    },
+
+    "fate_execution": {
+      "formula": "1.0"
+    }
+  },
+
+  "blocks": [
+    {
+      "if": "fate in ['dying_lysis', 'dying_perforin']",
+      "disable": ["metabolism", "effector", "repair"]
+    },
+    {
+      "if": "stress > 0.9",
+      "disable": ["cytokine"]
+    }
+  ]
+}

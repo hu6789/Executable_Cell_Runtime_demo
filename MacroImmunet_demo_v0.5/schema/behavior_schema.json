@@ -1,0 +1,62 @@
+{
+  "behavior_id": "xxx",
+
+  "_meta": {
+    "consumed_by": ["BehaviorEngine", "StateUpdate", "IntentBuilder"]
+  },
+
+  "biological_group": "metabolism","homeostasis","signaling", "secretion","effector"
+  "hir_group": "metabolism","homeostasis","signaling", "secretion","effector"
+  "execution_group": "normal",
+  "stage": { "value": "active" },
+
+  "target_domain": { "value": "self" },
+  "effect_type": { "value": "compute" },
+  "temporal": { "value": "instant" },
+
+  "drive": {
+    "type": "weighted_sum",
+    "normalize": true
+  },
+
+  "activation": {
+    "mode": "deterministic",
+    "threshold_base": 0.05,
+    "slope": 6.0
+  },
+
+  "gate": {
+    "conditions": [],
+    "logic": "all"
+  },
+
+  "hir_interaction": {
+    "blockable": false,
+    "scalable": false
+  },
+
+  "output": {
+    "targets": [
+      {
+        "type": "internal_state",
+        "node": "ATP",
+        "mode": "add",
+        "value": -0.05,
+        "scale_by": "activation"
+      },
+      {
+        "type": "intent",
+        "intent_type": "damage_cell",
+        "target": "target_cell",
+        "value": 0.5,
+        "scale_by": "drive"
+      },
+      {
+        "type": "external",
+        "field": "IL2",
+        "value": 0.3,
+        "scale_by": "drive"
+      }
+    ]
+  }
+}

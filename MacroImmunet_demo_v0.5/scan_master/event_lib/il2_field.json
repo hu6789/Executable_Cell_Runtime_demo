@@ -1,0 +1,12 @@
+{
+  "event_id": "il2_field",
+  "type": "signal",
+  "topology": "cell-substance",
+  "mode": "field",
+  "field": "IL2",
+  "source": {"type": "field", "id": "IL2"},
+  "target": {"type": "cell", "id": null},
+  "value": 1.0,
+  "meta": {}
+}
+

@@ -1,0 +1,43 @@
+{
+  "passive_id": "Ca_response",
+
+  "priority": {
+    "value": 20
+  },
+
+  "gate": {
+    "type": "threshold",
+    "conditions": [
+      {
+        "node": "Ca_flux",
+        "op": ">",
+        "value": 0.1
+      }
+    ]
+  },
+
+  "compute": {
+    "type": "formula",
+    "expression": "Ca_flux",
+    "params": {}
+  },
+
+  "update": {
+    "type": "node_update",
+
+    "targets": [
+      {
+        "node": "stress",
+        "mode": "add",
+        "value_from": "compute",
+        "scale": 0.7
+      },
+      {
+        "node": "damage",
+        "mode": "add",
+        "value_from": "compute",
+        "scale": 0.4
+      }
+    ]
+  }
+}

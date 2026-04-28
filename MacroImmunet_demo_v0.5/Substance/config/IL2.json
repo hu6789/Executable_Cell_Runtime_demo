@@ -1,0 +1,23 @@
+{
+  "name": "IL2",
+  
+  "type": "signal",
+
+  "dynamics": {
+    "type": "signal",
+    "decay_tau": 0.05,
+    "diffusion": 0.1
+  },
+
+  "interaction": {
+    "kind": "signal",   
+    "targets": ["cell"],
+    "conversion": {
+      "scale": 1.0
+    }
+  },
+
+  "master": {
+    "enabled": false
+  }
+}
