@@ -19,7 +19,8 @@
       "source": "membrane",
       "target": "Ca_flux",
       "type": "node-node",
-      "weight": -1.0,
+      "weight": 1.0,
+      "transform": "inverse",
       "gate": {
         "conditions": [
           { "op": "<", "value": 0.8 }
