@@ -31,7 +31,7 @@
         "type": "internal_state",
         "node": "ATP",
         "mode": "add",
-        "value": -0.05,
+        "value": -0.03,
         "scale_by": "activation"
       }
     ]

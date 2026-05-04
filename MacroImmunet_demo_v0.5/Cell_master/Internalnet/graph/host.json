@@ -6,10 +6,64 @@
     "pMHC",
     "ATP",
     "stress",
-    "damage"
+    "damage",
+    "membrane",
+    "Ca_flux"
   ],
 
   "edges": [
+    {
+      "source": "membrane",
+      "target": "membrane_repair",
+      "type": "node-behavior",
+
+      "role": "inhibit",
+      "weight": -1.0,
+
+      "gate": {
+        "conditions": [
+          { "op": "<", "value": 0.8 }
+        ],
+        "logic": "all"
+      }
+    },
+
+    {
+      "source": "stress",
+      "target": "membrane_repair",
+      "type": "node-behavior",
+
+      "role": "inhibit",
+      "weight": -0.4
+    },
+
+    {
+      "source": "ATP",
+      "target": "membrane_repair",
+      "type": "node-behavior",
+
+      "role": "drive",
+      "weight": 0.5,
+
+      "gate": {
+        "conditions": [
+          { "op": ">", "value": 0.2 }
+        ],
+        "logic": "all"
+      }
+    },
+    {
+      "source": "membrane",
+      "target": "Ca_flux",
+      "type": "node-node",
+      "weight": 0.25,
+      "transform": "sigmoid_inverse",
+      "gate": {
+        "conditions": [
+          { "op": "<", "value": 0.8 }
+        ]
+      }
+    },
     {
       "source": "viral_load",
       "target": "produce_pMHC",
@@ -20,7 +74,7 @@
 
       "gate": {
         "conditions": [
-          { "op": ">", "value": 0.1 }
+          { "op": ">", "value": 0.2 }
         ],
         "logic": "all"
       }

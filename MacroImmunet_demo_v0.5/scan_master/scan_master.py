@@ -77,27 +77,40 @@ class ScanMaster:
                 continue
 
             source = {"type": "field", "id": fname}
-            target = {"type": "cell", "id": cell.cell_id, "type": cell.cell_type}
-
-            # 匹配 event_lib
-            if not self._match_event_rule("signal", source, target):
-                continue
-
-            payload = {
-                "field": fname,
-                "value": val,
-                "target_id": cell.cell_id
+            target = {
+                "entity": "cell",
+                "id": cell.cell_id,
+                "type": cell.cell_type
             }
 
-            ev = self._make_event(
-                etype="signal",
-                source=source,
-                target=target,
-                payload=payload,
-                pos=pos,
-                tick=tick
-            )
-            events.append(ev)
+            # 匹配 event_lib
+            for rule in self.event_lib:
+                if rule.get("mode") != "field":
+                    continue
+                if rule.get("field") != fname:
+                    continue
+
+                etype = rule["type"]
+
+                if not self._match_event_rule(etype, source, target):
+                    continue
+
+                payload = {
+                    "field": fname,
+                    "value": val,
+                    "target_id": cell.cell_id
+                }
+
+                events.append(
+                    self._make_event(
+                        etype=etype,       
+                        source=source,
+                        target=target,
+                        payload=payload,
+                        pos=pos,
+                        tick=tick
+                    )
+                )
         return events
 
     # =========================
@@ -106,33 +119,55 @@ class ScanMaster:
     def _scan_contacts(self, cell, pos, tick):
         events = []
         neighbors = self.world.get_neighbors(cell)
+
         for nb in neighbors:
             nb_pos = tuple(nb.position)
             dist = self._distance(pos, nb_pos)
 
-            source = {"type": "cell", "id": nb.cell_id, "type": nb.cell_type}
-            target = {"type": "cell", "id": cell.cell_id, "type": cell.cell_type}
+            source = {"entity": "cell", "id": nb.cell_id, "type": nb.cell_type}
+            target = {"entity": "cell", "id": cell.cell_id, "type": cell.cell_type}
 
-            if not self._match_event_rule("contact", source, target):
-                continue
+            for rule in self.event_lib:
 
-            payload = {
-                "target_type": nb.cell_type,
-                "distance": dist
-            }
+                if rule.get("mode") != "contact":
+                    continue
 
-            ev = self._make_event(
-                etype="contact",
-                source=source,
-                target=target,
-                payload=payload,
-                pos=pos,
-                tick=tick,
-                dist=dist
-            )
-            events.append(ev)
+                etype = rule["type"]
+                field = rule.get("field")
+
+                if not field:
+                    continue
+
+                # ⭐ 从 neighbor 读取 node_state（比如 pMHC）
+                val = nb.node_state.get(field, 0.0)
+
+                if val <= 0:
+                    continue
+
+                if not self._match_event_rule(etype, source, target):
+                    continue
+  
+                payload = {
+                    "field": field,
+                    "value": val,
+                    "target_id": cell.cell_id,
+                    "distance": dist
+                }
+
+                ev = self._make_event(
+                    etype=etype,
+                    source=source,
+                    target=target,
+                    payload=payload,
+                    pos=pos,
+                    tick=tick,
+                    dist=dist
+                )
+
+                print("[SCAN CONTACT EVENT]", ev)  # ✅ debug
+                events.append(ev)
+
         return events
-
     # =========================
     # 3️⃣ context（hotspot等）
     # =========================
@@ -152,6 +187,7 @@ class ScanMaster:
                     continue
 
                 payload = {"tag": f"{fname}_hotspot"}
+                print("[SCAN EVENT]", fname, val)
 
                 ev = self._make_event(
                     etype="context",
@@ -162,6 +198,7 @@ class ScanMaster:
                     tick=tick
                 )
                 events.append(ev)
+
         return events
 
     # =========================

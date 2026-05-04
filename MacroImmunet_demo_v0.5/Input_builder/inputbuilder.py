@@ -21,8 +21,12 @@ class InputBuilder:
             for ev in perception.get("events", []):
 
                 payload = ev.get("payload", {})
-                field = payload.get("field")
+                
                 val = payload.get("value", 0.0)
+
+                field = payload.get("field")
+                if not field:
+                    field = ev.get("field")
 
                 if not field:
                     continue
@@ -133,3 +137,4 @@ class InputBuilder:
             perception_map[tid]["events"].append(ev)
 
         return perception_map
+        

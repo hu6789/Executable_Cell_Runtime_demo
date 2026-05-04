@@ -58,7 +58,7 @@ def apply_dynamics(node_state, delta, node_defs):
             val = prev + d
 
         elif mode == "accumulative":
-            decay = dyn.get("decay", 0.9)
+            decay = dyn.get("decay", 0.99)
             val = prev * decay + d
 
         elif mode == "leaky":

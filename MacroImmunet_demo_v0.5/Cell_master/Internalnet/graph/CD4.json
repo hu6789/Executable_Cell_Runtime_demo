@@ -19,7 +19,7 @@
 
       "gate": {
         "conditions": [
-          { "op": ">", "value": 0.1 }
+          { "op": ">", "value": 0.8 }
         ],
         "logic": "all"
       }
@@ -31,7 +31,7 @@
       "type": "node-behavior",
 
       "role": "mod",
-      "weight": 0.5
+      "weight": 0.3
     },
 
     {
@@ -44,7 +44,7 @@
 
       "gate": {
         "conditions": [
-          { "op": "<", "value": 0.5 }
+          { "op": "<", "value": 0.8 }
         ],
         "logic": "all"
       }

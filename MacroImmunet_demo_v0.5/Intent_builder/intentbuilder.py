@@ -103,14 +103,16 @@ class IntentBuilder:
 
         intents = []
 
-        if hir_output.get("fate") == "dying":
+        fate = hir_output.get("fate")
+ 
+        if fate and fate.startswith("dying"):
 
             intents.append(
                 self._make_intent(
                     itype="death",
                     source=cell_id,
                     target=cell_id,
-                    payload={"kind": "default"},
+                    payload={"kind": fate},  # 保留类型！
                     tick=tick
                 )
             )
@@ -138,11 +140,8 @@ class IntentBuilder:
                     self._make_intent(
                         itype="effect",
                         source=act.get("source"),
-                        target=act.get("target_id"),
-                        payload={
-                            "kind": act.get("kind"),
-                            "value": act.get("value")
-                        },
+                        target=act.get("target") or act.get("target_id"),
+                        payload=act.get("payload", {}),
                         tick=tick
                     )
                 )

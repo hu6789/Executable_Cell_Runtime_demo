@@ -1,0 +1,11 @@
+{
+  "event_id": "perforin_field",
+  "type": "effector",
+  "topology": "cell-substance",
+  "mode": "field",
+  "field": "perforin",
+  "source": {"type": "field", "id": "perforin"},
+  "target": {"type": "cell", "id": null},
+  "value": 1.0,
+  "meta": {}
+}

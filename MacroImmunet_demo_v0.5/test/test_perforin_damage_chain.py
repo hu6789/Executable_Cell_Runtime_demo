@@ -21,7 +21,11 @@ class Cell:
             "viral_load": 0.0
         }
 
-        self.state_flags = {"infected": True}
+        self.state_flags = {
+            "infected": True,
+            "alive": True,
+            "dying": False
+        }
         self.params = {"behavior": {}}
 class World:
     def __init__(self):
@@ -52,6 +56,10 @@ class World:
 
     def get_neighbors(self, cell):
         return []
+    def remove_cell(self, cid):
+        print(f"[WORLD] remove_cell {cid}")
+        if cid in self.cells:
+            del self.cells[cid]
 def test_perforin_chain():
 
     print("\n===== PERFORIN FULL CHAIN TEST =====")
@@ -70,7 +78,7 @@ def test_perforin_chain():
     intent_builder = IntentBuilder()
     label = LabelCenter()
 
-    for tick in range(5):
+    for tick in range(10):
 
         print(f"\n--- TICK {tick} ---")
 
@@ -81,7 +89,11 @@ def test_perforin_chain():
         ib_out = input_builder.build(events, cells=world.cells, world=world)
 
         cell_inputs = ib_out["cell"]
-        substance_inputs = ib_out["substance"]
+        substance_inputs = [
+            s for s in ib_out["substance"]
+            if world.cells.get(s.get("target"))
+            and world.cells[s["target"]].state_flags.get("alive", True)
+        ]
 
         # 3️⃣ substance（🔥 perforin 在这里触发）
         substance_actions = substance_master.step(substance_inputs)
@@ -89,13 +101,7 @@ def test_perforin_chain():
         print("[SUBSTANCE ACTIONS]", substance_actions)
 
         # 4️⃣ cell
-        cell_outputs = {}
-        for cid, cell in world.cells.items():
-
-            node_input = cell_inputs.get(cid, {}).get("node_input", {})
-
-            result = net.step(cell, node_input)
-            cell_outputs[cid] = result
+        cell_outputs = net.step_cells(world, cell_inputs)
 
         # 5️⃣ intent
         intents = intent_builder.build(
@@ -113,7 +119,11 @@ def test_perforin_chain():
         label.apply(world)
 
         # 7️⃣ state观察
-        cell = world.cells[1]
+        cell = world.cells.get(1)
+ 
+        if cell is None:
+            print("\n[STATE] cell removed")
+            break
         ns = cell.node_state
 
         print("\n[STATE]")

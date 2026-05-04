@@ -5,16 +5,16 @@
 
   "dynamics": {
     "type": "effector",
-    "decay_tau": 0.02,
-    "diffusion": 0.05
+    "decay_tau": 0.3,
+    "diffusion": 0.1
   },
 
   "interaction": {
     "kind": "membrane_damage",  
     "targets": ["cell"],
     "conversion": {
-      "scale": -0.5,
-      "threshold": 0.01
+      "scale": -0.1,
+      "threshold": 0.1
     },
     "filter": {
       "cell_flags": ["infected"]

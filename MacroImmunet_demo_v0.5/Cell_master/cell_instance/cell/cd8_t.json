@@ -2,15 +2,14 @@
   "cell_type": "cd8_t",
 
   "init_node_state": {
-    "ATP": 0.6,
+    "ATP": 3.0,
     "stress": 0.1,
     "damage": 0.0,
     "viral_load": 0.0,
     "pMHC": 0.0,
     "TCR_signal": 0.0,
     "IL2_signal": 0.0,
-    "membrane": 1.0,
-    "Ca_flux": 0.0
+    "membrane": 1.0
   },
 
   "params": {

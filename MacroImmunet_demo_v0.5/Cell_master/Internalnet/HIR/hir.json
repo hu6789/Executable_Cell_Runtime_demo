@@ -30,20 +30,19 @@
 
     "dying_lysis": {
       "weights": {
-        "viral_load": 0.9,
-        "damage": 0.5,
-        "stress": 0.4
+        "viral_load": 0.6,
+        "damage": 0.8,
+        "stress": 0.8
       },
       "thresholds": {
-        "score": 0.6,
-        "viral_load": 0.5
+        "score": 0.7,
+        "viral_load": 0.7
       }
     },
 
     "dying_perforin": {
       "conditions": [
-        { "node": "membrane", "op": "<", "value": 0.3 },
-        { "node": "Ca_flux", "op": ">", "value": 0.6 }
+        { "node": "Ca_flux", "op": ">", "value": 0.9 }
       ],
       "logic": "all"
     }

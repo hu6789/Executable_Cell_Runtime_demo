@@ -174,13 +174,25 @@ def build_outputs(b, activation, drive, cell=None):
             })
 
     return outputs
-def evaluate_behaviors(node_state, hir_output, behaviors, graph=None, cell=None):
-    outputs = []
 
+def evaluate_behaviors(node_state, hir_output, behaviors, graph=None, cell=None):
+
+    # ✅ 先定义
+    if isinstance(behaviors, dict):
+        behavior_iter = behaviors.values()
+    else:
+        behavior_iter = behaviors
+
+    # ✅ 再 debug
+    print("\n[DEBUG] === ENTER behavior_engine ===")
+    print("[DEBUG] node_state:", node_state)
+    print("[DEBUG] HIR fate:", hir_output.get("fate"))
+    print("[BEHAVIOR IDS]", [b.get("behavior_id") for b in behavior_iter])
+
+    outputs = []
     fate = hir_output.get("fate", "normal")
 
-    for b in behaviors:
-
+    for b in behavior_iter:
         exec_group = b.get("execution_group", "normal")
 
         # 1️⃣ fate gating
@@ -195,7 +207,7 @@ def evaluate_behaviors(node_state, hir_output, behaviors, graph=None, cell=None)
         if graph is not None:
             drive = build_drive_from_graph(node_state, b["behavior_id"], graph)
             if drive is None:
-                drive = compute_drive(node_state, b.get("drive", {}))
+                continue
         else:
             drive = compute_drive(node_state, b.get("drive", {}))
 
@@ -226,5 +238,6 @@ def evaluate_behaviors(node_state, hir_output, behaviors, graph=None, cell=None)
             "drive": drive,
             "outputs": results
         })
+        print("[DEBUG] checking behavior:", b.get("behavior_id"))
         print(f"[CELL TYPE] {cell.cell_type} → {b['behavior_id']}")
     return outputs

@@ -13,7 +13,7 @@ REGISTRY = {
 
     "pMHC": {
         "interaction": {
-            "type": "binding",
+            "type": "binding",   # 🔴 改这里
             "topology": "cell-cell",
             "mode": "contact"
         },

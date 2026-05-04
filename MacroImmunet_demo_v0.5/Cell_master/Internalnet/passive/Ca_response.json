@@ -11,7 +11,7 @@
       {
         "node": "Ca_flux",
         "op": ">",
-        "value": 0.1
+        "value": 0.4
       }
     ]
   },
@@ -30,13 +30,13 @@
         "node": "stress",
         "mode": "add",
         "value_from": "compute",
-        "scale": 0.7
+        "scale": 0.2
       },
       {
         "node": "damage",
         "mode": "add",
         "value_from": "compute",
-        "scale": 0.4
+        "scale": 0.06
       }
     ]
   }

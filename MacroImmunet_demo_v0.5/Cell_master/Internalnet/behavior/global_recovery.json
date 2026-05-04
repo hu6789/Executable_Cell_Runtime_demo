@@ -20,8 +20,8 @@
 
   "gate": {
     "conditions": [
-      { "node": "stress", "op": ">", "value": 0.4 },
-      { "node": "ATP", "op": ">", "value": 0.4 }
+      { "node": "stress", "op": ">", "value": 0.5 },
+      { "node": "ATP", "op": ">", "value": 0.1 }
     ],
     "logic": "all"
   },
@@ -37,21 +37,21 @@
         "type": "internal_state",
         "node": "stress",
         "mode": "add",
-        "value": -0.2,
+        "value": -0.1,
         "scale_by": "activation"
       },
       {
         "type": "internal_state",
         "node": "damage",
         "mode": "add",
-        "value": -0.2,
+        "value": -0.1,
         "scale_by": "activation"
       },
       {
         "type": "internal_state",
         "node": "ATP",
         "mode": "add",
-        "value": -0.1,
+        "value": -0.03,
         "scale_by": "activation"
       }
     ]

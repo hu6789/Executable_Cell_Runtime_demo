@@ -16,6 +16,8 @@ class PerforinMaster:
 
         intents = []
 
+        acc = {}   # 🔴 每个 cell 累积
+
         for it in interactions:
 
             target_id = it.get("target_id")
@@ -26,15 +28,9 @@ class PerforinMaster:
             if not cell:
                 continue
 
-            # =========================
-            # 1️⃣ infected 判定（🔥关键就在这里）
-            # =========================
             if not cell.state_flags.get("infected", False):
                 continue
 
-            # =========================
-            # 2️⃣ 数值转换
-            # =========================
             value = it.get("value", 0.0)
 
             scale = self.conversion.get("scale", 1.0)
@@ -44,17 +40,23 @@ class PerforinMaster:
             if threshold is not None and abs(value) < threshold:
                 continue
 
-            # =========================
-            # 3️⃣ 直接生成 intent（🔥核心）
-            # =========================
+            acc[target_id] = acc.get(target_id, 0.0) + abs(value)
+
+        # 🔥 clamp（关键）
+        max_damage = 0.15
+
+        for cid, total in acc.items():
+
+            dmg = min(total, max_damage)
+ 
             intents.append({
-                "type": "cell_state",
+                "type": "effect",
                 "source": "perforin",
-                "target": target_id,
+                "target": cid,
                 "payload": {
                     "node": "membrane",
                     "op": "add",
-                    "delta": -abs(value)   # 🔴 perforin = 减 membrane
+                    "delta": -dmg
                 }
             })
 

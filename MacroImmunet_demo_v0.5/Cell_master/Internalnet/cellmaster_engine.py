@@ -24,6 +24,7 @@ class InternalNet:
                 with open(path) as f:
                     self.behaviors.append(json.load(f))
             print(f"[DEBUG] Loaded {len(self.behaviors)} behaviors from {behavior_dir}")
+            print("[ALL BEHAVIORS LOADED]", [b.get("name") for b in self.behaviors])
         else:
             self.behaviors = behaviors
 
@@ -49,18 +50,33 @@ class InternalNet:
             "cd8_t": ["base", "CD8"]
         }
         self.behavior_graph = self.graph_loader.load_behavior_graph(["base"])
+    def step_cells(self, world, cell_inputs, state_snapshot=None):
+        outputs = {}
+        for cid, cell in world.cells.items():
+            if not cell.state_flags.get("alive", True):
+                continue
+            if cell.state_flags.get("dying", False):
+                continue
 
+            node_input = cell_inputs.get(cid, {}).get("node_input", {})
+
+            # ✅ 使用 snapshot
+            result = self.step(cell, node_input, state_snapshot=state_snapshot)
+            outputs[cid] = result
+        return outputs
     # =========================
     # 🔹 单步执行（唯一入口）
     # =========================
-    def step(self, cell, node_input):
-
-        before_state = dict(cell.node_state)
+    def step(self, cell, node_input, state_snapshot=None):
+        # 🔹 这里用 snapshot 而不是 live node_state
+        if state_snapshot:
+            node_state = dict(state_snapshot[cell.cell_id])
+        else:
+            node_state = dict(cell.node_state)
         
         # =========================
         # 0️⃣ init
         # =========================
-        node_state = dict(cell.node_state)
         node_deltas = {}
 
         # =========================
@@ -106,6 +122,14 @@ class InternalNet:
         # 4️⃣ HIR（只看 node_state）
         # =========================
         hir_output = compute_HIR(node_state, cell)
+        print("[POST-HIR CHECK]")
+        print("  cell:", cell.cell_id, cell.cell_type)
+        print("  membrane:", node_state.get("membrane"))
+        print("  Ca_flux:", node_state.get("Ca_flux"))
+        print("  damage:", node_state.get("damage"))
+        print("  stress:", node_state.get("stress"))
+        print("  viral_load:", node_state.get("viral_load"))
+        print("  fate:", hir_output.get("fate"))
 
         # =========================
         # 5️⃣ Behavior Engine
@@ -117,6 +141,8 @@ class InternalNet:
             graph=behavior_graph,
             cell=cell
         ) 
+        print("\n[STATE BEFORE UPDATE] membrane:", node_state.get("membrane"))
+       
 
         # =========================
         # 6️⃣ State Update
@@ -126,10 +152,31 @@ class InternalNet:
             behavior_outputs,
             self.node_defs
         )
+        print("[STATE DELTA]", state_delta)
+        
+        print("[STATE AFTER UPDATE] membrane:", new_state.get("membrane"))
 
-        cell.node_state = new_state
         print("[NODE DELTAS]", node_deltas)
         print("[STATE AFTER UPDATE]", new_state)
+        # ✅ 🔥关键：写回 cell
+        cell.node_state = new_state
+
+        # dying 标记
+        if hir_output.get("fate", "").startswith("dying"):
+            cell.state_flags["dying"] = True
+        debug_snapshot = {
+            "node_after_passive": dict(node_state_pre_behavior),
+            "node_after_behavior": dict(new_state),
+            "node_delta": dict(node_deltas)
+        }
+
+        return {
+            "behaviors": behavior_outputs,
+            "hir": hir_output,
+            "state_delta": state_delta,
+            "fate": hir_output.get("fate", "normal"),
+            "debug": debug_snapshot
+        }
         # =========================
         # 8️⃣ Debug（结构化）
         # =========================
@@ -142,12 +189,16 @@ class InternalNet:
             behavior_outputs,
             passive_logs
         )
+        # 🔴 标记 dying（关键）
+        if hir_output.get("fate", "").startswith("dying"):
+            cell.state_flags["dying"] = True
 
         return {
             "behaviors": behavior_outputs,
             "hir": hir_output,
             "state_delta": state_delta,
             "fate": hir_output.get("fate", "normal"),
+            "debug": debug_snapshot
         }
 
     # =========================

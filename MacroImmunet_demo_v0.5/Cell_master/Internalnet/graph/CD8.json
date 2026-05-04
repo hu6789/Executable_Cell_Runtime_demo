@@ -16,11 +16,11 @@
       "type": "node-behavior",
 
       "role": "drive",
-      "weight": 1.0,
+      "weight": 0.6,
 
       "gate": {
         "conditions": [
-          { "op": ">", "value": 0.2 }
+          { "op": ">", "value": 0.8 }
         ],
         "logic": "all"
       }
@@ -31,8 +31,8 @@
       "target": "release_perforin",
       "type": "node-behavior",
 
-      "role": "mod",
-      "weight": 0.7
+      "role": "drive",
+      "weight": 1.0
     },
 
     {

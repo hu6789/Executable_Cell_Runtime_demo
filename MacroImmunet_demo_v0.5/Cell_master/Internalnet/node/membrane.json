@@ -45,7 +45,7 @@
 
   "update_rule": {
     "type": "weighted_sum",
-    "decay": 0.9
+    "decay": 1.0
   },
 
   "state_dynamics": {
@@ -54,7 +54,8 @@
   },
 
   "decay": {
-    "enabled": false
+    "enabled": false,
+    "rate": 0.995
   },
 
   "clamp": {

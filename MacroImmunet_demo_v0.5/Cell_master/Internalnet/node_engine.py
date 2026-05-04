@@ -130,12 +130,16 @@ def run_node_graph(node_state, graph, node_defs, node_input):
     # =========================
     # 0️⃣ 初始化 current
     # =========================
-    # 先给所有节点赋初值 0.0
-    current = {node: 0.0 for node in node_defs.keys()}
-    
-    # 继承上一轮状态
-    if node_state:
-        current.update(node_state)
+    current = {}
+
+    for node, node_def in node_defs.items():
+
+        temporal = node_def.get("temporal_role", {}).get("value")
+
+        if temporal == "transient":
+            current[node] = 0.0
+        else:
+            current[node] = node_state.get(node, 0.0) if node_state else 0.0
     
     # =========================
     # 1️⃣ 注入 external input
@@ -161,7 +165,9 @@ def run_node_graph(node_state, graph, node_defs, node_input):
         node_def = node_defs.get(node)
         if not node_def:
             continue
-
+        for node in update_order:
+            if node not in node_defs:
+                print("[MISSING NODE DEF]", node)
         update_rule = node_def.get("update_rule", {})
         mode = update_rule.get("type", "weighted_sum")
 
@@ -178,6 +184,21 @@ def run_node_graph(node_state, graph, node_defs, node_input):
             weight = edge.get("weight", 1.0)
             src_val = current.get(src, 0.0)
 
+            # 🔥 transform 处理
+            transform = edge.get("transform")
+
+            if transform == "inverse":
+                src_val = 1.0 - src_val
+
+            elif transform == "neg":
+                src_val = -src_val
+
+            elif transform == "relu":
+                src_val = max(0.0, src_val)
+
+            elif transform == "square":
+                src_val = src_val * src_val
+
             gate = edge.get("gate")
             if gate and not check_gate(src_val, gate):
                 continue
@@ -193,22 +214,6 @@ def run_node_graph(node_state, graph, node_defs, node_input):
 
         if inputs:
             current[node] += val
-
-    # =========================
-    # 4️⃣ decay（统一在最后）
-    # =========================
-    for node, node_def in node_defs.items():
-
-        update_rule = node_def.get("update_rule", {}).get("type")
-
-        decay_def = node_def.get("decay", {})
-        if not decay_def.get("enabled"):
-            continue
-
-        tau = decay_def.get("tau", 1.0)
-        val = current.get(node, 0.0)
-        val *= (1.0 - 1.0 / tau)
-        current[node] = val
 
     return current, update_order
 # =========================

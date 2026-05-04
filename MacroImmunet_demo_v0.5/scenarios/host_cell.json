@@ -1,0 +1,24 @@
+{
+  "name": "host_cell",
+
+  "steps": 6,
+
+  "world": {
+    "width": 12,
+    "height": 12
+  },
+
+  "cells": [
+
+    { "type": "host_cell", "pos": [7, 8], "infected": true },
+    { "type": "host_cell", "pos": [7, 7], "infected": true },
+    { "type": "host_cell", "pos": [7, 6], "infected": true },
+
+    { "type": "host_cell", "pos": [2, 3], "infected": true },
+    { "type": "host_cell", "pos": [3, 3], "infected": true }
+    
+  ],
+  "fields": [
+    ["perforin", 7, 7, 0.2]
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "type": "event_log",
+  "input": "visualization/outputs/cd8_kill_chain.timeline.json",
+  "verbose": false
+}

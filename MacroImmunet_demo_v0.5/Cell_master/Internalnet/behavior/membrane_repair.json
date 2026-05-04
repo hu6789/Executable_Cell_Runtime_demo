@@ -20,8 +20,8 @@
 
   "gate": {
     "conditions": [
-      { "node": "membrane", "op": "<", "value": 1.0 },
-      { "node": "ATP", "op": ">", "value": 0.3 }
+      { "node": "membrane", "op": "<", "value": 0.8 },
+      { "node": "ATP", "op": ">", "value": 0.1 }
     ],
     "logic": "all"
   },
@@ -37,28 +37,28 @@
         "type": "internal_state",
         "node": "membrane",
         "mode": "add",
-        "value": 0.2,
+        "value": 0.25,
         "scale_by": "activation"
       },
       {
         "type": "internal_state",
         "node": "ATP",
         "mode": "add",
-        "value": -0.1,
+        "value": -0.03,
         "scale_by": "activation"
       },
       {
         "type": "internal_state",
         "node": "stress",
         "mode": "add",
-        "value": 0.05,
+        "value": 0.1,
         "scale_by": "activation"
       },
       {
         "type": "internal_state",
         "node": "Ca_flux",
         "mode": "add",
-        "value": -0.1,
+        "value": -0.05,
         "scale_by": "activation"
       }
     ]

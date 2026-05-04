@@ -24,7 +24,7 @@
       {
         "node": "viral_load",
         "op": ">",
-        "value": 0.0
+        "value": 0.45
       }
     ],
     "logic": "all"
@@ -34,7 +34,7 @@
     "type": "formula",
     "expression": "viral_load * (1 - viral_load) * k_rep",
     "params": {
-      "k_rep": 0.8
+      "k_rep": 0.7
     }
   },
 

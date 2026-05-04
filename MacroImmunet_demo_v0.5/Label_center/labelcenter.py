@@ -5,7 +5,6 @@ from Cell_master.state_updata.state_updata import apply_dynamics
 from Cell_master.Internalnet.node_engine import load_nodes
 import math
 
-
 class LabelCenter:
 
     def __init__(self, field_defs=None):
@@ -20,12 +19,10 @@ class LabelCenter:
     def collect(self, intents):
         if intents:
             self.intents.extend(intents)
-
     # =========================
     # 主执行
     # =========================
-    def apply(self, world):
-
+    def apply(self, world, tick):
         self.field_defs = world.field_defs
 
         # 1️⃣ 分桶
@@ -60,7 +57,7 @@ class LabelCenter:
     # 分桶
     # =========================
     def _bucket_intents(self, intents):
-        
+
         buckets = {
             "effect": [],
             "field": [],
@@ -73,8 +70,13 @@ class LabelCenter:
 
             if t == "add_field":
                 buckets["field"].append(it)
+
+            elif t == "death":          # ⭐ 核心修复
+                buckets["fate"].append(it)
+
             elif t in buckets:
                 buckets[t].append(it)
+
         return buckets
 
     # =========================
@@ -242,16 +244,17 @@ class LabelCenter:
     def _apply_fate(self, world, intents):
 
         for it in intents:
+            if it.get("type") != "death":
+                continue
 
-            payload = it.get("payload", {})
+            cid = it.get("target")
+            cell = world.cells.get(cid)
 
-            if it.get("type") == "death":
+            if not cell:
+                continue
 
-                cid = it.get("target")
-                cell = world.cells.get(cid)
-
-                if cell:
-                    cell.state_flags["alive"] = False
+            # 1️⃣ 标记死亡（不要立刻删）
+            cell.state_flags["alive"] = False
 
     # =========================
     # diffusion
