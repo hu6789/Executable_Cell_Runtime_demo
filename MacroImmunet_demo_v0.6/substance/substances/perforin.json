@@ -1,0 +1,88 @@
+{
+  "template_id": "perforin",
+
+  "identity": {
+
+    "substance_type": "Perforin",
+
+    "category": "effector",
+
+    "species": "human"
+  },
+
+  "runtime_defaults": {
+
+    "default_amount": 100.0,
+
+    "active": true
+  },
+
+  "dynamics": {
+
+    "diffusion": {
+
+      "enabled": true,
+
+      "fraction": 0.10,
+
+      "directions": 4
+    },
+
+    "decay": {
+
+      "enabled": true,
+
+      "rate": 0.02
+    },
+
+    "aggregation": {
+
+      "enabled": true,
+
+      "distance": 1.0
+    },
+
+    "cleanup": {
+
+      "minimum_amount": 1.0
+    }
+  },
+
+  "interaction": {
+
+    "interaction_mode": "active",
+
+    "interaction_rules": [
+
+      {
+
+        "rule_id":
+          "perforin_membrane_damage",
+
+        "target_type":
+          "cell",
+
+        "effect_type":
+          "membrane_damage",
+
+        "base_strength":
+          1.0
+      }
+    ]
+  },
+
+  "runtime_params": {
+
+    "strength_scale": 1.0,
+
+    "interaction_radius": 1.0
+  },
+
+  "runtime_enabled": true,
+
+  "metadata": {
+
+    "description":
+      "Cytotoxic pore-forming effector."
+  }
+}

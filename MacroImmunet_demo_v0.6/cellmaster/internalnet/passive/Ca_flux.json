@@ -1,0 +1,51 @@
+{
+    "name": "Ca_flux",
+
+    "passive_type": "leakage",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+
+        "cell_membrane",
+        "Ca"
+    ],
+
+    "formula": {
+
+        "type": "membrane_instability",
+
+        "source": "cell_membrane",
+
+        "flux_rate": 0.05
+    },
+
+    "passive_gate": {
+
+        "required_nodes": [
+
+            "cell_membrane"
+        ],
+
+        "minimum_value": 0.0
+    },
+
+    "passive_transform": {
+
+        "transform": "clamp",
+
+        "minimum": 0.0,
+
+        "maximum": 20.0
+    },
+
+    "metadata": {
+
+        "description":
+            "Passive calcium influx caused by membrane integrity loss",
+
+        "physiology":
+
+            "Lower membrane integrity produces stronger calcium leakage"
+    }
+}

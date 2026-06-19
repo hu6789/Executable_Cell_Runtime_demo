@@ -1,0 +1,39 @@
+{
+    "name": "viral_uncoating",
+
+    "passive_type": "maintenance",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+
+        "viral_particle",
+        "viral_RNA"
+    ],
+
+    "formula": {
+
+        "type": "resource_consumption"
+    },
+
+    "passive_gate": {
+
+        "required_nodes": [
+
+            "viral_particle"
+        ],
+
+        "minimum_value": 1.0
+    },
+
+    "passive_transform": {
+
+        "transform": "none"
+    },
+
+    "metadata": {
+
+        "description":
+            "viral particle releases genome"
+    }
+}

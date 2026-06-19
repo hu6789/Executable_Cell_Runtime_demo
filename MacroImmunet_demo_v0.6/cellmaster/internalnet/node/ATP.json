@@ -1,0 +1,36 @@
+{
+    "name": "ATP",
+
+    "node_type": "resource",
+
+    "default_value": 50.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "drive_balance",
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+
+        "runtime_min": 0.0,
+
+        "runtime_max": 100.0
+    },
+
+    "self_decay": {
+
+        "formula": "proportional",
+
+        "rate": 0.02
+    },
+
+    "metadata": {
+
+        "description":
+            "Primary cellular energy resource",
+
+        "unit":
+            "relative_energy"
+    }
+}

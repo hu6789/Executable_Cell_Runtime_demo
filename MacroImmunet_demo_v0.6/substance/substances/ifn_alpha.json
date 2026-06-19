@@ -1,0 +1,72 @@
+{
+  "template_id": "ifn_alpha",
+
+  "identity": {
+
+    "substance_type": "IFN_alpha",
+
+    "category": "cytokine",
+
+    "species": "human"
+  },
+
+  "runtime_defaults": {
+
+    "default_amount": 100.0,
+
+    "active": true
+  },
+
+  "dynamics": {
+
+    "diffusion": {
+
+      "enabled": true,
+
+      "fraction": 0.25,
+
+      "directions": 4
+    },
+
+    "decay": {
+
+      "enabled": true,
+
+      "rate": 0.05
+    },
+
+    "aggregation": {
+
+      "enabled": true,
+
+      "distance": 1.0
+    },
+
+    "cleanup": {
+
+      "minimum_amount": 1.0
+    }
+  },
+
+  "interaction": {
+
+    "interaction_mode": "passive",
+
+    "interaction_rules": []
+  },
+
+  "runtime_params": {
+
+    "strength_scale": 1.0,
+
+    "interaction_radius": 5.0
+  },
+
+  "runtime_enabled": true,
+
+  "metadata": {
+
+    "description":
+      "Type-I interferon signaling molecule."
+  }
+}

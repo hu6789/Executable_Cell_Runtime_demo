@@ -1,0 +1,38 @@
+{
+    "name": "viral_particle",
+
+    "node_type": "resource",
+
+    "default_value": 0.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "activation_only",
+
+    "supported_contribution_categories": [
+
+        "activation"
+    ],
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+
+        "runtime_min": 0.0,
+
+        "runtime_max": 10000.0,
+
+        "soft_clamp": false
+    },
+
+    "self_decay": {
+
+        "formula": "none"
+    },
+
+    "metadata": {
+
+        "description":
+            "intact viral particles before uncoating"
+    }
+}

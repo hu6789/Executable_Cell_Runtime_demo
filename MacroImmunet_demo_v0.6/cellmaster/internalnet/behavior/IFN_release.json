@@ -1,0 +1,86 @@
+{
+    "name": "IFN_release",
+
+    "behavior_category": "communication",
+
+    "behavior_type": "IFN_release",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.2,
+
+        "minimum_ATP": 1.0,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "secretory_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "protein": 0.1
+    },
+
+    "external_outputs": [
+
+        {
+            "request_type": "secrete",
+
+            "payload": {
+
+                "substance": "IFN"
+            }
+        }
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Release intracellular interferon to extracellular environment.",
+
+            "Generates IFN secretion requests.",
+
+            "Consumed by downstream intent execution systems."
+        ],
+
+        "biological_role": [
+
+            "antiviral_signaling",
+            "immune_alarm",
+            "cell_communication"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "IFN",
+            "ATP",
+            "ER_membrane",
+            "cell_membrane"
+        ],
+
+        "typical_downstream_targets": [
+
+            "IFN_field"
+        ]
+    }
+}

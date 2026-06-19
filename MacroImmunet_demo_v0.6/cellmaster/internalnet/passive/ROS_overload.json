@@ -1,0 +1,51 @@
+{
+    "name": "ROS_overload",
+
+    "passive_type": "instability",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+
+        "ROS",
+        "cell_membrane"
+    ],
+
+    "formula": {
+
+        "type": "membrane_instability",
+
+        "stress": "ROS",
+
+        "repair": "cell_membrane",
+
+        "instability_factor": 0.05
+    },
+
+    "passive_gate": {
+
+        "required_nodes": [
+
+            "ROS"
+        ],
+
+        "minimum_value": 0.3
+    },
+
+    "passive_transform": {
+
+        "transform": "limiting"
+    },
+
+    "metadata": {
+
+        "description": [
+
+            "ROS overload causes progressive membrane instability.",
+
+            "Represents oxidative stress induced structural damage.",
+
+            "Acts as a passive damage propagation process."
+        ]
+    }
+}

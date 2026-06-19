@@ -1,0 +1,39 @@
+{
+    "name": "ROS",
+
+    "node_type": "damage",
+
+    "default_value": 5.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "damage_integrated",
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+
+        "runtime_min": 0.0,
+
+        "runtime_max": 1000.0
+    },
+
+    "self_decay": {
+
+        "formula": "proportional",
+
+        "rate": 0.05
+    },
+
+    "metadata": {
+
+        "description":
+            "Reactive oxygen species accumulation",
+
+        "unit":
+            "relative_damage",
+
+        "hir_related":
+            true
+    }
+}

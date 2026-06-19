@@ -1,0 +1,22 @@
+{
+    "name": "viral_overlay_graph",
+
+    "graph_type": "overlay",
+
+    "nodes": [
+
+        "viral_RNA",
+        "viral_protein",
+        "capsid"
+
+    ],
+
+    "behaviors": [],
+
+    "edges": [],
+
+    "metadata": {
+
+        "mode": "injection_only"
+    }
+}

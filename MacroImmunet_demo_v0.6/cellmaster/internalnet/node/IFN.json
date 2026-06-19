@@ -1,0 +1,80 @@
+{
+    "name": "IFN",
+
+    "node_type": "signal",
+
+    "default_value": 0.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "resource_limited",
+
+    "supported_contribution_categories": [
+
+        "activation",
+        "suppression",
+        "amplification",
+        "resource",
+        "damage",
+        "stabilization",
+        "destabilization"
+    ],
+
+    "runtime_gates": [
+
+        {
+            "gate_type": "minimum_resource",
+
+            "threshold": 0.1
+        }
+    ],
+
+    "runtime_clamp": {
+
+        "runtime_min": 0.0,
+
+        "runtime_max": 100.0,
+
+        "soft_clamp": true,
+
+        "soft_limit": 30.0,
+
+        "soft_compression": 0.3
+    },
+
+    "self_decay": {
+
+        "formula": "proportional",
+
+        "rate": 0.05
+    },
+
+    "metadata": {
+
+        "description":
+            "Intracellular interferon production pool",
+
+        "biological_role": [
+
+            "antiviral signaling",
+            "alarm signal",
+            "immune activation"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "viral_RNA",
+            "viral_DNA",
+            "cGAS",
+            "STING",
+            "IRF3",
+            "NFkB"
+        ],
+
+        "typical_downstream_behaviors": [
+
+            "IFN_production",
+            "IFN_release"
+        ]
+    }
+}

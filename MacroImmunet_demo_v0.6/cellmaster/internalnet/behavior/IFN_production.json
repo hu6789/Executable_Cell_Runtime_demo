@@ -1,0 +1,34 @@
+{
+    "name": "IFN_production",
+
+    "behavior_category": "communication",
+
+    "behavior_type": "IFN_production",
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 1.0,
+
+        "minimum_ATP": 5.0
+    },
+
+    "resource_cost": {
+
+        "ATP": 2.0
+    },
+
+    "external_outputs": [],
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description":
+            "Produce intracellular interferon"
+    }
+}

@@ -1,0 +1,126 @@
+{
+    "name": "host_graph",
+
+    "graph_type": "mixed_graph",
+
+    "nodes": [
+
+        "viral_signal",
+        "IFN"
+    ],
+    
+    "behaviors": [
+        "IFN_production",
+        "IFN_release"
+    ],
+
+    "edges": [
+
+        {
+            "source": "viral_signal",
+
+            "target": "IFN_production",
+
+            "weight": 2.0,
+
+            "transform": "linear",
+
+            "contribution_category":
+                "activation",
+
+            "participation_requirement":
+                "optional",
+
+            "runtime_enabled": true,
+
+            "metadata": {
+
+                "description":
+                    "Viral stimulation drives IFN production behavior"
+            }
+        },
+
+        {
+            "source": "ATP",
+
+            "target": "IFN_production",
+
+            "weight": 1.0,
+
+            "transform": "normalized",
+
+            "contribution_category":
+                "resource",
+
+            "participation_requirement":
+                "optional",
+
+            "runtime_enabled": true,
+
+            "metadata": {
+
+                "description":
+                    "ATP availability supports IFN production"
+            }
+        },
+
+        {
+            "source": "IFN",
+
+            "target": "IFN_release",
+
+            "weight": 1.0,
+
+            "transform": "normalized",
+
+            "contribution_category":
+                "resource",
+
+            "participation_requirement":
+                "optional",
+
+            "runtime_enabled": true,
+
+            "metadata": {
+
+                "description":
+                    "Stored IFN enables secretion"
+            }
+        },
+
+        {
+            "source": "ATP",
+
+            "target": "IFN_release",
+
+            "weight": 0.5,
+
+            "transform": "normalized",
+
+            "contribution_category":
+                "resource",
+
+            "participation_requirement":
+                "optional",
+
+            "runtime_enabled": true,
+
+            "metadata": {
+
+                "description":
+                    "Secretion requires ATP"
+            }
+        }
+    ],
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description":
+            "Minimal host antiviral response graph",
+
+        "version":
+            "v0.6_minimal"
+    }
+}
