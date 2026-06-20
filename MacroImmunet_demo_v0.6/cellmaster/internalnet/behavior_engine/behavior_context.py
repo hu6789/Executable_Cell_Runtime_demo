@@ -107,13 +107,13 @@ def build_behavior_context(
     # behavior graph context
     # =====================================
 
-    behavior_group = graph_context.get_runtime_nodes(
-        "behavior_graphs"
+    behavior_defs = (
+        graph_context.get_behavior_defs()
     )
 
-    behavior_defs = behavior_group
-
-    behavior_edges = graph_context.get_runtime_edges("behavior_graphs") or []
+    behavior_edges = (
+        graph_context.get_runtime_edges()
+    )
 
     # =====================================
     # runtime ecology context

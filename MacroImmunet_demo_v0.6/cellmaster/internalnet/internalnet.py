@@ -121,9 +121,7 @@ class InternalNet:
 
             self.node_engine.evaluate_nodes(
 
-                node_definitions = graph_context.get_runtime_nodes(
-                    "node_graphs"
-                ),
+                node_definitions = graph_context.get_runtime_nodes(),
 
                 runtime_context=
                     runtime_context,
@@ -154,18 +152,9 @@ class InternalNet:
         # passive runtime
         # ================================
 
-        passive_defs = graph_context.get_runtime_nodes("passive_graphs") or []
+        passive_runtime_results = []
 
-        passive_runtime_results = self.passive_engine.process_all_passives(
-            runtime_entity=runtime_entity,
-            runtime_context=runtime_context,
-            passive_definitions=passive_defs
-        )
-
-        passive_runtime_state = self.passive_engine.apply_passive_state(
-            node_runtime_state,
-            passive_runtime_results
-        )
+        passive_runtime_state = node_runtime_state
 
         # =================================
         # modulation runtime
@@ -272,9 +261,7 @@ class InternalNet:
                     modulated_runtime_state,
 
                 behavior_defs=
-                    graph_context.get_runtime_nodes(
-                        "behavior_graphs"
-                    ),
+                    graph_context.get_runtime_behaviors(),
 
                 modulation_runtime_state=
                     modulation_runtime_state,

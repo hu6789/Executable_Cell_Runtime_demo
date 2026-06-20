@@ -170,8 +170,11 @@ def aggregate_fields(intents):
 
         position = payload.get("position")
 
-        amount = payload.get("amount", 0.0)
+        amount = payload.get("amount")
 
+        if amount is None:
+            amount = payload.get("strength", 0.0)
+ 
         if not field_type or position is None:
             continue
 

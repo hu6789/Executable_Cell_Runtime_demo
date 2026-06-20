@@ -106,6 +106,8 @@
 
             "Defines contribution flow between runtime entities."
         ],
+        
+        
 
         "fields": {
 
@@ -128,6 +130,8 @@
                     "Target definition name."
                 ]
             },
+            
+            "edge_type": "node_to_node"/"node_to_behavior",
 
             "weight": {
 

@@ -1,6 +1,20 @@
 # cellmaster/internalnet/runtime_graph/graph_merge.py
 
+"""
+v0.6+
 
+Graph is now a flat merged runtime graph.
+
+Passive systems are NOT graph components.
+
+HIR profiles are NOT graph components.
+
+RuntimeGraphMerger only merges:
+
+    nodes
+    behaviors
+    edges
+"""
 # =========================================
 # Runtime Graph Merge
 # =========================================
@@ -11,15 +25,14 @@ class RuntimeGraphMerger:
     runtime graph fragment merger
 
     responsibilities:
-        - merge runtime graph fragments
-        - preserve graph lineage
-        - unify runtime graph package
+        - merge graph fragments
         - preserve overlay ordering
+        - collect graph lineage
 
     DOES NOT:
         - normalize graph schema
-        - validate graph semantics
         - build runtime indexes
+        - validate graph semantics
     """
 
     def __init__(self):
@@ -27,86 +40,24 @@ class RuntimeGraphMerger:
         pass
 
     # =====================================
-    # merge runtime graph package
+    # merge graph fragments
     # =====================================
 
-    def merge_runtime_graphs(
+    def merge_graph_group(
         self,
-        runtime_graph_package
+        graph_fragments
     ):
 
-        merged_graph = {
-
-            # =============================
-            # merged node graph
-            # =============================
-
-            "node_graphs":
-
-                self.merge_graph_group(
-
-                    runtime_graph_package.get(
-                        "node_graphs",
-                        []
-                    )
-                ),
-
-            # =============================
-            # merged behavior graph
-            # =============================
-
-            "behavior_graphs":
-
-                self.merge_graph_group(
-
-                    runtime_graph_package.get(
-                        "behavior_graphs",
-                        []
-                    )
-                ),
-
-            # =============================
-            # merged passive graph
-            # =============================
-
-            "passive_graphs":
-
-                self.merge_graph_group(
-
-                    runtime_graph_package.get(
-                        "passive_graphs",
-                        []
-                    )
-                ),
-            
-            # =============================
-            # merged HIR profiles
-            # =============================
-
-            "hir_profiles":
-
-                self.merge_graph_group(
-
-                    runtime_graph_package.get(
-                        "hir_profiles",
-                        []
-                    )
-                )
-        }
-
-        return merged_graph
-
-    # =====================================
-    # merge graph group
-    # =====================================
-
-    def merge_graph_group(self, graph_fragments):
-
         merged = {
+
             "nodes": [],
+
             "behaviors": [],
+
             "edges": [],
-            "metadata": {},   # ❗必须是 dict
+
+            "metadata": {},
+
             "sources": []
         }
 
@@ -115,18 +66,67 @@ class RuntimeGraphMerger:
             if fragment is None:
                 continue
 
-            if not isinstance(fragment, dict):
+            if not isinstance(
+                fragment,
+                dict
+            ):
                 continue
 
-            merged["sources"].append(
-                fragment.get("graph_name", fragment.get("name", "unknown"))
-            )
-  
-            merged["nodes"].extend(fragment.get("nodes", []))
-            merged["behaviors"].extend(fragment.get("behaviors", []))
-            merged["edges"].extend(fragment.get("edges", []))
+            # -------------------------
+            # lineage
+            # -------------------------
 
-            # ❗ metadata 改成 dict merge，而不是 list append
-            merged["metadata"].update(fragment.get("metadata", {}))
+            merged["sources"].append(
+
+                fragment.get(
+                    "name",
+                    "unknown"
+                )
+            )
+
+            # -------------------------
+            # topology
+            # -------------------------
+
+            merged["nodes"].extend(
+
+                fragment.get(
+                    "nodes",
+                    []
+                )
+            )
+
+            merged["behaviors"].extend(
+
+                fragment.get(
+                    "behaviors",
+                    []
+                )
+            )
+
+            merged["edges"].extend(
+
+                fragment.get(
+                    "edges",
+                    []
+                )
+            )
+
+            # -------------------------
+            # metadata
+            # -------------------------
+
+            metadata = fragment.get(
+                "metadata",
+                {}
+            )
+
+            if isinstance(
+                metadata,
+                dict
+            ):
+                merged["metadata"].update(
+                    metadata
+                )
 
         return merged

@@ -127,24 +127,19 @@ def build_modulation_context(
 
         "node_count":
             len(
-                runtime_graph.get_runtime_nodes(
-                    "node_graphs"
-                )
+                runtime_graph.get_runtime_nodes()
             ),
 
         "edge_count":
             len(
                 runtime_graph.get_edges_by_type(
-                    "node_graphs",
                     "node_to_node"
                 )
             ),
 
         "behavior_count":
             len(
-                runtime_graph.get_runtime_nodes(
-                    "behavior_graphs"
-                )
+                runtime_graph.get_runtime_behaviors()
             )
     }
 

@@ -20,6 +20,8 @@
             "source": "viral_signal",
 
             "target": "IFN_production",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 2.0,
 
@@ -44,6 +46,8 @@
             "source": "ATP",
 
             "target": "IFN_production",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -68,6 +72,8 @@
             "source": "IFN",
 
             "target": "IFN_release",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -92,6 +98,8 @@
             "source": "ATP",
 
             "target": "IFN_release",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 0.5,
 

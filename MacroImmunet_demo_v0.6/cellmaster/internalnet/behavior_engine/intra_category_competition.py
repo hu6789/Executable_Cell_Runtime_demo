@@ -95,17 +95,9 @@ def group_behaviors_by_category(
 
     grouped = {}
 
-    for behavior_def in behavior_defs:
-
-        behavior_name = (
-            behavior_def.get(
-                "behavior_type"
-            )
-            or
-            behavior_def.get(
-                "name"
-            )
-        )
+    for behavior_name, behavior_def in (
+        behavior_defs.items()
+    ):
 
         category = behavior_def.get(
             "behavior_category",

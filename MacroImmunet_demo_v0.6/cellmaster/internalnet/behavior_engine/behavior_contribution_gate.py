@@ -90,9 +90,8 @@ def evaluate_behavior_contribution_gate(
     print(runtime_state)
     print("================================")
     print()
-    behavior_edges = graph_context.get_runtime_edges(
-        "behavior_graphs"
-    )
+    
+    behavior_edges = graph_context.get_runtime_edges()
     
     accepted = []
 
@@ -101,6 +100,9 @@ def evaluate_behavior_contribution_gate(
     # =====================================
 
     for edge in behavior_edges:
+
+        if edge.get("edge_type") != "node_to_behavior":
+            continue
 
         # -----------------------------
         # behavior target filtering

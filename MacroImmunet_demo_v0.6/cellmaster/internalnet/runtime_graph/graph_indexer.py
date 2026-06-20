@@ -14,7 +14,6 @@ class RuntimeGraphIndexer:
         - index graph edges
         - build runtime lookup tables
         - accelerate runtime traversal
-        - expose execution-oriented graph views
 
     DOES NOT:
         - execute runtime logic
@@ -27,7 +26,7 @@ class RuntimeGraphIndexer:
         pass
 
     # =====================================
-    # build runtime graph indexes
+    # build indexes
     # =====================================
 
     def build_indexes(
@@ -35,45 +34,41 @@ class RuntimeGraphIndexer:
         normalized_graph
     ):
 
-        indexed_graph = {}
-
-        for group_name, group_data in (
-
-            normalized_graph.items()
-        ):
-
-            indexed_graph[
-                group_name
-            ] = self.index_graph_group(
-                group_data
-            )
-
-        return indexed_graph
+        return self.index_graph(
+            normalized_graph
+        )
 
     # =====================================
-    # index graph group
+    # index graph
     # =====================================
 
-    def index_graph_group(
+    def index_graph(
         self,
-        group_data
+        graph
     ):
 
-        edges = group_data.get(
+        edges = graph.get(
             "edges",
             []
         )
 
         return {
 
-            # =============================
-            # original normalized graph
-            # =============================
+            # -----------------------------
+            # original graph
+            # -----------------------------
 
             "nodes":
 
-                group_data.get(
+                graph.get(
                     "nodes",
+                    []
+                ),
+
+            "behaviors":
+
+                graph.get(
+                    "behaviors",
                     []
                 ),
 
@@ -82,21 +77,21 @@ class RuntimeGraphIndexer:
 
             "metadata":
 
-                group_data.get(
+                graph.get(
                     "metadata",
-                    []
+                    {}
                 ),
 
             "sources":
 
-                group_data.get(
+                graph.get(
                     "sources",
                     []
                 ),
 
-            # =============================
+            # -----------------------------
             # execution indexes
-            # =============================
+            # -----------------------------
 
             "edges_by_source":
 
@@ -141,7 +136,6 @@ class RuntimeGraphIndexer:
             )
 
             if source is None:
-
                 continue
 
             indexed.setdefault(
@@ -169,7 +163,6 @@ class RuntimeGraphIndexer:
             )
 
             if target is None:
-
                 continue
 
             indexed.setdefault(
@@ -205,7 +198,7 @@ class RuntimeGraphIndexer:
         return indexed
 
     # =====================================
-    # contribution category index
+    # category index
     # =====================================
 
     def index_by_category(

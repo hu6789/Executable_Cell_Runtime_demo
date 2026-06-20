@@ -1,5 +1,8 @@
 # cellmaster/internalnet/hir/behavior_regulation.py
 
+from cellmaster.internalnet.runtime_graph.behavior_definition_loader import (
+    BehaviorDefinitionLoader
+)
 
 # =========================================
 # Behavior Regulation Layer
@@ -47,7 +50,13 @@ def regulate_behaviors(
         "stable"
     )
 
-    for behavior_def in behavior_defs:
+    loader = BehaviorDefinitionLoader()
+
+    for behavior_name in behavior_defs:
+
+        behavior_def = loader.load(
+            behavior_name
+        )
 
         behavior_name = (
 

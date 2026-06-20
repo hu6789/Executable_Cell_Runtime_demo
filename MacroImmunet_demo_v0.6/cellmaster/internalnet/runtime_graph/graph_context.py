@@ -1,5 +1,8 @@
 # cellmaster/internalnet/runtime_graph/graph_context.py
 
+from .behavior_definition_loader import (
+    BehaviorDefinitionLoader
+)
 
 # =========================================
 # Runtime Graph Context
@@ -14,7 +17,6 @@ class RuntimeGraphContext:
         - expose runtime graph access API
         - provide execution-oriented graph lookup
         - isolate runtime engines from graph storage
-        - provide unified graph traversal interface
 
     DOES NOT:
         - execute graph logic
@@ -28,232 +30,193 @@ class RuntimeGraphContext:
     ):
 
         self.graph = indexed_graph
+        
+        self.behavior_loader = (
+            BehaviorDefinitionLoader()
+        )
 
     # =====================================
-    # node outgoing edges
+    # topology
+    # =====================================
+
+    def get_runtime_nodes(
+        self
+    ):
+
+        return self.graph.get(
+            "nodes",
+            []
+        )
+
+    def get_runtime_behaviors(
+        self
+    ):
+
+        return self.graph.get(
+            "behaviors",
+            []
+        )
+
+    def get_runtime_edges(
+        self
+    ):
+
+        return self.graph.get(
+            "edges",
+            []
+        )
+
+    # =====================================
+    # edge lookup
     # =====================================
 
     def get_outgoing_edges(
         self,
-        group_name,
         source_node
     ):
 
-        group = self.graph.get(
-            group_name,
-            {}
-        )
+        return (
 
-        edges_by_source = group.get(
-            "edges_by_source",
-            {}
+            self.graph
+            .get(
+                "edges_by_source",
+                {}
+            )
+            .get(
+                source_node,
+                []
+            )
         )
-
-        return edges_by_source.get(
-            source_node,
-            []
-        )
-
-    # =====================================
-    # node incoming edges
-    # =====================================
 
     def get_incoming_edges(
         self,
-        group_name,
         target_node
     ):
 
-        group = self.graph.get(
-            group_name,
-            {}
-        )
+        return (
 
-        edges_by_target = group.get(
-            "edges_by_target",
-            {}
+            self.graph
+            .get(
+                "edges_by_target",
+                {}
+            )
+            .get(
+                target_node,
+                []
+            )
         )
-
-        return edges_by_target.get(
-            target_node,
-            []
-        )
-
-    # =====================================
-    # edge type lookup
-    # =====================================
 
     def get_edges_by_type(
         self,
-        group_name,
         edge_type
     ):
 
-        group = self.graph.get(
-            group_name,
-            {}
-        )
+        return (
 
-        indexed = group.get(
-            "edges_by_type",
-            {}
+            self.graph
+            .get(
+                "edges_by_type",
+                {}
+            )
+            .get(
+                edge_type,
+                []
+            )
         )
-
-        return indexed.get(
-            edge_type,
-            []
-        )
-
-    # =====================================
-    # contribution category lookup
-    # =====================================
 
     def get_edges_by_category(
         self,
-        group_name,
         category
     ):
 
-        group = self.graph.get(
-            group_name,
-            {}
-        )
+        return (
 
-        indexed = group.get(
-            "edges_by_category",
-            {}
+            self.graph
+            .get(
+                "edges_by_category",
+                {}
+            )
+            .get(
+                category,
+                []
+            )
         )
+    
+    def get_behavior_defs(self):
 
-        return indexed.get(
-            category,
+        result = {}
+
+        for behavior_name in self.graph.get(
+            "behaviors",
             []
-        )
+        ):
 
+            try:
+
+                result[
+                    behavior_name
+                ] = self.behavior_loader.load(
+                    behavior_name
+                )
+
+            except FileNotFoundError:
+
+                pass
+  
+        return result
+    
     # =====================================
-    # runtime node lookup
-    # =====================================
-
-    def get_runtime_nodes(
-        self,
-        group_name
-    ):
-
-        group = self.graph.get(
-            group_name,
-            {}
-        )
-
-        return group.get(
-            "nodes",
-            []
-        )
-    # =====================================
-    # runtime edge lookup
-    # =====================================
-
-    def get_runtime_edges(
-        self,
-        group_name
-    ):
-
-        group = self.graph.get(
-            group_name,
-            {}
-        )
-
-        return group.get(
-            "edges",
-            []
-        )
-    # =====================================
-    # graph metadata
+    # metadata
     # =====================================
 
     def get_metadata(
-        self,
-        group_name
+        self
     ):
 
-        group = self.graph.get(
-            group_name,
+        return self.graph.get(
+            "metadata",
             {}
         )
-
-        return group.get(
-            "metadata",
-            []
-        )
-
-    # =====================================
-    # graph sources
-    # =====================================
 
     def get_sources(
-        self,
-        group_name
+        self
     ):
 
-        group = self.graph.get(
-            group_name,
-            {}
-        )
-
-        return group.get(
+        return self.graph.get(
             "sources",
             []
         )
 
     # =====================================
-    # behavior
+    # compatibility aliases
     # =====================================
 
-    def get_behavior_defs(self):
+    def get_nodes(self):
 
-        nodes = self.get_runtime_nodes(
-            "behavior_graphs"
+        return self.get_runtime_nodes()
+
+    def get_behaviors(self):
+
+        return self.get_runtime_behaviors()
+
+    def get_edges(self):
+
+        return self.get_runtime_edges()
+
+    def get_incoming(
+        self,
+        node_id
+    ):
+
+        return self.get_incoming_edges(
+            node_id
         )
 
-        result = {}
+    def get_outgoing(
+        self,
+        node_id
+    ):
 
-        for node in nodes:
-
-            name = node.get(
-                "name"
-            )
-
-            if name:
-
-                result[name] = node
-
-        return result
-    def get_behavior_edges(self):
-
-        return (
-            self.graph
-            .get("behavior_graphs", {})
-            .get("edges", [])
-        )  
-    # =====================================
-    # Compatibility Alias Layer (A-PLAN)
-    # =====================================
-
-    def get_nodes(self, group_name):
-        return self.get_runtime_nodes(group_name)
-
-
-    def get_edges(self, group_name):
-        return self.get_runtime_edges(group_name)
-
-
-    def get_incoming(self, group_name, node_id):
-        return self.get_incoming_edges(group_name, node_id)
-
-
-    def get_outgoing(self, group_name, node_id):
-        return self.get_outgoing_edges(group_name, node_id)      
-        
-    def get_runtime_edges(self, group_name):
-        return self.graph.get(group_name, {}).get("edges", []) or []
-         
-    def get_passive_graph(self):
-        return self.indexed_graph.get("passive_graphs", {})
+        return self.get_outgoing_edges(
+            node_id
+        )

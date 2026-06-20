@@ -23,6 +23,8 @@
         {
             "source": "ROS",
             "target": "cell_membrane",
+            
+            "edge_type":"node_to_node",
 
             "weight": 1.0,
 
@@ -43,6 +45,8 @@
         {
             "source": "cell_membrane",
             "target": "Ca",
+            
+            "edge_type":"node_to_node",
 
             "weight": 1.0,
 
@@ -63,6 +67,8 @@
         {
             "source": "ATP",
             "target": "ROS",
+            
+            "edge_type":"node_to_node",
 
             "weight": 1.0,
 
@@ -83,6 +89,8 @@
         {
             "source": "ROS",
             "target": "ROS_cleanup",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -103,6 +111,8 @@
         {
             "source": "ATP",
             "target": "ROS_cleanup",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -123,6 +133,8 @@
         {
             "source": "ROS",
             "target": "membrane_repair",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -143,6 +155,8 @@
         {
             "source": "cell_membrane",
             "target": "membrane_repair",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -163,6 +177,8 @@
         {
             "source": "ATP",
             "target": "membrane_repair",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -183,6 +199,8 @@
         {
             "source": "IFN",
             "target": "IFN_release",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -203,6 +221,8 @@
         {
             "source": "ATP",
             "target": "ATP_production",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 
@@ -223,6 +243,8 @@
         {
             "source": "ROS",
             "target": "ATP_production",
+            
+            "edge_type":"node_to_behavior",
 
             "weight": 1.0,
 

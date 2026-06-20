@@ -116,15 +116,45 @@ def apply_additions(
             {}
         )
 
+        # ----------------------
+        # create runtime cell
+        # ----------------------
+
+        template_id = payload.get(
+            "template_id"
+        )
+
+        if template_id:
+
+            entity = (
+                world.cell_factory
+                .create_runtime_entity(
+                    template_id=template_id,
+                    cell_id=(
+                        payload.get("cell_id")
+                        or intent.get("target_id")
+                    ),
+                    position=payload.get(
+                        "position"
+                    )
+                )
+            )
+
+            world.add_cell(entity)
+
+            continue
+
+        # ----------------------
+        # legacy path
+        # ----------------------
+
         entity = payload.get(
             "entity"
         )
 
-        if entity is None:
-            continue
+        if entity is not None:
 
-        # currently only cell
-        world.add_cell(entity)
+            world.add_cell(entity)
 
 
 # =========================================

@@ -33,6 +33,10 @@ from cellmaster.internalnet.node_engine.node_runtime_result import (
     build_node_runtime_result
 )
 
+from cellmaster.internalnet.runtime_graph.node_definition_loader import (
+    NodeDefinitionLoader
+)
+
 # =========================================
 # Node Runtime Engine
 # =========================================
@@ -74,7 +78,13 @@ class NodeEngine:
 
         node_results = []
 
-        for node_definition in node_definitions:
+        loader = NodeDefinitionLoader()
+
+        for node_name in node_definitions:
+
+            node_definition = loader.load(
+                node_name
+            )
 
             result = self.evaluate_node(
 
@@ -116,8 +126,7 @@ class NodeEngine:
         # =================================
 
         incoming_edges = (
-            graph_context.get_incoming_edges(
-                "node_graphs",
+            graph_context.get_incoming(
                 node_id
             )
         )

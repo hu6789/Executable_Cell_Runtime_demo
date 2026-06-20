@@ -76,66 +76,60 @@ class RuntimeAssembler:
                     graph_fragments.append(frag)
 
         # =================================================
-        # 2. passive fragments
-        # =================================================
-        passive_fragments = []
-        for name in graph_refs.get("passive", []):
-            frag = self._load(
-                f"cellmaster/internalnet/passive_graph/{name}.json"
-            )
-            if frag:
-                passive_fragments.append(frag)
-
-        # =================================================
-        # 3. MERGE (FLAT STRUCTURE)
+        # 2. MERGE (FLAT STRUCTURE)
         # =================================================
         merged = self.graph_merger.merge_graph_group(graph_fragments)
-        passive = self.graph_merger.merge_graph_group(passive_fragments)
-
+        
         # =================================================
-        # 4. BUILD NODE LIST
+        # 3. BUILD NODE LIST
         # =================================================
         nodes = list(set(merged.get("nodes", [])))
 
         # =================================================
-        # 5. BUILD BEHAVIOR LIST
+        # 4. BUILD BEHAVIOR LIST
         # =================================================
         behaviors = list(set(merged.get("behaviors", [])))
 
         # =================================================
-        # 6. BUILD EDGE LIST
+        # 5. BUILD EDGE LIST
         # =================================================
         edges = merged.get("edges", [])
 
         # =================================================
-        # 7. PASSIVE
-        # =================================================
-        passive_nodes = list(set(passive.get("nodes", [])))
-        passive_systems = passive.get("behaviors", [])
-
-        # =================================================
-        # 8. FINAL RUNTIME GRAPH (IMPORTANT)
+        # 6. FINAL RUNTIME GRAPH (IMPORTANT)
         # =================================================
         runtime_graph = {
+
             "nodes": nodes,
+
             "behaviors": behaviors,
+
             "edges": edges,
 
-            "passive_nodes": passive_nodes,
-            "passive_systems": passive_systems,
+            "metadata":
+                merged.get(
+                    "metadata",
+                    {}
+                ),
+
+            "sources":
+                merged.get(
+                    "sources",
+                    []
+                )
         }
 
         # =================================================
-        # 9. NORMALIZE
+        # 7. NORMALIZE
         # =================================================
         normalized = self.graph_normalizer.normalize_runtime_graph(runtime_graph)
 
         # =================================================
-        # 10. INDEX
+        # 8. INDEX
         # =================================================
         indexed = self.graph_indexer.build_indexes(normalized)
 
         # =================================================
-        # 11. CONTEXT
+        # 9. CONTEXT
         # =================================================
         return RuntimeGraphContext(indexed)

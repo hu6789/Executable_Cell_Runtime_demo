@@ -248,6 +248,9 @@ class LabelCenter:
             field_writes=aggregated,
             field_defs=world.field_defs
         )
+        
+        print("\n[DEBUG] AFTER PROJECTION")
+        print(world.fields)
  
         # -------------------------------------
         # autonomous field evolution
@@ -257,6 +260,9 @@ class LabelCenter:
             world=world,
             field_defs=world.field_defs
         )
+        
+        print("\n[DEBUG] AFTER DYNAMICS")
+        print(world.fields)
 
     def _apply_targeted_directed(
         self,
