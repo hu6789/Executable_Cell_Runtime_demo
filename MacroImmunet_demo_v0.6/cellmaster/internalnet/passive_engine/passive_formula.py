@@ -73,10 +73,66 @@ def compute_passive_formula(
     # membrane
     # =====================================
     if f_type == "membrane_instability":
-        stress = node_values.get("stress", 0.0)
-        repair = node_values.get("repair", 0.0)
-        k = formula.get("instability_factor", 0.05)
 
-        return (stress - repair) * k
+        stress_node = formula.get(
+            "stress",
+            "stress"
+        )
 
+        repair_node = formula.get(
+            "repair",
+            "repair"
+        )
+
+        stress = node_values.get(
+            stress_node,
+            0.0
+        )
+
+        repair = node_values.get(
+            repair_node,
+            0.0
+        )
+
+        k = formula.get(
+            "instability_factor",
+            0.05
+        )
+
+        return (
+            stress - repair
+        ) * k
+        
+    # =====================================
+    # Ca
+    # =====================================
+    if f_type == "calcium_influx":
+
+        membrane = node_values.get(
+            formula.get(
+                "source",
+                "cell_membrane"
+            ),
+            0.0
+        )
+
+        rate = formula.get(
+            "flux_rate",
+            0.05
+        )
+
+        max_integrity = formula.get(
+            "max_integrity",
+            100.0
+        )
+
+        damage = max(
+ 
+            0.0,
+
+            max_integrity
+            - membrane
+        )
+
+        return damage * rate
     return 0.0

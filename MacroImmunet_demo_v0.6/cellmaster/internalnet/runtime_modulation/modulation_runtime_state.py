@@ -41,6 +41,13 @@ def build_modulation_runtime_state(
             {},
 
         # =================================
+        #  modulation
+        # =================================
+     
+        "payloads": 
+            [],
+
+        # =================================
         # behavior-level modulation
         # =================================
 
@@ -59,16 +66,31 @@ def build_modulation_runtime_state(
         # =================================
 
         "global_modulations":
-            {}
+            {},
+            
+        # =================================
+        # payload modulation
+        # =================================
+        "payloads":
+            aggregated_modulations.get(
+                "payloads",
+                []
+            )
+        
     }
 
     # =====================================
     # classify modulation targets
     # =====================================
 
-    for target, modulation in (
-        aggregated_modulations.items()
-    ):
+    modulation_map = (
+        aggregated_modulations.get(
+            "modulations",
+            {}
+        )
+    )
+
+    for target, modulation in modulation_map.items():
 
         modulation_type = detect_modulation_type(
             target,
@@ -124,6 +146,7 @@ def build_modulation_runtime_state(
             runtime_state[
                 "global_modulations"
             ][target] = modulation
+           
 
     return runtime_state
 

@@ -37,39 +37,24 @@ def adjust_physiological_interpretation(
         global_context
     )
 
-    interpretation_delta = (
-        hir_interpretation_delta
-        or {}
+    modulation_summary = adjusted_context.get(
+        "modulation_summary",
+        {}
     )
 
-    # =====================================
-    # apply masking
-    # =====================================
-
-    adjusted_context = apply_signal_masking(
-
-        adjusted_context,
-        interpretation_delta
+    vml_payload = modulation_summary.get(
+        "vml_payload"
     )
 
-    # =====================================
-    # apply compensation
-    # =====================================
 
-    adjusted_context = apply_survival_compensation(
-
+    adjusted_context = apply_vml_signal_masking(
         adjusted_context,
-        interpretation_delta
+        vml_payload
     )
 
-    # =====================================
-    # apply override
-    # =====================================
-
-    adjusted_context = apply_override_flags(
-
+    adjusted_context = apply_vml_resource_deception(
         adjusted_context,
-        interpretation_delta
+        vml_payload
     )
 
     # =====================================
@@ -93,14 +78,31 @@ def adjust_physiological_interpretation(
 # Signal Masking
 # =========================================
 
-def apply_signal_masking(
+# =========================================
+# VML Signal Masking
+# =========================================
+
+def apply_vml_signal_masking(
     adjusted_context,
-    interpretation_delta
+    vml_payload
 ):
 
-    masked_signals = interpretation_delta.get(
-        "masked_signals",
-        []
+    if not vml_payload:
+
+        return adjusted_context
+
+    deception_context = (
+        vml_payload.get(
+            "deception_context",
+            {}
+        )
+    )
+
+    signal_masking = (
+        deception_context.get(
+            "signal_masking",
+            {}
+        )
     )
 
     node_summary = adjusted_context.get(
@@ -109,100 +111,104 @@ def apply_signal_masking(
     )
 
     # =====================================
-    # ROS masking
+    # IFN masking
     # =====================================
 
-    if (
-        "ROS" in masked_signals
-        and "ROS" in node_summary
-    ):
+    if "IFN" in node_summary:
 
-        node_summary["ROS"] *= 0.5
+        node_summary["IFN"] *= (
+
+            signal_masking.get(
+                "IFN",
+                1.0
+            )
+        )
 
     # =====================================
-    # stress masking
+    # viral signal masking
     # =====================================
 
-    if (
-        "stress" in masked_signals
-        and "stress" in node_summary
-    ):
+    if "viral_signal" in node_summary:
 
-        node_summary["stress"] *= 0.5
+        node_summary["viral_signal"] *= (
+
+            signal_masking.get(
+                "viral_signal",
+                1.0
+            )
+        )
 
     adjusted_context[
         "node_summary"
     ] = node_summary
 
     return adjusted_context
-
-
+    
 # =========================================
-# Survival Compensation
+# VML Resource Deception
 # =========================================
 
-def apply_survival_compensation(
+def apply_vml_resource_deception(
     adjusted_context,
-    interpretation_delta
+    vml_payload
 ):
 
-    active_modulations = interpretation_delta.get(
-        "active_modulations",
-        []
+    if not vml_payload:
+
+        return adjusted_context
+
+    deception_context = (
+        vml_payload.get(
+            "deception_context",
+            {}
+        )
     )
 
-    survival_summary = adjusted_context.get(
-        "survival_summary",
+    fake_resource_map = (
+        deception_context.get(
+            "fake_resource_map",
+            {}
+        )
+    )
+
+    node_summary = adjusted_context.get(
+        "node_summary",
         {}
     )
 
     # =====================================
-    # apoptosis suppression
+    # fake ATP
     # =====================================
 
-    if "apoptosis_suppression" in active_modulations:
+    if "ATP" in node_summary:
 
-        survival_summary[
-            "survival_score"
-        ] *= 1.5
+        node_summary["ATP"] *= (
+
+            fake_resource_map.get(
+                "ATP",
+                1.0
+            )
+        )
 
     # =====================================
-    # fake ATP compensation
+    # fake membrane state
     # =====================================
 
-    if "fake_resource_support" in active_modulations:
+    if "cell_membrane" in node_summary:
 
-        survival_summary[
-            "survival_score"
-        ] += 2.0
+        node_summary["cell_membrane"] *= (
+
+            fake_resource_map.get(
+                "cell_membrane",
+                1.0
+            )
+        )
 
     adjusted_context[
-        "survival_summary"
-    ] = survival_summary
+        "node_summary"
+    ] = node_summary
 
     return adjusted_context
-
-
-# =========================================
-# Override Flags
-# =========================================
-
-def apply_override_flags(
-    adjusted_context,
-    interpretation_delta
-):
-
-    override_flags = interpretation_delta.get(
-        "override_flags",
-        []
-    )
-
-    adjusted_context[
-        "override_flags"
-    ] = override_flags
-
-    return adjusted_context
-
 
 # =========================================
 # Interpretation Labels

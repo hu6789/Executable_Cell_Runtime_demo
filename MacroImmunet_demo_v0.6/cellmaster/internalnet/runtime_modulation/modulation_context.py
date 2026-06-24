@@ -151,6 +151,9 @@ def build_modulation_context(
 
         "tick":
             tick,
+            
+        "runtime_entity":
+            runtime_entity,
 
         "runtime_identity":
             runtime_identity,

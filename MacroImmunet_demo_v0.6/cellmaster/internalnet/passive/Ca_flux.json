@@ -7,17 +7,22 @@
 
     "involved_nodes": [
 
-        "cell_membrane",
-        "Ca"
+        "cell_membrane"
     ],
+
+    "update_target": "Ca",
+
+    "update_mode": "add",
 
     "formula": {
 
-        "type": "membrane_instability",
+        "type": "calcium_influx",
 
         "source": "cell_membrane",
 
-        "flux_rate": 0.05
+        "flux_rate": 0.05,
+
+        "max_integrity": 100.0
     },
 
     "passive_gate": {
@@ -42,10 +47,6 @@
     "metadata": {
 
         "description":
-            "Passive calcium influx caused by membrane integrity loss",
-
-        "physiology":
-
-            "Lower membrane integrity produces stronger calcium leakage"
+            "Passive calcium influx caused by membrane damage"
     }
 }

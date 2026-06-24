@@ -6,21 +6,26 @@
     "runtime_enabled": true,
 
     "involved_nodes": [
-
-        "viral_particle",
-        "viral_RNA"
+        "capsid"
     ],
+
+    "update_target": "viral_RNA",
+
+    "update_mode": "add",
 
     "formula": {
 
-        "type": "resource_consumption"
+        "type": "linear_decay",
+
+        "source": "capsid",
+
+        "decay_rate": 0.1
     },
 
     "passive_gate": {
 
         "required_nodes": [
-
-            "viral_particle"
+            "capsid"
         ],
 
         "minimum_value": 1.0

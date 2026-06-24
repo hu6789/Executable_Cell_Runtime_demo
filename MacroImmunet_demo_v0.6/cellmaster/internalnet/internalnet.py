@@ -23,6 +23,10 @@ from cellmaster.internalnet.behavior_engine.behavior_engine import (
     BehaviorEngine
 )
 
+from cellmaster.internalnet.passive_engine.passive_loader import (
+    PassiveLoader
+)
+
 # =========================================
 # Internal Runtime Network
 # =========================================
@@ -67,7 +71,9 @@ class InternalNet:
             node_engine
             or NodeEngine()
         )
-
+        
+        self.passive_loader = PassiveLoader()
+        
         self.passive_engine = (
             passive_engine
             or PassiveEngine()
@@ -144,17 +150,38 @@ class InternalNet:
             if node_id is None:
                 continue
 
-            node_runtime_state[node_id] = (
+            node_runtime_state[node_id] += (
                 result.get("runtime_value", 0.0)
             )
 
-        # ================================
+        # =================================
         # passive runtime
-        # ================================
+        # =================================
 
-        passive_runtime_results = []
+        passive_definitions = (
+            self.passive_loader.load_all_passives()
+        )
 
-        passive_runtime_state = node_runtime_state
+        passive_runtime_results = (
+            self.passive_engine.process_all_passives(
+                runtime_entity=runtime_entity,
+                runtime_context={
+                    "runtime_state":
+                        node_runtime_state,
+                    "tick":
+                        tick
+                },
+                passive_definitions=
+                    passive_definitions
+            )
+        )
+
+        passive_runtime_state = (
+            self.passive_engine.apply_passive_state(
+                node_runtime_state.copy(),
+                passive_runtime_results
+            )
+        )
 
         # =================================
         # modulation runtime

@@ -157,40 +157,40 @@ def summarize_node_state(
 # =========================================
 
 def summarize_modulation_state(
-    modulation_result
+    modulation_runtime_state
 ):
 
-    if modulation_result is None:
+    if modulation_runtime_state is None:
 
-        return {
+        return {}
 
-            "active_modulations": [],
-            "masked_signals": [],
-            "override_flags": []
-        }
+    payloads = (
+        modulation_runtime_state.get(
+            "payloads",
+            []
+        )
+    )
+
+    vml_payload = None
+
+    for payload in payloads:
+
+        if payload.get(
+            "_payload_type"
+        ) == "vml":
+
+            vml_payload = payload.get(
+                "payload"
+            )
+
+            break
 
     return {
 
-        "active_modulations":
-            modulation_result.get(
-                "active_modulations",
-                []
-            ),
-
-        "masked_signals":
-            modulation_result.get(
-                "masked_signals",
-                []
-            ),
-
-        "override_flags":
-            modulation_result.get(
-                "override_flags",
-                []
-            )
+        "vml_payload":
+            vml_payload
     }
-
-
+    
 # =========================================
 # Integrity Estimation
 # =========================================

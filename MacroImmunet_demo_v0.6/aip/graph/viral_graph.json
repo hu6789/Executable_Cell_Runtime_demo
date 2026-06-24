@@ -1,0 +1,117 @@
+{
+    "name": "viral_graph",
+
+    "graph_type": "viral_graph",
+
+    "nodes": [
+        "viral_RNA",
+        "viral_protein",
+        "capsid",
+        "viral_particle",
+
+        "ATP",
+        "cell_membrane",
+        "ROS",
+        "IFN"
+    ],
+
+    "behaviors": [
+        "viral_replication",
+        "viral_hijack"
+    ],
+
+    "edges": [
+
+        {
+            "source": "viral_RNA",
+            "target": "viral_replication",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true,
+            "metadata": {
+                "description": "viral RNA drives replication program"
+            }
+        },
+
+        {
+            "source": "ATP",
+            "target": "viral_replication",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "normalized",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true,
+            "metadata": {
+                "description": "host energy supports replication"
+            }
+        },
+
+        {
+            "source": "IFN",
+            "target": "viral_replication",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "suppression",
+            "participation_requirement": "optional",
+            "runtime_enabled": true,
+            "metadata": {
+                "description": "immune signaling suppresses replication"
+            }
+        },
+
+        {
+            "source": "viral_protein",
+            "target": "viral_hijack",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true,
+            "metadata": {
+                "description": "viral proteins enable hijacking"
+            }
+        },
+
+        {
+            "source": "ATP",
+            "target": "viral_hijack",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "normalized",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true,
+            "metadata": {
+                "description": "energy required for hijacking"
+            }
+        },
+
+        {
+            "source": "ROS",
+            "target": "viral_hijack",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "damage",
+            "participation_requirement": "optional",
+            "runtime_enabled": true,
+            "metadata": {
+                "description": "stress limits hijacking efficiency"
+            }
+        }
+
+    ],
+
+    "runtime_enabled": true,
+
+    "metadata": {
+        "version": "0.1",
+        "note": "minimal viral core graph for InternalNet + BehaviorEngine integration"
+    }
+}

@@ -6,10 +6,13 @@
     "runtime_enabled": true,
 
     "involved_nodes": [
-
         "ROS",
         "cell_membrane"
     ],
+
+    "update_target": "cell_membrane",
+
+    "update_mode": "add",
 
     "formula": {
 
@@ -25,7 +28,6 @@
     "passive_gate": {
 
         "required_nodes": [
-
             "ROS"
         ],
 
@@ -40,12 +42,7 @@
     "metadata": {
 
         "description": [
-
-            "ROS overload causes progressive membrane instability.",
-
-            "Represents oxidative stress induced structural damage.",
-
-            "Acts as a passive damage propagation process."
+            "ROS overload causes progressive membrane instability."
         ]
     }
 }

@@ -24,13 +24,38 @@ def aggregate_modulation_results(
         - apply world writes
     """
 
-    aggregated = {}
+    aggregated = {
+
+        "modulations": {},
+
+        "payloads": []
+    }
 
     # =====================================
     # process modulation results
     # =====================================
 
     for result in modulation_results:
+
+        if not isinstance(
+            result,
+            dict
+        ):
+            continue
+
+        payload_type = result.get(
+            "_payload_type"
+        )
+
+        if payload_type is not None:
+
+            aggregated[
+                "payloads"
+            ].append(
+                result
+            )
+
+            continue
 
         target = result.get(
             "target"
@@ -59,7 +84,9 @@ def aggregate_modulation_results(
 
         if target not in aggregated:
 
-            aggregated[target] = {
+            aggregated[
+                "modulations"
+            ][target] = {
 
                 "target":
                     target,
@@ -81,6 +108,8 @@ def aggregate_modulation_results(
             }
 
         target_state = aggregated[
+            "modulations"
+        ][
             target
         ]
 

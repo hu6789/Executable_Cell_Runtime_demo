@@ -1,0 +1,42 @@
+{
+  "name": "viral_hijack",
+  "behavior_category": "hijack",
+  "behavior_type": "hijack",
+
+  "behavior_skeleton": {
+    "formula": "default"
+  },
+
+  "viral_phase_bias": "entry",
+
+  "viral_resource_bias": {
+    "ribosome_priority": 1.8,
+    "er_priority": 1.0,
+    "translation_bias": 0.8
+  },
+
+  "viral_gate": {
+    "minimum_drive": 0.2,
+    "required_phase": "entry"
+  },
+
+  "resource_cost": {
+    "ATP": 0.5,
+    "protein": 0.2
+  },
+
+  "external_outputs": [
+    {
+      "request_type": "hijack",
+      "payload": {
+        "target": "host_translation"
+      }
+    }
+  ],
+
+  "runtime_enabled": true,
+
+  "metadata": {
+    "description": "viral host machinery hijacking"
+  }
+}

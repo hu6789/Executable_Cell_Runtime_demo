@@ -39,7 +39,13 @@ def build_modulation_runtime_delta(
             {},
 
         "global_runtime_delta":
-            {}
+            {},
+        
+        "payloads":
+            modulation_runtime_state.get(
+                "payloads",
+                []
+            )
     }
 
     # =====================================

@@ -113,6 +113,18 @@ class RuntimeModulationEngine:
         # =================================
 
         for hook in active_hooks:
+            
+            print()
+            print("RUN HOOK")
+            print(hook.hook_name)
+
+            result = hook.apply(
+                modulation_context
+            )
+
+            print()
+            print("HOOK RESULT")
+            print(result)
 
             result = hook.apply(
                 modulation_context

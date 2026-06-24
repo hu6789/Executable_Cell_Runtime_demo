@@ -220,3 +220,9 @@ class RuntimeGraphContext:
         return self.get_outgoing_edges(
             node_id
         )
+    def get_passive_definitions(self):
+
+        return self.graph.get(
+            "passive_definitions",
+            []
+        )

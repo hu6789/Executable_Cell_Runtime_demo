@@ -28,6 +28,11 @@ from cellmaster.internalnet.hir.state_label import (
 from cellmaster.internalnet.hir.behavior_regulation import (
     regulate_behaviors
 )
+
+from cellmaster.internalnet.hir.modulation_bridge import (
+    extract_hir_interpretation_delta
+)
+
 # =========================================
 # HIR Engine
 # =========================================
@@ -85,6 +90,21 @@ class HIREngine:
                     modulation_runtime_state
             )
         )
+        
+        # =================================
+        # modulation interpretation bridge
+        # =================================
+
+        if hir_interpretation_delta is None:
+
+            hir_interpretation_delta = (
+
+                extract_hir_interpretation_delta(
+
+                    modulation_runtime_state
+                )
+            )
+        
         # =================================
         # apply interpretation adjustment
         # =================================
