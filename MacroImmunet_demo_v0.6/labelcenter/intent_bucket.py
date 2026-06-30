@@ -1,60 +1,91 @@
 # labelcenter/intent_bucket.py
 
-from collections import defaultdict
+"""
+LabelCenter Intent Bucket
+
+Responsibilities
+----------------
+- classify intents by write_mode
+- create stable buckets for LabelCenter apply pipeline
+- separate invalid intents
+
+DOES NOT
+--------
+- aggregate intents
+- execute world updates
+- validate payload semantics
+"""
+
+from typing import Dict, List, Tuple
 
 
-# =========================================
-# v0.6 Intent Bucket System
-# =========================================
+# ==========================================================
+# Supported write modes
+# ==========================================================
 
 VALID_WRITE_MODES = {
 
-    "cell_state",
     "runtime_state",
-    "label_flag",
+
     "field",
+
+    "entity",
+
+    "substance",
+
+    "event",
+
     "targeted_directed",
+
     "link",
-    "entity_lifecycle"
+
+    "label"
 
 }
 
 
-# =========================================
-# create empty buckets
-# =========================================
+# ==========================================================
+# Bucket Factory
+# ==========================================================
 
-def create_empty_buckets():
+def create_empty_buckets() -> Dict[str, List[dict]]:
 
     return {
-        "cell_state": [],
-        "runtime_state": [],
-        "label_flag": [],
-        "field": [],
-        "targeted_directed": [],
-        "link": [],
-        "entity_lifecycle": []
+
+        mode: []
+
+        for mode in VALID_WRITE_MODES
+
     }
 
 
-# =========================================
-# bucket intents by write_mode
-# =========================================
+# ==========================================================
+# Bucket Intents
+# ==========================================================
 
-def bucket_intents(intents):
+def bucket_intents(
+    intents: List[dict]
+) -> Tuple[
+    Dict[str, List[dict]],
+    List[dict]
+]:
 
     buckets = create_empty_buckets()
 
-    invalid_intents = []
+    invalid = []
 
     for intent in intents:
 
-        mode = intent.get("write_mode")
+        mode = intent.get(
+            "write_mode"
+        )
 
         if mode not in VALID_WRITE_MODES:
-            invalid_intents.append(intent)
+
+            invalid.append(intent)
+
             continue
 
         buckets[mode].append(intent)
 
-    return buckets, invalid_intents
+    return buckets, invalid

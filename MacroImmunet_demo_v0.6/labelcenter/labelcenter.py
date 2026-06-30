@@ -1,8 +1,13 @@
 # labelcenter/labelcenter.py
 
 from labelcenter.intent_bucket import bucket_intents
+
 from labelcenter.write_aggregator import (
-    aggregate_fields
+    aggregate_intents
+)
+
+from labelcenter.runtime_state_apply import (
+    apply_runtime_state_updates
 )
 
 from labelcenter.field_projection import (
@@ -13,324 +18,300 @@ from labelcenter.field_dynamics import (
     apply_field_dynamics
 )
 
-from labelcenter.lifecycle_manager import (
-    apply_lifecycle_updates
-)
-
-from labelcenter.cleanup import (
-    cleanup_world
-)
-from labelcenter.cell_state_apply import (
-    apply_cell_state_updates
-)
-
-from labelcenter.label_flag_apply import (
-    apply_label_flag_updates
+from labelcenter.entity_apply import (
+    apply_entity_updates
 )
 
 from labelcenter.targeted_directed_apply import (
     apply_targeted_directed_updates
 )
 
-from labelcenter.link_apply import (
-    apply_link_updates
-)
-
 from labelcenter.directed_effect_projection import (
     apply_world_directed_effects
 )
 
-from labelcenter.runtime_state_apply import (
-    apply_runtime_state_updates
+from labelcenter.link_apply import (
+    apply_link_updates
 )
+
+from labelcenter.cleanup import (
+    cleanup_world
+)
+
+
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+
+    if DEBUG:
+        print(*args, **kwargs)
+
+
+# ==========================================================
+# LabelCenter
+# ==========================================================
 
 class LabelCenter:
 
     """
-    v0.6 World Execution Layer
+    LabelCenter v1.0
 
-    LabelCenter is the ONLY world write authority (SSOT).
+    World State Single Source of Truth (SSOT)
 
-    Responsibilities:
-        - collect intents
-        - classify intents
-        - orchestrate apply order
-        - execute world writes
-        - cleanup invalid entities
+    Responsibilities
+    ----------------
+    - collect write requests
+    - bucket requests
+    - aggregate writes
+    - execute world updates
+    - cleanup world
 
-    LabelCenter DOES NOT:
-        - perform biology reasoning
-        - compute behavior logic
-        - interpret physiology
+    DOES NOT
+    --------
+    - perform biological reasoning
+    - execute InternalNet
+    - schedule cells
+    - interpret physiology
     """
 
     def __init__(self):
 
-        # runtime intent queue
         self.intent_queue = []
 
-    # =========================================
-    # collect intents
-    # =========================================
+    # ======================================================
+    # Collect
+    # ======================================================
 
-    def collect(self, intents):
+    def collect(
+        self,
+        intents
+    ):
 
-        if not intents:
-            return
+        if intents:
 
-        self.intent_queue.extend(intents)
+            self.intent_queue.extend(intents)
 
-    # =========================================
-    # main apply pipeline
-    # =========================================
+    # ======================================================
+    # Main Apply
+    # ======================================================
 
-    def apply(self, world, tick):
-
-        # -------------------------------------
-        # 1. bucket intents
-        # -------------------------------------
+    def apply(
+        self,
+        world,
+        tick
+    ):
 
         buckets, invalid = bucket_intents(
             self.intent_queue
         )
 
         if invalid:
+
             print(
-                f"[LabelCenter] invalid intents: {len(invalid)}"
+                f"[LabelCenter] ignored {len(invalid)} invalid intents."
             )
 
-        # -------------------------------------
-        # 2. apply ordered phases
-        # -------------------------------------
 
-        self._apply_cell_state(
-            world,
-            buckets["cell_state"],
-            tick
-        )
-        
-        self._apply_runtime_state(
-            world,
-            buckets["runtime_state"],
-            tick
-        )
-        
+        #
+        # Entity
+        #
 
-        self._apply_label_flag(
+        self._run_entity(
             world,
-            buckets["label_flag"],
-            tick
+            buckets["entity"]
         )
 
-        self._apply_field(
+        #
+        # Runtime
+        #
+
+        self._run_runtime_state(
             world,
-            buckets["field"],
-            tick
+            buckets["runtime_state"]
         )
 
-        self._apply_targeted_directed(
+        #
+        # Field
+        #
+
+        self._run_field(
             world,
-            buckets["targeted_directed"],
-            tick
-        )
-        
-        self._apply_directed_effect_projection(
-            world,
-            tick
+            buckets["field"]
         )
 
-        self._apply_link(
+        #
+        # Directed Effects
+        #
+
+        self._run_targeted_directed(
             world,
-            buckets["link"],
-            tick
+            buckets["targeted_directed"]
         )
 
-        self._apply_entity_lifecycle(
-            world,
-            buckets["entity_lifecycle"],
-            tick
+        self._run_directed_projection(
+            world
         )
 
-        # -------------------------------------
-        # 3. cleanup
-        # -------------------------------------
+        #
+        # Link
+        #
 
-        self._cleanup(world)
+        self._run_link(
+            world,
+            buckets["link"]
+        )
 
-        # -------------------------------------
-        # 4. clear queue
-        # -------------------------------------
+        #
+        # Cleanup
+        #
+
+        self._cleanup(
+            world
+        )
+
+        #
+        # Clear queue
+        #
 
         self.intent_queue.clear()
+        
+    # ======================================================
+    # Entity
+    # ======================================================
 
-    # =========================================
-    # apply phases (skeleton)
-    # =========================================
-
-    def _apply_cell_state(
+    def _run_entity(
         self,
         world,
-        intents,
-        tick
+        intents
     ):
 
-        print(
-            f"[LabelCenter] apply cell_state: {len(intents)}"
+        intents = aggregate_intents(
+            "entity",
+            intents
         )
 
-        apply_cell_state_updates(
+        apply_entity_updates(
+
             world=world,
-            intents=intents
+
+            entity_requests=intents
+
         )
         
-    def _apply_runtime_state(
+    # ======================================================
+    # Runtime State
+    # ======================================================
+
+    def _run_runtime_state(
         self,
         world,
-        intents,
-        tick
+        intents
     ):
 
-        print(
-            f"[LabelCenter] apply runtime_state: {len(intents)}"
+        intents = aggregate_intents(
+            "runtime_state",
+            intents
         )
 
         apply_runtime_state_updates(
             world=world,
             intents=intents
         )
+
+    # ======================================================
+    # Field
+    # ======================================================
+
+    def _run_field(
+        self,
+        world,
+        intents
+    ):
     
-    def _apply_label_flag(
-        self,
-        world,
-        intents,
-        tick
-    ):
+        from pprint import pprint
 
-        print(
-            f"[LabelCenter] apply label_flag: {len(intents)}"
-        )
+        print("\nField Intents:")
+        pprint(intents)
 
-        apply_label_flag_updates(
-            world=world,
-            intents=intents
-        )
-
-    def _apply_field(
-        self,
-        world,
-        intents,
-        tick
-    ):
-
-        print(
-            f"[LabelCenter] apply field: {len(intents)}"
-        )
-
-        # -------------------------------------
-        # aggregate field writes
-        # -------------------------------------
-
-        aggregated = aggregate_fields(
+        intents = aggregate_intents(
+            "field",
             intents
         )
-
-        print(
-            f"[Field] aggregated writes: "
-            f"{len(aggregated)}"
-        )
-
-        # -------------------------------------
-        # projection
-        # -------------------------------------
-
-        apply_field_projection(
-            world=world,
-            field_writes=aggregated,
-            field_defs=world.field_defs
-        )
         
-        print("\n[DEBUG] AFTER PROJECTION")
-        print(world.fields)
- 
-        # -------------------------------------
-        # autonomous field evolution
-        # -------------------------------------
+        print("\nAggregated Field Writes:")
+        pprint(intents)
+        
+        apply_field_projection(
+
+            world=world,
+
+            field_writes=intents,
+
+            field_defs=world.field_defs
+
+        )
 
         apply_field_dynamics(
-            world=world,
-            field_defs=world.field_defs
-        )
-        
-        print("\n[DEBUG] AFTER DYNAMICS")
-        print(world.fields)
 
-    def _apply_targeted_directed(
+            world=world,
+
+            field_defs=world.field_defs
+
+        )
+
+    # ======================================================
+    # Directed
+    # ======================================================
+
+    def _run_targeted_directed(
         self,
         world,
-        intents,
-        tick
+        intents
     ):
-
-        print(
-            f"[LabelCenter] apply targeted_directed: {len(intents)}"
-        )
 
         apply_targeted_directed_updates(
+
             world=world,
+
             intents=intents
+
         )
 
-    def _apply_directed_effect_projection(
+    def _run_directed_projection(
         self,
-        world,
-        tick
+        world
     ):
-
-        print(
-            "[LabelCenter] apply directed_effect_projection"
-        )
 
         apply_world_directed_effects(
             world
         )
 
-    def _apply_link(
+    # ======================================================
+    # Link
+    # ======================================================
+
+    def _run_link(
         self,
         world,
-        intents,
-        tick
+        intents
     ):
-
-        print(
-            f"[LabelCenter] apply link: {len(intents)}"
-        )
 
         apply_link_updates(
+
             world=world,
+
             intents=intents
+
         )
 
-    def _apply_entity_lifecycle(
+    # ======================================================
+    # Cleanup
+    # ======================================================
+
+    def _cleanup(
         self,
-        world,
-        intents,
-        tick
+        world
     ):
-
-        print(
-            f"[LabelCenter] apply entity_lifecycle: {len(intents)}"
-        )
- 
-        apply_lifecycle_updates(
-            world=world,
-            lifecycle_intents=intents
-        )
-    # =========================================
-    # cleanup
-    # =========================================
-
-    def _cleanup(self, world):
-
-        print("[LabelCenter] cleanup")
 
         cleanup_world(world)

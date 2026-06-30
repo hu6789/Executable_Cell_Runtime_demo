@@ -4,6 +4,13 @@ from collections import defaultdict
 import math
 
 
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+        
 # =========================================
 # apply field projections
 # =========================================
@@ -35,6 +42,8 @@ def apply_field_projection(
     # -------------------------------------
 
     for write in field_writes:
+    
+        debug_print("FIELD WRITE:", write)
 
         field_type = write["field_type"]
 

@@ -1,5 +1,12 @@
 # cellmaster/stateupdate/context_integrator.py
 
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+       
 """
 Runtime Context Integration
 
@@ -40,8 +47,12 @@ def integrate_runtime_context(
         {}
     )
 
-    runtime_state = runtime_output.get(
-        "runtime_state",
+    # =====================================
+    # latest executable runtime state
+    # =====================================
+
+    executable_runtime_state = runtime_output.get(
+        "modulated_runtime_state",
         {}
     )
 
@@ -71,11 +82,29 @@ def integrate_runtime_context(
  
     projected_runtime_state = (
         apply_physiological_cost(
-            runtime_state,
+            executable_runtime_state,
             physiological_cost
         )
     )
+    
+    debug_print()
+    debug_print("=" * 60)
+    debug_print("STATE UPDATE")
+    debug_print("=" * 60)
 
+    debug_print("INPUT STATE")
+    debug_print(executable_runtime_state)
+
+    debug_print()
+
+    debug_print("PHYSIOLOGICAL COST")
+    debug_print(physiological_cost)
+
+    debug_print()
+
+    debug_print("PROJECTED STATE")
+    debug_print(projected_runtime_state)
+    
     # =====================================
     # runtime labels
     # =====================================
@@ -86,15 +115,6 @@ def integrate_runtime_context(
         hir_output,
         label_flags
     ) 
-    # =====================================
-    # fate progression
-    # =====================================
-
-    fate_state = evaluate_fate_progression(
-
-        runtime_state,
-        runtime_labels
-    )
     
     # =====================================
     # outward context package
@@ -111,7 +131,7 @@ def integrate_runtime_context(
             tick,
 
         "runtime_state":
-            runtime_state,
+            executable_runtime_state,
 
         "projected_runtime_state":
             projected_runtime_state,
@@ -188,22 +208,17 @@ def build_runtime_labels(
     # activation
     # =====================================
 
-    labels["activated"] = True
+    runtime_labels = hir_output.get(
+        "state_labels",
+        []
+    )
+
+    labels["activated"] = (
+        "activated" in runtime_labels
+    )
 
     return labels
 
-
-# =========================================
-# Fate Progression
-# =========================================
-
-def evaluate_fate_progression(
-    runtime_state,
-    runtime_labels
-):
-
-    return "stable"
-    
 # =====================================
 # cost
 # =====================================a

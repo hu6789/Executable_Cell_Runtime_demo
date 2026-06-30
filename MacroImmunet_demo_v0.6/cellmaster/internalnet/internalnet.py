@@ -27,6 +27,13 @@ from cellmaster.internalnet.passive_engine.passive_loader import (
     PassiveLoader
 )
 
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+        
 # =========================================
 # Internal Runtime Network
 # =========================================
@@ -115,13 +122,26 @@ class InternalNet:
         tick=None
     ):
 
-        print(
+        debug_print(
             f"[InternalNet] tick={tick}"
         )
 
         # =================================
         # node runtime
         # =================================
+        
+        debug_print()
+        debug_print()
+        debug_print("GRAPH NODES")
+        debug_print(
+            graph_context.get_runtime_nodes()
+        )
+
+        debug_print()
+        debug_print("GRAPH EDGES")
+        debug_print(
+            graph_context.get_runtime_edges()
+        )
 
         node_runtime_results = (
 
@@ -136,6 +156,10 @@ class InternalNet:
                     graph_context
             )
         )
+        
+        debug_print()
+        debug_print("NODE RUNTIME RESULTS")
+        debug_print(node_runtime_results)
 
         # =================================
         # build node runtime state
@@ -182,6 +206,18 @@ class InternalNet:
                 passive_runtime_results
             )
         )
+        
+        debug_print()
+        debug_print("=" * 60)
+        debug_print("PASSIVE RESULTS")
+        debug_print("=" * 60)
+        debug_print(passive_runtime_results)
+
+        debug_print()
+        debug_print("=" * 60)
+        debug_print("PASSIVE STATE")
+        debug_print("=" * 60)
+        debug_print(passive_runtime_state)
 
         # =================================
         # modulation runtime
@@ -273,6 +309,12 @@ class InternalNet:
             modulated_runtime_state[
                 node_id
             ] = value
+            
+            
+        debug_print()
+        debug_print("MODULATION OUTPUT")
+        debug_print(modulation_output)
+
         # =================================
         # HIR
         # =================================
@@ -323,13 +365,13 @@ class InternalNet:
                 tick=tick
             )
         )
-        print()
-        print("HIR OUTPUT")
-        print(hir_output)
+        debug_print()
+        debug_print("HIR OUTPUT")
+        debug_print(hir_output)
 
-        print()
-        print("BEHAVIOR OUTPUT")
-        print(behavior_output)
+        debug_print()
+        debug_print("BEHAVIOR OUTPUT")
+        debug_print(behavior_output)
         # =================================
         # runtime output
         # =================================
@@ -375,7 +417,7 @@ class InternalNet:
 
             "modulation_output":
                 modulation_output,
-            
+                
             "modulated_runtime_state":
                 modulated_runtime_state,
                 

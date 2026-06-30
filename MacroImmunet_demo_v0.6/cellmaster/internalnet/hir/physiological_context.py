@@ -54,7 +54,8 @@ def integrate_global_context(
         integrity_summary
     )
     
-    identity = runtime_entity.identity
+    identity = safe_get_identity(runtime_entity)
+    cell_id = safe_get_id(runtime_entity)
     
     return {
 
@@ -247,3 +248,19 @@ def estimate_survival_tendency(
         "survival_possible":
             survival_score > 0.5
     }
+    
+def safe_get_identity(runtime_entity):
+    if hasattr(runtime_entity, "identity"):
+        return runtime_entity.identity
+
+    if isinstance(runtime_entity, dict):
+        return runtime_entity.get("identity", {})
+
+    return {}
+    
+def safe_get_id(runtime_entity):
+    if hasattr(runtime_entity, "id"):
+        return runtime_entity.id
+    if isinstance(runtime_entity, dict):
+        return runtime_entity.get("id", None)
+    return None

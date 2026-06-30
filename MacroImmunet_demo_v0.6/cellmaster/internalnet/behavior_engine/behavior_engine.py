@@ -81,7 +81,13 @@ from cellmaster.internalnet.behavior_engine.behavior_output import (
     build_behavior_output
 )
 
+DEBUG = False
 
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+        
 # =========================================
 # Behavior Engine
 # =========================================
@@ -150,9 +156,9 @@ class BehaviorEngine:
                     tick
             )
         )
-        print()
-        print("BEHAVIOR CONTEXT")
-        print(
+        debug_print()
+        debug_print("BEHAVIOR CONTEXT")
+        debug_print(
             behavior_context["runtime_state"]
         )
         # =================================
@@ -164,9 +170,9 @@ class BehaviorEngine:
                 behavior_context
             )
         )
-        print()
-        print("ECOLOGY CONTEXT")
-        print(
+        debug_print()
+        debug_print("ECOLOGY CONTEXT")
+        debug_print(
             ecology_context["runtime_state"]
         )
         # =================================
@@ -178,9 +184,9 @@ class BehaviorEngine:
                 ecology_context
             )
         )
-        print()
-        print("ALLOCATION CONTEXT")
-        print(
+        debug_print()
+        debug_print("ALLOCATION CONTEXT")
+        debug_print(
             allocation_context["runtime_state"]
         )
         # =================================
@@ -192,9 +198,9 @@ class BehaviorEngine:
                 allocation_context
             )
         )
-        print()
-        print("COMPETITION CONTEXT")
-        print(
+        debug_print()
+        debug_print("COMPETITION CONTEXT")
+        debug_print(
             competition_context["runtime_state"]
         )
         # =================================
@@ -278,21 +284,21 @@ class BehaviorEngine:
             if not allowed:
 
                 continue
-            print()
-            print("==== BEHAVIOR ====")
-            print(behavior_name)
+            debug_print()
+            debug_print("==== BEHAVIOR ====")
+            debug_print(behavior_name)
 
-            print("gated:")
-            print(gated_contributions)
+            debug_print("gated:")
+            debug_print(gated_contributions)
 
-            print("aggregated:")
-            print(aggregated)
+            debug_print("aggregated:")
+            debug_print(aggregated)
 
-            print("skeleton:")
-            print(skeleton_result)
+            debug_print("skeleton:")
+            debug_print(skeleton_result)
 
-            print("allowed:")
-            print(allowed)
+            debug_print("allowed:")
+            debug_print(allowed)
             # -----------------------------
             # runtime scaling
             # -----------------------------
@@ -304,9 +310,9 @@ class BehaviorEngine:
                     competition_context
                 )
             )
-            print()
-            print("scaled_result")
-            print(scaled_result)
+            debug_print()
+            debug_print("scaled_result")
+            debug_print(scaled_result)
 
             # -----------------------------
             # build behavior package
@@ -320,9 +326,9 @@ class BehaviorEngine:
                     scaled_result
                 )
             )
-            print()
-            print("behavior_package")
-            print(behavior_package)
+            debug_print()
+            debug_print("behavior_package")
+            debug_print(behavior_package)
             # -----------------------------
             # append package
             # -----------------------------

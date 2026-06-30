@@ -1,17 +1,28 @@
 # minisio/normalizer/request_normalizer.py
 
-# =========================================================
-# MiniSIO Request Normalizer v0.1
-# =========================================================
+"""
+MiniSIO Request Normalizer
 
-from typing import Any, Dict, List, Optional
-from dataclasses import asdict
+Responsibilities
+----------------
+- validate external requests
+- normalize raw dict -> OrchestrationRequest
+- build spatial / temporal contexts
+- provide unified request objects for compiler stage
+
+DOES NOT
+---------
+- compile intents
+- execute simulation
+- modify world state
+"""
+
+from typing import Dict, List, Optional
 
 from minisio.minisio_schema import (
     OrchestrationRequest,
     SpatialContext,
     TemporalContext,
-    MiniSIOOperation
 )
 
 
@@ -21,182 +32,164 @@ from minisio.minisio_schema import (
 
 class RequestNormalizer:
 
-    """
-    Responsibilities:
-        - normalize raw external dict -> OrchestrationRequest
-        - enforce schema correctness
-        - fill missing spatial/temporal fields
-        - reject invalid operations
-
-    DOES NOT:
-        - compile intents
-        - execute simulation logic
-        - modify world
-    """
-
-    # =========================================
-    # public entry
-    # =========================================
+    # =====================================================
+    # batch
+    # =====================================================
 
     def normalize_batch(
         self,
-        raw_requests: List[Dict[str, Any]]
+        raw_requests: List[Dict]
     ) -> List[OrchestrationRequest]:
 
         normalized = []
 
-        for req in raw_requests:
+        for request in raw_requests:
 
             try:
-                obj = self.normalize_single(req)
 
-                if obj is None:
-                    continue
+                obj = self.normalize_single(request)
 
-                normalized.append(obj)
+                if obj is not None:
+                    normalized.append(obj)
 
             except Exception as e:
 
-                print(f"[MiniSIO] rejected request: {e}")
+                print(
+                    f"[MiniSIO] rejected request: {e}"
+                )
 
         return normalized
 
-
-    # =========================================
-    # normalize single request
-    # =========================================
+    # =====================================================
+    # single
+    # =====================================================
 
     def normalize_single(
         self,
-        req: Dict[str, Any]
+        request: Dict
     ) -> Optional[OrchestrationRequest]:
 
-        if not isinstance(req, dict):
-            raise ValueError("request must be dict")
+        if not isinstance(request, dict):
+            raise ValueError(
+                "request must be dict"
+            )
 
-        # -----------------------------
-        # operation validation
-        # -----------------------------
-        operation = req.get("operation")
+        operation = request.get("operation")
 
         if operation is None:
-            raise ValueError("missing operation")
+            raise ValueError(
+                "missing operation"
+            )
 
-        if not self._is_valid_operation(operation):
-            raise ValueError(f"invalid operation: {operation}")
-
-        # -----------------------------
-        # target
-        # -----------------------------
-        target_type = req.get("target_type", "unknown")
-        target_id = req.get("target_id", None)
-
-        # -----------------------------
-        # payload
-        # -----------------------------
-        payload = req.get("payload", {})
-
-        if payload is None:
-            payload = {}
+        payload = request.get("payload") or {}
 
         if not isinstance(payload, dict):
-            raise ValueError("payload must be dict")
+            raise ValueError(
+                "payload must be dict"
+            )
 
-        # -----------------------------
-        # spatial normalization
-        # -----------------------------
-        spatial = self._build_spatial(req)
-
-        # -----------------------------
-        # temporal normalization (IMPORTANT)
-        # -----------------------------
-        temporal = self._build_temporal(req)
-
-        # -----------------------------
-        # schedule mode
-        # -----------------------------
-        schedule_mode = req.get("schedule_mode", "immediate")
-
-        if schedule_mode not in ["immediate", "delayed", "recurring"]:
-            schedule_mode = "immediate"
-
-        # -----------------------------
-        # build final object
-        # -----------------------------
         return OrchestrationRequest(
+
             operation=operation,
-            target_type=target_type,
-            target_id=target_id,
-            spatial=spatial,
-            temporal=temporal,
+
+            write_mode=request.get(
+                "write_mode",
+                "runtime_state"
+            ),
+
+            source=request.get(
+                "source",
+                "external"
+            ),
+
+            target_type=request.get(
+                "target_type",
+                "unknown"
+            ),
+
+            target_id=request.get(
+                "target_id"
+            ),
+
+            spatial=self._build_spatial(
+                request
+            ),
+
+            temporal=self._build_temporal(
+                request
+            ),
+
             payload=payload,
-            schedule_mode=schedule_mode
+
+            schedule_mode=request.get(
+                "schedule_mode",
+                "immediate"
+            )
         )
 
+    # =====================================================
+    # spatial
+    # =====================================================
 
-    # =========================================
-    # spatial builder
-    # =========================================
+    def _build_spatial(
+        self,
+        request: Dict
+    ) -> Optional[SpatialContext]:
 
-    def _build_spatial(self, req: Dict[str, Any]) -> Optional[SpatialContext]:
+        payload = request.get(
+            "payload",
+            {}
+        )
 
-        position = req.get("position")
-
-        # allow payload fallback (but normalize it)
-        if position is None:
-            payload = req.get("payload", {})
-            position = payload.get("position")
+        position = (
+            request.get("position")
+            or payload.get("position")
+        )
 
         if position is None:
             return None
 
-        if not isinstance(position, (tuple, list)) or len(position) != 2:
-            raise ValueError(f"invalid position: {position}")
-
         return SpatialContext(
-            position=(int(position[0]), int(position[1])),
-            radius=req.get("radius"),
-            region=req.get("region")
+
+            position=(
+                int(position[0]),
+                int(position[1])
+            ),
+
+            radius=request.get("radius"),
+
+            region=request.get("region")
         )
 
+    # =====================================================
+    # temporal
+    # =====================================================
 
-    # =========================================
-    # temporal builder
-    # =========================================
+    def _build_temporal(
+        self,
+        request: Dict
+    ) -> TemporalContext:
 
-    def _build_temporal(self, req: Dict[str, Any]) -> TemporalContext:
+        payload = request.get(
+            "payload",
+            {}
+        )
 
-        tick = req.get("tick")
+        tick = (
+            request.get("tick")
+            or payload.get("tick")
+        )
 
-        # fallback: payload tick
         if tick is None:
-            payload = req.get("payload", {})
-            tick = payload.get("tick")
-
-        if tick is None:
-            raise ValueError("missing tick")
+            raise ValueError(
+                "missing tick"
+            )
 
         return TemporalContext(
+
             tick=int(tick),
-            delay=req.get("delay"),
-            duration=req.get("duration")
+
+            delay=request.get("delay"),
+
+            duration=request.get("duration")
         )
-
-
-    # =========================================
-    # operation validator
-    # =========================================
-
-    def _is_valid_operation(self, op: str) -> bool:
-
-        valid_ops = {
-            MiniSIOOperation.CREATE_CELL,
-            MiniSIOOperation.INJECT_VIRUS,
-            MiniSIOOperation.EMIT_FIELD,
-            MiniSIOOperation.SPAWN_SUBSTANCE,
-            MiniSIOOperation.MOVE_ENTITY,
-            MiniSIOOperation.DELETE_ENTITY,
-            MiniSIOOperation.SCHEDULE_EVENT
-        }
-
-        return op in valid_ops

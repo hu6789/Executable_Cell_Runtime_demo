@@ -4,21 +4,24 @@ from aip.viral_behavior_engine.viral_category_allocator import allocate_behavior
 from aip.viral_behavior_engine.viral_intra_category_competition import perform_intra_category_competition
 from aip.viral_behavior_engine.viral_runtime_scaling import apply_runtime_scaling
 from aip.viral_behavior_engine.viral_behavior_output import build_viral_behavior_output
-from aip.viral_behavior_engine.viral_behavior_gate import (
-    evaluate_viral_behavior_gate
+from aip.viral_behavior_engine.viral_behavior_gate import evaluate_viral_behavior_gate
+from aip.viral_behavior_engine.viral_to_skeleton_adapter import (
+    build_viral_skeleton_inputs
 )
-from cellmaster.internalnet.behavior_engine.skeleton import compute_behavior_skeleton
+from cellmaster.internalnet.behavior_engine.behavior_skeleton import apply_behavior_skeleton
 
 
 # =========================================
-# Viral Behavior Engine (ENTRY POINT)
+# Viral Behavior Engine
+# OUTPUT: modulation_runtime_state ONLY
 # =========================================
+
 class ViralBehaviorEngine:
 
     def process(
         self,
         runtime_entity,
-        viral_context,          # ← MUST come from VML
+        viral_context,
         behavior_defs,
         viral_cycle_state,
         vml_context=None,
@@ -26,96 +29,83 @@ class ViralBehaviorEngine:
     ):
 
         # =================================
-        # 2. category allocation (viral only)
+        # 1. allocation
         # =================================
-
-        allocation_context = (
-            allocate_behavior_categories(
-                viral_cycle_state=
-                    viral_cycle_state,
-
-                viral_context=
-                    viral_context
-            )
-        )
-        
-        allocation_context["behavior_defs"] = (
-            behavior_defs
+        allocation = allocate_behavior_categories(
+            viral_cycle_state=viral_cycle_state,
+            viral_context=viral_context
         )
 
-        # =================================
-        # 3. intra-category competition
-        # =================================
-
-        competition_context = perform_intra_category_competition(
-            allocation_context
-        )
+        allocation["behavior_defs"] = behavior_defs
 
         # =================================
-        # 4. skeleton compute (PURE math layer)
+        # 2. competition
         # =================================
+        competition = perform_intra_category_competition(allocation)
 
+        # =================================
+        # 3. skeleton
+        # =================================
         skeleton_results = {}
 
-        for behavior_name, behavior_def in behavior_defs.items():
+        for name, behavior_def in behavior_defs.items():
 
-            skeleton_result = skeleton_results[
-                behavior_name
-            ]
+            inputs = build_viral_skeleton_inputs(
+                behavior_name=name,
+                behavior_def=behavior_def,
+                viral_context=viral_context,
+                competition_context=competition,
+                viral_cycle_state=viral_cycle_state
+            )
 
-            if evaluate_behavior_gate(
+            skeleton_results[name] = apply_behavior_skeleton(
                 behavior_def,
-                skeleton_result,
-                viral_cycle_state
-            ):
-                gated_behaviors[
-                    behavior_name
-                ] = skeleton_result
+                inputs
+            )
+       
 
         # =================================
-        # 5. REMOVE HIR GATE ❗
-        # replace with viral gate ONLY
+        # 4. gate (FIXED)
         # =================================
+        gated = {}
 
-        gated_behaviors = {}
-
-        for behavior_name, skeleton_result in skeleton_results.items():
+        for name, skeleton in skeleton_results.items():
 
             if evaluate_viral_behavior_gate(
-                behavior_name,
-                skeleton_result,
-                competition_context,
-                viral_context
+                behavior_def=behavior_defs[name],
+                skeleton_result=skeleton,
+                viral_cycle_state=viral_cycle_state
             ):
-                gated_behaviors[behavior_name] = skeleton_result
+                gated[name] = skeleton
 
         # =================================
-        # 6. runtime scaling (viral only)
+        # 5. scaling
         # =================================
+        scaled = {}
 
-        scaled_results = {}
+        for name, skeleton in gated.items():
 
-        for behavior_name, skeleton_result in gated_behaviors.items():
-
-            scaled_results[behavior_name] = apply_runtime_scaling(
-                behavior_name,
-                skeleton_result,
-                competition_context
+            scaled[name] = apply_runtime_scaling(
+                name,
+                skeleton,
+                competition
             )
 
         # =================================
-        # 7. output
+        # 6. OUTPUT FIX (关键修复)
         # =================================
-
-        output_result = build_viral_behavior_output(
+        output = build_viral_behavior_output(
             viral_context=viral_context,
-            behavior_results=scaled_results,
+            behavior_results=scaled,
             cycle_state=viral_cycle_state,
-            resource_usage=viral_context
+            resource_usage=viral_context.get(
+                "resource_projection",
+                {}
+            )
         )
 
         return {
             "runtime_type": "viral_modulation",
             "tick": tick,
-            "output": output_result
+            "modulation_runtime_state": output["modulation_runtime_state"]
         }

@@ -30,12 +30,50 @@ def aggregate_modulation_results(
 
         "payloads": []
     }
+    # =====================================
+    # normalize input formats (viral / cell / passive)
+    # =====================================
 
+    normalized_results = []
+
+    for item in modulation_results:
+
+        # ---------------------------------
+        # viral contribution format
+        # ---------------------------------
+
+        if isinstance(item, dict) and "modulations" in item:
+
+            for target, mod in item["modulations"].items():
+
+                normalized_results.append({
+                    "target": target,
+                    "operation": "multiply",
+                    "value": mod.get("multiply", 1.0),
+                    "source": mod.get("sources", ["viral"])[0]
+                })
+
+            # handle payloads
+            for p in item.get("payloads", []):
+                normalized_results.append({
+                    "_payload_type": p.get("type", "viral_payload"),
+                    "source": "viral",
+                    "value": p
+                })
+
+            continue
+
+        # ---------------------------------
+        # already flat format (existing system)
+        # ---------------------------------
+
+        normalized_results.append(item)
+    
     # =====================================
     # process modulation results
     # =====================================
 
-    for result in modulation_results:
+    for result in normalized_results:
 
         if not isinstance(
             result,
@@ -82,7 +120,7 @@ def aggregate_modulation_results(
         # initialize target state
         # =================================
 
-        if target not in aggregated:
+        if target not in aggregated["modulations"]:
 
             aggregated[
                 "modulations"

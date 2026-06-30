@@ -1,120 +1,56 @@
-# cellinstance/runtime/runtime_state.py
-
-
-# =========================================
-# Runtime State
-# =========================================
-
 class RuntimeState:
 
-    """
-    runtime node state container
+    def __init__(self, initial_state=None):
+        self.node_state = dict(initial_state or {})
 
-    responsibilities:
-        - hold internal node values
-        - apply runtime delta
-        - provide snapshot
-        - support node read/write
+    # -----------------------------
+    # basic api
+    # -----------------------------
 
-    DOES NOT:
-        - calculate physiology
-        - execute graph logic
-        - write world
-    """
+    def get(self, key, default=0.0):
+        return self.node_state.get(key, default)
 
-    def __init__(
+    def set(self, key, value):
+        self.node_state[key] = value
 
-        self,
-        initial_state=None
-    ):
-
-        self.node_state = dict(
-
-            initial_state or {}
-        )
-
-    # =====================================
-    # get node
-    # =====================================
-
-    def get(
-
-        self,
-        node_name,
-        default=0.0
-    ):
-
-        return self.node_state.get(
-
-            node_name,
-            default
-        )
-
-    # =====================================
-    # set node
-    # =====================================
-
-    def set(
-
-        self,
-        node_name,
-        value
-    ):
-
-        self.node_state[node_name] = value
-
-    # =====================================
-    # apply delta
-    # =====================================
-
-    def apply_delta(
-
-        self,
-        delta_dict
-    ):
-
-        for node_name, delta in delta_dict.items():
-
-            old_value = self.node_state.get(
-
-                node_name,
-                0.0
+    def apply_delta(self, delta_dict):
+        for key, delta in delta_dict.items():
+            self.node_state[key] = (
+                self.node_state.get(key, 0.0)
+                + delta
             )
 
-            self.node_state[node_name] = (
-
-                old_value + delta
-            )
-
-    # =====================================
-    # export snapshot
-    # =====================================
-
-    def snapshot(self):
-
-        return dict(
-
-            self.node_state
-        )
-
-    def raw(self):
-        return self.node_state
-
+    # -----------------------------
+    # export
+    # -----------------------------
 
     def snapshot(self):
         return dict(self.node_state)
 
-    def __getitem__(self, k):
-        return self.node_state[k]
+    def raw(self):
+        return self.node_state
 
-    def __setitem__(self, k, v):
-        self.node_state[k] = v
+    # -----------------------------
+    # dict compatibility
+    # -----------------------------
 
-    def get(self, k, default=None):
-        return self.node_state.get(k, default)
+    def __getitem__(self, key):
+        return self.node_state[key]
+
+    def __setitem__(self, key, value):
+        self.node_state[key] = value
+
+    def __contains__(self, key):
+        return key in self.node_state
 
     def items(self):
         return self.node_state.items()
+
+    def keys(self):
+        return self.node_state.keys()
+
+    def values(self):
+        return self.node_state.values()
 
     def __iter__(self):
         return iter(self.node_state)

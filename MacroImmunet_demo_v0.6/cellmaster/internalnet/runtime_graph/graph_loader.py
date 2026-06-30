@@ -3,7 +3,13 @@
 import json
 from pathlib import Path
 
+DEBUG = False
 
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+       
 # =========================================
 # Runtime Graph Loader
 # =========================================
@@ -91,7 +97,7 @@ class RuntimeGraphLoader:
 
             loaded_graphs.append(graph)
 
-            print(
+            debug_print(
                 "[RuntimeGraphLoader]",
                 "loaded:",
                 path.name
@@ -114,7 +120,7 @@ class RuntimeGraphLoader:
 
         except Exception as e:
 
-            print("[RuntimeGraphLoader] failed:", path)
-            print(e)
+            debug_print("[RuntimeGraphLoader] failed:", path)
+            debug_print(e)
 
             return None

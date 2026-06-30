@@ -20,6 +20,13 @@ from cellmaster.stateupdate.runtime_package import (
     build_runtime_package
 )
 
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+       
 
 # =========================================
 # Runtime State Finalization Layer
@@ -59,7 +66,7 @@ class StateUpdater:
         tick=None
     ):
 
-        print(
+        debug_print(
             f"[StateUpdate] tick={tick}"
         )
 
@@ -80,7 +87,7 @@ class StateUpdater:
                     package
                 )
 
-        print(
+        debug_print(
             f"[StateUpdate] packages="
             f"{len(finalized_packages)}"
         )

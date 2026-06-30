@@ -6,6 +6,11 @@
     "nodes": [
 
         "viral_signal",
+
+        "IFNGR_activation",
+ 
+        "STAT1",
+
         "IFN"
     ],
     
@@ -15,6 +20,53 @@
     ],
 
     "edges": [
+        {
+            "source": "IFNGR_activation",
+
+            "target": "STAT1",
+
+            "edge_type":
+                "node_to_node",
+
+            "weight":
+                1.0,
+
+            "transform":
+                "linear",
+
+            "contribution_category":
+                "activation",
+
+            "participation_requirement":
+                "optional",
+
+            "runtime_enabled":
+                true
+        },
+        
+        {
+            "source": "STAT1",
+
+            "target": "IFN_production",
+
+            "edge_type":
+                "node_to_behavior",
+
+            "weight":
+                1.5,
+
+            "transform":
+                "linear",
+
+            "contribution_category":
+                "activation",
+
+            "participation_requirement":
+                "optional",
+
+            "runtime_enabled":
+                true
+        },
 
         {
             "source": "viral_signal",

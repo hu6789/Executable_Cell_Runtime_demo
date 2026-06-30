@@ -77,31 +77,19 @@ def build_contact_event(
 
         "interaction_mode": "contact",
 
-        "source_id": interaction.get(
-            "source_id"
-        ),
+        "source_id": interaction.get("source_id"),
 
-        "target_id": interaction.get(
-            "target_id"
-        ),
+        "target_id": interaction.get("target_id"),
 
-        "source_type": interaction.get(
-            "source_type"
-        ),
+        "source_type": interaction.get("source_type"),
 
-        "target_type": interaction.get(
-            "target_type"
-        ),
+        "target_type": interaction.get("target_type"),
+ 
+        "tick": interaction.get("tick"),      # ← 放这里
 
         "payload": {
 
-            "distance": interaction.get(
-                "distance"
-            ),
-        "tick":
-            interaction.get(
-                "tick"
-            )
+            "distance": interaction.get("distance")
         }
     }
     
@@ -115,38 +103,25 @@ def build_field_event(
 
     return {
 
-        "event_type":
-            "field_exposure_event",
+        "event_type": "field_exposure_event",
+ 
+        "interaction_mode": "field",
 
-        "interaction_mode":
-            "field",
+        "target_id": interaction.get("target_id"),
 
-        "target_id":
-            interaction.get(
-                "target_id"
-            ),
+        "target_type": interaction.get("target_type"),
 
-        "target_type":
-            interaction.get(
-                "target_type"
-            ),
+        "tick": interaction.get("tick"),      # ← 根层
 
         "payload": {
 
             "field_type":
-                interaction.get(
-                    "field_type"
-                ),
+                interaction.get("field_type"),
 
             "field_strength":
                 interaction.get(
                     "field_strength",
                     0.0
-                ),
-        "tick":
-            interaction.get(
-                "tick"
-            )
+                )
         }
     }
-    

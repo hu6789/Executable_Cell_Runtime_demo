@@ -71,9 +71,11 @@ def build_runtime_context(
         # base runtime state
         # =================================
 
-        "base_runtime_state":
+        "runtime_state":
             runtime_entity.runtime_state.snapshot(),
 
+        "base_runtime_state":
+            runtime_entity.runtime_state.snapshot(),
         # =================================
         # node inputs
         # =================================

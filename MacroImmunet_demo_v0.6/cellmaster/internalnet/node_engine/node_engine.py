@@ -37,6 +37,13 @@ from cellmaster.internalnet.runtime_graph.node_definition_loader import (
     NodeDefinitionLoader
 )
 
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+        
 # =========================================
 # Node Runtime Engine
 # =========================================
@@ -75,17 +82,24 @@ class NodeEngine:
         runtime_context,
         graph_context
     ):
+        debug_print("<<<<<<<< NODE ENGINE >>>>>>>>")
+        
+        debug_print("NODE DEFINITIONS =", node_definitions)
 
         node_results = []
 
         loader = NodeDefinitionLoader()
 
         for node_name in node_definitions:
+        
+            debug_print("NODE NAME =", node_name)
 
             node_definition = loader.load(
                 node_name
             )
-
+ 
+            debug_print("NODE DEF =", node_definition)
+            
             result = self.evaluate_node(
 
                 node_definition,
@@ -130,14 +144,37 @@ class NodeEngine:
                 node_id
             )
         )
+        
+        debug_print()
+        debug_print(
+            f"NODE = {node_id}"
+        )
+
+        debug_print(
+            "INCOMING =",
+            incoming_edges
+        )
 
         valid_contributions = []
 
         # =================================
         # evaluate graph contributions
         # =================================
-
+        
         for edge in incoming_edges:
+        
+            debug_print()
+            debug_print(
+                "EDGE SOURCE =",
+                edge["source"]
+            )
+ 
+            debug_print(
+                "SOURCE VALUE =",
+                runtime_context
+                    .get("runtime_state", {})
+                    .get(edge["source"])
+            )
 
             # -----------------------------
             # edge runtime gate
@@ -175,6 +212,11 @@ class NodeEngine:
                 continue
 
             valid_contributions.append(
+                transformed
+            )
+            
+            debug_print(
+                "TRANSFORMED =",
                 transformed
             )
 

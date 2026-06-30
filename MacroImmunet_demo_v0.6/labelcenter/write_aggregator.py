@@ -3,119 +3,53 @@
 from collections import defaultdict
 
 
-# =========================================
-# aggregate intents
-# =========================================
+# ==========================================================
+# LabelCenter Write Aggregator v0.7
+# ==========================================================
+
+"""
+Responsibilities
+----------------
+Aggregate intents before apply.
+
+Only write modes that benefit from aggregation are merged.
+
+DOES NOT
+--------
+- execute writes
+- modify world
+- validate intents
+"""
+
+
+# ==========================================================
+# Dispatcher
+# ==========================================================
 
 def aggregate_intents(write_mode, intents):
 
-    if write_mode == "cell_state":
-        return aggregate_cell_state(intents)
-
-    elif write_mode == "label_flag":
-        return aggregate_label_flags(intents)
+    if write_mode == "runtime_state":
+        return aggregate_runtime_state(intents)
 
     elif write_mode == "field":
         return aggregate_fields(intents)
 
-    elif write_mode == "entity_lifecycle":
-        return aggregate_lifecycle(intents)
-    
-    elif write_mode == "runtime_state":
-        return aggregate_runtime_state(intents)
+    elif write_mode == "entity":
+        return aggregate_entity(intents)
+
+    elif write_mode == "substance":
+        return aggregate_substance(intents)
 
     else:
+        # targeted_directed / link / event ...
         return intents
 
 
-# =========================================
-# cell_state aggregation
-# =========================================
+# ==========================================================
+# Runtime State
+# ==========================================================
 
-def aggregate_cell_state(intents):
-
-    merged = {}
-
-    for intent in intents:
-
-        target_id = intent.get(
-            "target_id"
-        )
-
-        payload = intent.get(
-            "payload",
-            {}
-        )
-
-        state = payload.get(
-            "state"
-        )
-
-        if not target_id or not state:
-            continue
-
-        merged[target_id] = state
-
-    aggregated = []
-
-    for target_id, state in merged.items():
-
-        aggregated.append({
-
-            "target_id": target_id,
-
-            "state": state
-        })
-
-    return aggregated
-
-
-# =========================================
-# runtime_state aggregation
-# =========================================
-
-def aggregate_runtime_state(
-    intents
-):
-
-    merged = {}
-
-    for intent in intents:
-
-        target_id = intent.get(
-            "target_id"
-        )
-
-        payload = intent.get(
-            "payload",
-            {}
-        )
-
-        if not target_id:
-            continue
-
-        merged[target_id] = payload
-
-    aggregated = []
-
-    for target_id, payload in merged.items():
-
-        aggregated.append({
-
-            "target_id":
-                target_id,
-
-            "payload":
-                payload
-        })
-
-    return aggregated
-
-# =========================================
-# label_flag aggregation
-# =========================================
-
-def aggregate_label_flags(intents):
+def aggregate_runtime_state(intents):
 
     merged = {}
 
@@ -123,98 +57,108 @@ def aggregate_label_flags(intents):
 
         target_id = intent.get("target_id")
 
-        payload = intent.get("payload", {})
-
-        label = payload.get("label")
-
-        value = payload.get("value")
-
-        if not target_id or not label:
+        if target_id is None:
             continue
 
-        key = (target_id, label)
+        merged[target_id] = intent
 
-        merged[key] = value
-
-    aggregated = []
-
-    for (target_id, label), value in merged.items():
-
-        aggregated.append({
-
-            "target_id": target_id,
-
-            "label": label,
-
-            "value": value
-        })
-
-    return aggregated
+    return list(merged.values())
 
 
-# =========================================
-# field aggregation
-# =========================================
+# ==========================================================
+# Field
+# ==========================================================
 
 def aggregate_fields(intents):
 
-    acc = defaultdict(float)
+    accumulator = defaultdict(float)
 
-    meta = {}
+    metadata = {}
 
     for intent in intents:
 
-        payload = intent.get("payload", {})
+        field_type = intent.get("field_type")
+        position = intent.get("position")
 
-        field_type = payload.get("field_type")
-
-        position = payload.get("position")
-
-        amount = payload.get("amount")
-
-        if amount is None:
-            amount = payload.get("strength", 0.0)
- 
-        if not field_type or position is None:
+        if field_type is None or position is None:
             continue
+
+        amount = intent.get(
+            "amount",
+            intent.get("strength", 0.0)
+        )
 
         key = (
             field_type,
             tuple(position)
         )
 
-        acc[key] += amount
+        accumulator[key] += amount
 
-        meta[key] = {
+        metadata[key] = {
             "field_type": field_type,
-            "position": tuple(position)
+            "position": tuple(position),
+            "radius": intent.get("radius"),
+            "region": intent.get("region")
         }
 
     aggregated = []
 
-    for key, value in acc.items():
+    for key, value in accumulator.items():
 
-        info = meta[key]
+        info = metadata[key]
 
         aggregated.append({
+
+            "operation": "emit_field",
+
+            "write_mode": "field",
+
+            "target_type": "field",
+
+            "target_id": info["field_type"],
 
             "field_type": info["field_type"],
 
             "position": info["position"],
 
+            "radius": info["radius"],
+
+            "region": info["region"],
+
             "amount": value
+
         })
 
     return aggregated
 
+# ==========================================================
+# Entity
+# ==========================================================
 
-# =========================================
-# lifecycle aggregation
-# =========================================
+def aggregate_entity(intents):
 
-def aggregate_lifecycle(intents):
+    """
+    Entity lifecycle should preserve ordering.
 
-    # lifecycle 不建议强聚合
-    # 先保持原样
+    Do NOT merge.
+    """
+
+    return intents
+
+
+# ==========================================================
+# Substance
+# ==========================================================
+
+def aggregate_substance(intents):
+
+    """
+    Substance spawn requests are currently not merged.
+
+    Future:
+        identical spawn at same location
+        can be merged.
+    """
 
     return intents

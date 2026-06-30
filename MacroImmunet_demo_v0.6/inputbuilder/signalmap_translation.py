@@ -4,7 +4,13 @@ from semantic.world_to_cell_map import (
     WORLD_TO_CELL_SIGNAL_MAP
 )
 
-print(WORLD_TO_CELL_SIGNAL_MAP)
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+         
 # =========================================
 # world semantic
 # →
@@ -68,7 +74,7 @@ def translate_event(
             "field_type"
         )
         
-        print(
+        debug_print(
             "[Translator] signal =",
             signal
         )
@@ -80,7 +86,7 @@ def translate_event(
             )
         )
         
-        print(
+        debug_print(
             "[Translator] internal =",
             internal_signal
         )

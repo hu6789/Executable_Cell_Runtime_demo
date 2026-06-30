@@ -16,6 +16,14 @@ from cellmaster.internalnet.runtime_modulation.modulation_runtime_state import (
 from cellmaster.internalnet.runtime_modulation.modulation_runtime_delta import (
     build_modulation_runtime_delta
 )
+
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+       
 # =========================================
 # Runtime Modulation Engine
 # =========================================
@@ -114,17 +122,17 @@ class RuntimeModulationEngine:
 
         for hook in active_hooks:
             
-            print()
-            print("RUN HOOK")
-            print(hook.hook_name)
+            debug_print()
+            debug_print("RUN HOOK")
+            debug_print(hook.hook_name)
 
             result = hook.apply(
                 modulation_context
             )
 
-            print()
-            print("HOOK RESULT")
-            print(result)
+            debug_print()
+            debug_print("HOOK RESULT")
+            debug_print(result)
 
             result = hook.apply(
                 modulation_context

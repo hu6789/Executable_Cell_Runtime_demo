@@ -1,29 +1,102 @@
 # minisio/minisio_schema.py
 
-# =========================================================
-# MiniSIO Schema v0.1
-# External Orchestration Layer Contract
-# =========================================================
+"""
+=========================================================
+MiniSIO Schema v0.7
+=========================================================
 
-from dataclasses import dataclass
-from typing import Any, Dict, Tuple, Optional, List
+Unified Runtime Request Contract
+
+MiniSIO Responsibilities
+------------------------
+External Request
+        ↓
+Normalization
+        ↓
+Compiler
+        ↓
+LabelCenter Intent
+
+MiniSIO never executes world updates.
+MiniSIO only translates external requests.
+"""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
 
 
 # =========================================================
-# Operation Types
+# Operations
 # =========================================================
 
 class MiniSIOOperation:
     """
-    All external orchestration operations
+    High-level operations accepted by MiniSIO.
+
+    Operations describe user intent.
+
+    Compilers decide how they become LabelCenter intents.
     """
+
+    # -----------------------------------------------------
+    # Runtime
+    # -----------------------------------------------------
+
+    SET_RUNTIME = "set_runtime"
+
+    # -----------------------------------------------------
+    # Entity
+    # -----------------------------------------------------
+
     CREATE_CELL = "create_cell"
-    INJECT_VIRUS = "inject_virus"
-    EMIT_FIELD = "emit_field"
-    SPAWN_SUBSTANCE = "spawn_substance"
-    MOVE_ENTITY = "move_entity"
+
+    CREATE_SUBSTANCE = "create_substance"
+
+    CREATE_VIRUS = "create_virus"
+
     DELETE_ENTITY = "delete_entity"
+
+    TRANSFORM_ENTITY = "transform_entity"
+
+    MOVE_ENTITY = "move_entity"
+
+    # -----------------------------------------------------
+    # Field
+    # -----------------------------------------------------
+
+    EMIT_FIELD = "emit_field"
+
+    # -----------------------------------------------------
+    # Event
+    # -----------------------------------------------------
+
     SCHEDULE_EVENT = "schedule_event"
+
+    # -----------------------------------------------------
+    # Compatibility
+    # -----------------------------------------------------
+
+    INJECT_VIRUS = CREATE_VIRUS
+
+    SPAWN_SUBSTANCE = CREATE_SUBSTANCE
+
+
+# =========================================================
+# Write Modes
+# =========================================================
+
+class MiniSIOWriteMode:
+    """
+    LabelCenter dispatch buckets.
+    """
+
+    RUNTIME_STATE = "runtime_state"
+
+    FIELD = "field"
+
+    ENTITY = "entity"
+
+    EVENT = "event"
 
 
 # =========================================================
@@ -32,11 +105,11 @@ class MiniSIOOperation:
 
 @dataclass
 class SpatialContext:
-    """
-    Spatial binding for all orchestration requests
-    """
+
     position: Tuple[int, int]
+
     radius: Optional[float] = None
+
     region: Optional[str] = None
 
 
@@ -46,107 +119,85 @@ class SpatialContext:
 
 @dataclass
 class TemporalContext:
-    """
-    Tick-based scheduling context
-    """
+
     tick: int
+
     delay: Optional[int] = None
+
     duration: Optional[int] = None
 
 
 # =========================================================
-# Core Orchestration Request
+# Unified Runtime Request
 # =========================================================
 
 @dataclass
 class OrchestrationRequest:
     """
-    Unified external simulation command
+    Normalized request entering MiniSIO.
+
+    This object is compiler-facing.
+
+    It is intentionally independent from
+    LabelCenter Intent format.
     """
 
-    # -----------------------------
-    # operation
-    # -----------------------------
+    # required
+
     operation: str
 
-    # -----------------------------
+    write_mode: str
+
+    # source
+
+    source: str = "external"
+
     # target
-    # -----------------------------
-    target_type: str            # cell / virus / substance / field
+
+    target_type: str = "unknown"
+
     target_id: Optional[str] = None
 
-    # -----------------------------
-    # context
-    # -----------------------------
+    # contexts
+
     spatial: Optional[SpatialContext] = None
+
     temporal: Optional[TemporalContext] = None
 
-    # -----------------------------
-    # payload
-    # -----------------------------
-    payload: Dict[str, Any] = None
+    # operation payload
 
-    # -----------------------------
-    # scheduling mode
-    # -----------------------------
-    schedule_mode: str = "immediate"  # immediate / delayed / recurring
+    payload: Dict[str, Any] = field(default_factory=dict)
 
+    # scheduling
 
-    def __post_init__(self):
-        if self.payload is None:
-            self.payload = {}
+    schedule_mode: str = "immediate"
 
 
 # =========================================================
-# Specialized Requests
+# Compiler Output Package
 # =========================================================
 
 @dataclass
-class CellInjectionRequest:
+class MiniSIORequestPackage:
     """
-    Create cell in world
+    Output produced by MiniSIO.
+
+    These requests are already compiled
+    into LabelCenter-compatible intents.
     """
-    template_id: str
-    cell_id: str
-    position: Tuple[int, int]
-    tick: int
-    initial_state: Dict[str, Any]
 
+    requests: List[Dict[str, Any]]
 
-@dataclass
-class ViralInjectionRequest:
-    """
-    Infect or inject virus into system
-    """
-    virus_type: str
-    tick: int
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    target_cell_id: Optional[str] = None
-    position: Optional[Tuple[int, int]] = None
+    def __len__(self):
 
-    load: float = 1.0
+        return len(self.requests)
 
+    def __iter__(self):
 
-@dataclass
-class FieldEmissionRequest:
-    """
-    Emit field/substance into world
-    """
-    field_type: str
-    position: Tuple[int, int]
-    radius: float
-    tick: int
-    strength: float
+        return iter(self.requests)
 
+    def is_empty(self):
 
-# =========================================================
-# MiniSIO Output Package
-# =========================================================
-
-@dataclass
-class MiniSIOIntentPackage:
-    """
-    Output compiled intents for IntentBuilder
-    """
-    intents: List[Dict[str, Any]]
-    metadata: Dict[str, Any]
+        return len(self.requests) == 0

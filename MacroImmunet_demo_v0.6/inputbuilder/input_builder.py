@@ -32,7 +32,13 @@ from inputbuilder.asi_plugin import (
     AdaptiveSpecificityInterpreter
 )
 
+DEBUG = False
 
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+             
 class InputBuilder:
 
     """
@@ -96,10 +102,10 @@ class InputBuilder:
                     events
                 )
             )
-        print(
+        debug_print(
             "\n===== TRANSLATED ====="
         )
-        print(translated)
+        debug_print(translated)
         # ---------------------------------
         # semantic processing
         # ---------------------------------
@@ -110,10 +116,10 @@ class InputBuilder:
                 translated
             )
         )
-        print(
+        debug_print(
             "\n===== SEMANTIC ====="
         )
-        print(semantic_processed)
+        debug_print(semantic_processed)
         # ---------------------------------
         # receptor processing
         # ---------------------------------
@@ -124,10 +130,10 @@ class InputBuilder:
                 semantic_processed
             )
         )
-        print(
+        debug_print(
             "\n===== RECEPTOR ====="
         )
-        print(receptor_processed)
+        debug_print(receptor_processed)
         # ---------------------------------
         # field processing
         # ---------------------------------

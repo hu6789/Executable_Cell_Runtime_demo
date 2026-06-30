@@ -33,6 +33,10 @@ from cellmaster.internalnet.hir.modulation_bridge import (
     extract_hir_interpretation_delta
 )
 
+from cellmaster.internalnet.hir.perception_layer import (
+    build_perceived_context
+)
+
 # =========================================
 # HIR Engine
 # =========================================
@@ -95,34 +99,23 @@ class HIREngine:
         # modulation interpretation bridge
         # =================================
 
-        if hir_interpretation_delta is None:
+        deception_delta = extract_hir_interpretation_delta(modulation_runtime_state)
 
-            hir_interpretation_delta = (
+        # =================================
+        # apply deception layer
+        # =================================
 
-                extract_hir_interpretation_delta(
+        perceived_context = build_perceived_context(global_context, deception_delta)
 
-                    modulation_runtime_state
-                )
-            )
-        
         # =================================
         # apply interpretation adjustment
         # =================================
 
-        adjusted_context = (
-
-            adjust_physiological_interpretation(
-
-                global_context=
-                    global_context,
-
-                hir_interpretation_delta=
-                    hir_interpretation_delta,
-
-                runtime_entity=
-                    runtime_entity
-            )
-        )
+        adjusted_context = adjust_physiological_interpretation(
+            global_context=perceived_context,
+            hir_interpretation_delta=deception_delta,
+            runtime_entity=runtime_entity
+        ) 
 
         # =================================
         # compute fate progression
@@ -229,4 +222,18 @@ class HIREngine:
             )
         )
 
+        hir_output["debug_perception_diff"] = self.debug_perception_diff(
+            global_context,
+            perceived_context
+        )
+
         return hir_output
+        
+    def debug_perception_diff(self, real, perceived):
+        return {
+            "infection_diff": real.get("infection_visible") != perceived.get("infection_visible"),
+            "resource_diff": {
+                k: perceived.get("resource_pool", {}).get(k)
+                for k in (real.get("resource_pool", {}) or {})
+            }
+        }

@@ -82,22 +82,18 @@ def build_modulation_context(
     # =====================================
     # node summaries
     # =====================================
-
+    
     node_result_map = {}
+
 
     for result in node_runtime_results:
 
-        node_name = result.get(
-            "node_name"
-        )
+        node_id = result.get("node_id")
 
-        if node_name is None:
-
+        if node_id is None:
             continue
 
-        node_result_map[
-            node_name
-        ] = result
+        node_result_map[node_id] = result
 
     # =====================================
     # passive summaries

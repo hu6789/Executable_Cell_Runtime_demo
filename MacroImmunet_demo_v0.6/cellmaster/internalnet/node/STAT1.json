@@ -1,0 +1,33 @@
+{
+    "node_id": "STAT1",
+
+    "node_type": "signal",
+
+    "default_value": 0.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "activation_only",
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+
+        "runtime_min": 0.0,
+
+        "runtime_max": 10.0
+    },
+
+    "self_decay": {
+
+        "formula": "proportional",
+
+        "rate": 0.1
+    },
+
+    "metadata": {
+
+        "description":
+            "IFN downstream signaling"
+    }
+}

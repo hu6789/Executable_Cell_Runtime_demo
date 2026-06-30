@@ -80,17 +80,7 @@ def evaluate_behavior_contribution_gate(
             {}
         )
     )
-    print()
-    print("================================")
-    print("BEHAVIOR:", behavior_name)
-    print("COMPETITION_CONTEXT:")
-    print(competition_context)
-    print()
-    print("RUNTIME_STATE:")
-    print(runtime_state)
-    print("================================")
-    print()
-    
+
     behavior_edges = graph_context.get_runtime_edges()
     
     accepted = []

@@ -38,6 +38,10 @@
         "Ca": 0.0,
 
         "ROS": 1.0,
+        
+        "IFNGR_activation": 0.0,
+        
+        "STAT1": 0.0,
 
         "cell_membrane": 100.0,
 
