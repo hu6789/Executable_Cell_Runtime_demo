@@ -1,0 +1,82 @@
+{
+    "name": "viral_RNA_production",
+
+    "behavior_category": "proliferation",
+
+    "behavior_type": "viral_RNA_production",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.2,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "viral_replication_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "ribonucleotide": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "viral_RNA": 1.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Replicate viral RNA genomes using intracellular replication machinery.",
+
+            "Consumes ribonucleotides and ATP during viral genome replication.",
+
+            "Represents intracellular influenza genome amplification.",
+
+            "Viral RNA production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "viral_replication",
+            "viral_proliferation",
+            "genome_amplification"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "viral_RNA",
+            "ATP",
+            "ribonucleotide"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "viral_RNA"
+        ]
+    }
+}

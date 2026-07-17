@@ -1,0 +1,36 @@
+{
+    "name": "capsid_protein",
+
+    "node_type": "resource",
+
+    "default_value": 0.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "resource_limited",
+
+    "supported_contribution_categories": [
+        "activation",
+        "resource",
+        "damage"
+    ],
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+        "runtime_min": 0.0,
+        "runtime_max": 100.0,
+        "soft_clamp": false,
+        "soft_limit": 100.0,
+        "soft_compression": 1.0
+    },
+
+    "self_decay": {
+        "formula": "none",
+        "rate": 0.0,
+        "baseline": 0.0,
+        "recovery_rate": 0.0
+    },
+
+    "metadata": {}
+}

@@ -1,0 +1,83 @@
+{
+    "name": "capsid_production",
+
+    "behavior_category": "proliferation",
+
+    "behavior_type": "capsid_production",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.2,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "viral_translation_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "capsid_production": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "influenza": 1.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Translate viral capsid proteins from viral RNA using the host translation machinery.",
+
+            "Consumes ATP and amino acids during viral structural protein synthesis.",
+
+            "Provides structural components required for virion assembly.",
+
+            "Capsid protein production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "viral_translation",
+            "structural_protein_synthesis",
+            "viral_proliferation"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "viral_RNA",
+            "ER",
+            "ATP",
+            "amino_acid"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "capsid_protein"
+        ]
+    }
+}

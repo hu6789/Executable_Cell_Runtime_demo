@@ -1,0 +1,114 @@
+{
+    "template_id": "CXCL10",
+
+    "identity": {
+
+        "substance_type": "CXCL10",
+
+        "category": "chemokine",
+
+        "species": "human"
+
+    },
+
+    "runtime_defaults": {
+
+        "default_amount": 100.0,
+
+        "active": true
+
+    },
+
+    "dynamics": {
+
+        "diffusion": {
+
+            "enabled": true,
+
+            "fraction": 0.30,
+
+            "directions": 4
+
+        },
+
+        "decay": {
+
+            "enabled": true,
+
+            "rate": 0.05
+
+        },
+
+        "aggregation": {
+
+            "enabled": true,
+
+            "distance": 1.0
+
+        },
+
+        "cleanup": {
+
+            "minimum_amount": 1.0
+
+        }
+
+    },
+    
+    "field_projection":{
+ 
+        "projection_sigma":3.0,
+
+        "projection_radius":8,
+
+        "max_value":200
+
+    },
+
+    "interaction": {
+
+        "interaction_mode": "passive",
+
+        "interaction_rules": []
+
+    },
+
+    "runtime_params": {
+
+        "strength_scale": 1.0,
+
+        "interaction_radius": 1.0
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "CXCL10 chemokine template.",
+
+            "Released by infected host cells.",
+
+            "Diffuses through the environment to establish chemokine gradients.",
+
+            "Does not directly modify cells.",
+
+            "Cell migration is determined by downstream sensing and decision systems."
+
+        ],
+
+        "biological_role": [
+
+            "chemotaxis",
+
+            "immune_recruitment",
+
+            "cell_communication"
+
+        ]
+
+    }
+
+}

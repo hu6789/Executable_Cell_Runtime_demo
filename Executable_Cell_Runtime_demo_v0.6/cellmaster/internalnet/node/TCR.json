@@ -1,0 +1,38 @@
+{
+    "name": "TCR",
+
+    "node_type": "signal",
+
+    "default_value": 0.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "drive_balance",
+
+    "supported_contribution_categories": [
+        "activation",
+        "suppression",
+        "amplification",
+        "stabilization",
+        "destabilization"
+    ],
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+        "runtime_min": 0.0,
+        "runtime_max": 1.0,
+        "soft_clamp": false,
+        "soft_limit": 1.0,
+        "soft_compression": 1.0
+    },
+
+    "self_decay": {
+        "formula": "homeostatic",
+        "rate": 0.0,
+        "baseline": 0.0,
+        "recovery_rate": 0.1
+    },
+
+    "metadata": {}
+}

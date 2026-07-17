@@ -1,0 +1,83 @@
+{
+    "name": "PA_X_production",
+
+    "behavior_category": "proliferation",
+
+    "behavior_type": "PA_X_production",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.2,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "viral_translation_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "amino_acid": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "PA_X": 1.0
+
+    },
+    
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Translate the viral PA_X protein from viral RNA using the host translation machinery.",
+
+            "Consumes ATP and amino acids during viral protein synthesis.",
+
+            "Produces the influenza PA_X host-shutoff protein.",
+
+            "PA_X production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "viral_translation",
+            "host_shutdown",
+            "viral_proliferation"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "viral_RNA",
+            "ER",
+            "ATP",
+            "amino_acid"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "PA_X"
+        ]
+    }
+}

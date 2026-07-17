@@ -1,0 +1,59 @@
+{
+    "name": "pMHC",
+
+    "node_type": "signal",
+
+    "default_value": 0.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "activation_only",
+
+    "supported_contribution_categories": [
+
+        "activation"
+
+    ],
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+
+        "runtime_min": 0.0,
+
+        "runtime_max": 100.0,
+
+        "soft_clamp": false
+
+    },
+
+    "self_decay": {
+
+        "formula": "proportional",
+
+        "rate": 0.2
+
+    },
+
+    "metadata": {
+
+        "description": [
+
+            "Integrated TCR-pMHC stimulation signal.",
+
+            "Represents effective antigen recognition after ASI gating.",
+
+            "Drives downstream T cell activation programs."
+
+        ],
+
+        "immune_signal": true,
+
+        "downstream": [
+
+            "NFAT",
+            "IL2",
+            "activation_state"
+        ]
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "name": "pMHC_release",
+
+    "behavior_category": "communication",
+
+    "behavior_type": "pMHC_release",
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.001,
+
+        "minimum_ATP": 2.0,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "dead"
+
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+
+        ]
+
+    },
+
+    "resource_cost": {
+
+        "ATP": 1.0
+
+    },
+
+    "internal_outputs": {
+
+        "pMHC": 3.0
+
+    },
+
+    "external_outputs":[
+    {
+        "request_type":"field",
+        "payload":{
+            "field_type":"pMHC",
+            "amount":500
+        }
+    }
+    ],
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Transport intracellular pMHC complexes to the cell surface.",
+
+            "Creates membrane-displayed antigen for immune recognition.",
+
+            "Consumed by ScanMaster and ASI/TCR recognition."
+
+        ]
+
+    }
+}

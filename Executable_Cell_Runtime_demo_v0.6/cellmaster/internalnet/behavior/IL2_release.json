@@ -1,0 +1,86 @@
+{
+    "name": "IL2_release",
+
+    "behavior_category": "secretion",
+
+    "behavior_type": "IL2_release",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.005,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "secretory_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "IL2": 2.0
+        
+    },
+
+    "external_outputs":[
+    {
+        "request_type":"field",
+        "payload":{
+            "field_type":"IL2",
+            "amount":100
+        }
+    }
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Release intracellular IL2 into the extracellular environment.",
+
+            "Consumes ATP during cytokine secretion.",
+
+            "Generates IL2 secretion requests for downstream execution.",
+
+            "IL2 secretion is executed through IntentBuilder."
+        ],
+
+        "biological_role": [
+
+            "cytokine_release",
+            "T_cell_activation",
+            "cell_communication"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "IL2",
+            "ATP",
+            "cell_membrane"
+        ],
+
+        "typical_downstream_targets": [
+
+            "IL2_field"
+        ]
+    }
+}

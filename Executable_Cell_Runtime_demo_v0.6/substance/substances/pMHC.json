@@ -1,0 +1,106 @@
+{
+  "template_id": "pMHC",
+
+  "identity": {
+
+    "substance_type": "pMHC",
+
+    "category": "antigen_signal",
+
+    "species": "host"
+
+  },
+
+  "runtime_defaults": {
+
+    "default_amount": 100.0,
+
+    "active": true
+
+  },
+
+  "dynamics": {
+
+    "diffusion": {
+
+      "enabled": false,
+
+      "fraction": 0.0,
+
+      "directions": 0
+
+    },
+
+    "decay": {
+
+      "enabled": true,
+
+      "rate": 0.02
+
+    },
+
+    "aggregation": {
+
+      "enabled": true,
+
+      "distance": 1.0
+
+    },
+
+    "cleanup": {
+
+      "minimum_amount": 0.1
+
+    }
+
+  },
+
+  "field_projection":{
+
+      "projection_sigma":0.1,
+
+      "projection_radius":0,
+
+      "max_value":20
+
+  },
+
+  "interaction": {
+
+    "interaction_mode": "passive",
+
+    "interaction_rules": []
+
+  },
+
+  "runtime_params": {
+
+    "strength_scale": 1.0,
+
+    "interaction_radius": 0.5
+
+  },
+
+  "runtime_enabled": true,
+
+  "metadata": {
+
+    "description": [
+
+      "Peptide-MHC presentation signal.",
+
+      "Produced by infected host cells.",
+
+      "Acts as local antigen presentation."
+
+    ],
+
+    "biological_role": [
+
+      "antigen_presentation"
+
+    ]
+
+  }
+
+}

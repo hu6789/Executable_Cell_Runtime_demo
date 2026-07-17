@@ -1,0 +1,47 @@
+{
+    "name": "viral_uncoating",
+
+    "passive_type": "custom",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+        "influenza",
+        "capsid_protein",
+        "viral_RNA",
+        "NS1",
+        "PA_X",
+        "M2"
+    ],
+
+    "outputs":[
+        {
+            "target":"RNA",
+            "mode":"add"
+        }
+    ],
+
+    "formula": {
+        "type": "custom_formula",
+        "source": "influenza"
+    },
+
+    "passive_gate": {
+        "required_nodes": [
+            "influenza"
+        ],
+        "required_labels": [],
+        "blocked_labels": [],
+        "minimum_value": 0.01
+    },
+
+    "passive_transform": {
+        "transform": "clamp",
+        "minimum": 0.0,
+        "maximum": 100.0
+    },
+
+    "metadata": {
+        "note": "Influenza virion releases viral components during uncoating."
+    }
+}

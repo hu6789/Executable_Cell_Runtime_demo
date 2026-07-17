@@ -1,0 +1,249 @@
+{
+    "name": "base_graph",
+
+    "graph_type": "behavior_graph",
+
+    "runtime_enabled": true,
+
+    "nodes": [
+
+        "ATP"
+        "ROS",
+        "Ca",
+        "DNA",
+        "RNA",
+        "protein",
+        "amino_acid",
+        "ribonucleotide",
+        "glucose",
+
+        "ER",
+        "mitochondria"
+    ],
+    
+    "behaviors": [
+        "ATP_production",
+        "membrane_repair",
+        "transcribe",
+        "translation",
+        "ROS_cleanup",
+        "material_acquisition"
+    ],
+
+    "edges": [
+
+        {
+            "source": "mitochondria",
+            "target": "ATP_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "glucose",
+            "target": "ATP_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "ATP_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.6,
+            "transform": "linear",
+            "contribution_category": "suppression",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+       
+        {
+            "source": "ER",
+            "target": "membrane_repair",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "membrane_repair",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "protein",
+            "target": "membrane_repair",
+            "edge_type": "node_to_behavior",
+            "weight": 0.6,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ROS",
+            "target": "membrane_repair",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "suppression",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "Ca",
+            "target": "membrane_repair",
+            "edge_type": "node_to_behavior",
+            "weight": 0.5,
+            "transform": "linear",
+            "contribution_category": "suppression",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "DNA",
+            "target": "transcribe",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "transcribe",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ribonucleotide",
+            "target": "transcribe",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "RNA",
+            "target": "translation",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ER",
+            "target": "translation",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "translation",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "amino_acid",
+            "target": "translation",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ROS",
+            "target": "ROS_cleanup",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "ROS_cleanup",
+            "edge_type": "node_to_behavior",
+            "weight": 0.6,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+
+        {
+            "source": "ATP",
+            "target": "material_acquisition",
+            "edge_type": "node_to_behavior",
+            "weight": 0.6,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        }
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Core physiological graph shared by all cell types.",
+
+            "Defines fundamental metabolic and maintenance behavior topology.",
+
+            "Behavior semantics are defined by BehaviorSchema.",
+
+            "Node semantics are defined by NodeSchema."
+        ]
+    }
+}

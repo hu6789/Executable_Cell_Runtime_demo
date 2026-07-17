@@ -1,0 +1,83 @@
+{
+    "name": "transcribe",
+
+    "behavior_category": "metabolism",
+
+    "behavior_type": "transcribe",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.1,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "transcription_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "ribonucleotide": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "RNA": 1.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Synthesize RNA molecules through DNA-directed transcription.",
+
+            "Consumes ribonucleotides and ATP during RNA synthesis.",
+
+            "Represents basal intracellular transcriptional activity.",
+
+            "RNA production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "gene_expression",
+            "biosynthesis",
+            "metabolism"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "DNA",
+            "ATP",
+            "ribonucleotide"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "RNA"
+        ]
+    }
+}

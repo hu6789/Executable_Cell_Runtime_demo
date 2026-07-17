@@ -1,0 +1,86 @@
+{
+    "name": "assemble",
+
+    "behavior_category": "proliferation",
+
+    "behavior_type": "assemble",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.3,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "viral_assembly_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+        "NS1": 0.5,
+        "M2": 0.5,
+        "PA_X": 0.5
+    },
+    
+    "internal_outputs": {
+
+        "influenza": 1.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Assemble viral structural components into mature influenza virions.",
+
+            "Consumes ATP during intracellular virion assembly.",
+
+            "Represents the formation of replication-competent viral particles.",
+
+            "Virion assembly is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "viral_assembly",
+            "viral_proliferation",
+            "virion_maturation"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "capsid_protein",
+            "viral_RNA",
+            "NS1",
+            "PA_X",
+            "M2",
+            "ATP"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "influenza"
+        ]
+    }
+}

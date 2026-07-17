@@ -1,0 +1,83 @@
+{
+    "name": "CXCL10_production",
+
+    "behavior_category": "communication",
+
+    "behavior_type": "CXCL10_production",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.001,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "transcription_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "amino_acid": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "CXCL10": 1.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Produce the chemokine CXCL10 in response to intracellular viral signaling.",
+
+            "Consumes ATP and amino acids during chemokine biosynthesis.",
+
+            "Represents host antiviral chemokine production.",
+
+            "CXCL10 production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "chemokine_production",
+            "antiviral_response",
+            "cell_communication"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "NS1",
+            "ATP",
+            "amino_acid"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "CXCL10"
+        ]
+    }
+}

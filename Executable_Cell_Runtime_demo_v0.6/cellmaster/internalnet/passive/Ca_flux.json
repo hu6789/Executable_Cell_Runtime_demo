@@ -1,0 +1,56 @@
+{
+    "name": "Ca_flux",
+
+    "passive_type": "maintenance",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+        "cell_membrane"
+    ],
+
+    "formula": {
+
+        "type": "calcium_influx",
+
+        "source": "cell_membrane",
+
+        "flux_rate": 0.05,
+
+        "max_integrity": 100.0
+    },
+
+    "outputs": [
+
+        {
+
+            "target": "Ca",
+
+            "mode": "add"
+
+        }
+
+    ],
+
+    "passive_gate": {
+
+        "required_nodes": [],
+
+        "required_labels": [],
+
+        "blocked_labels": []
+
+    },
+
+    "passive_transform": {
+
+        "transform": "clamp",
+
+        "minimum": 0.0,
+
+        "maximum": 5.0
+
+    },
+
+    "metadata": {}
+}

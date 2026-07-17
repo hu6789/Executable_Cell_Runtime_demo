@@ -1,0 +1,104 @@
+{
+    "template_id": "influenza",
+
+    "identity": {
+
+        "cell_type": "virus",
+
+        "subtype": "influenza",
+
+        "lineage": "orthomyxovirus",
+
+        "species": "influenza_a"
+
+    },
+
+    "graph_refs": {
+
+        "base": [],
+
+        "specific": [
+
+            "viral_behavior_graph"
+
+        ],
+
+        "lineage_shared": []
+
+    },
+
+    "init_node_state": {
+
+        "influenza": 0.0,
+
+        "viral_RNA": 1.0,
+
+        "capsid_protein": 0.0,
+
+        "NS1": 0.0,
+
+        "PA_X": 0.0,
+
+        "M2": 0.0
+
+    },
+
+    "hir_capabilities": {
+
+        "hir_profile": "default_virus"
+
+    },
+
+    "exposure_rules": {
+
+        "exposure_profile": "viral_default"
+
+    },
+
+    "runtime_params": {
+
+        "metabolic_scale": 1.0,
+
+        "signal_sensitivity": 1.0,
+
+        "volume": 0.1
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Influenza virus runtime template.",
+
+            "Defines viral replication behaviors.",
+
+            "Designed to be assembled into infected host runtime.",
+
+            "Requires host cellular resources for execution."
+
+        ],
+
+        "graph_summary": [
+
+            "viral_behavior_graph"
+
+        ],
+
+        "host_dependencies": [
+
+            "ATP",
+
+            "ER",
+
+            "cell_membrane",
+
+            "amino_acid",
+
+            "ribonucleotide"
+
+        ]
+    }
+}

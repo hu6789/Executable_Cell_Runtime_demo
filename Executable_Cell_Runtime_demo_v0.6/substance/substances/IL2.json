@@ -1,0 +1,116 @@
+{
+    "template_id": "IL2",
+
+    "identity": {
+
+        "substance_type": "IL2",
+
+        "category": "cytokine",
+
+        "species": "human"
+
+    },
+
+    "runtime_defaults": {
+
+        "default_amount": 100.0,
+
+        "active": true
+
+    },
+
+    "dynamics": {
+
+        "diffusion": {
+
+            "enabled": true,
+
+            "fraction": 0.25,
+
+            "directions": 4
+
+        },
+
+        "decay": {
+
+            "enabled": true,
+
+            "rate": 0.08
+
+        },
+
+        "aggregation": {
+
+            "enabled": true,
+
+            "distance": 1.0
+
+        },
+
+        "cleanup": {
+
+            "minimum_amount": 1.0
+
+        }
+
+    },
+    
+    "field_projection":{
+
+        "projection_model":"gaussian",
+
+        "projection_sigma":1.0,
+
+        "projection_radius":3,
+
+        "max_value":500
+
+    },
+
+    "interaction": {
+
+        "interaction_mode": "passive",
+
+        "interaction_rules": []
+
+    },
+
+    "runtime_params": {
+
+        "strength_scale": 1.0,
+
+        "interaction_radius": 1.0
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Interleukin-2 cytokine template.",
+
+            "Released by activated T cells.",
+
+            "Diffuses through the environment and forms local cytokine gradients.",
+
+            "Does not directly modify cells.",
+
+            "Cell responses are determined by downstream sensing and decision systems."
+
+        ],
+
+        "biological_role": [
+
+            "t_cell_activation",
+
+            "immune_communication",
+
+            "cytokine_signaling"
+
+        ]
+
+    }
+
+}

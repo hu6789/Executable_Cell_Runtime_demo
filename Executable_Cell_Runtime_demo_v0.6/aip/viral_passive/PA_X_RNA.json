@@ -1,0 +1,43 @@
+{
+    "name": "PA_X_RNA",
+
+    "passive_type": "decay",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+        "PA_X",
+        "RNA"
+    ],
+
+    "outputs":[
+        {
+            "target":"RNA",
+            "mode":"subtract"
+        }
+    ],
+
+    "formula": {
+        "type": "linear_decay",
+        "source": "RNA",
+        "stress": "PA_X",
+        "decay_rate": 1.0
+    },
+
+    "passive_gate": {
+        "required_nodes": [
+            "PA_X"
+        ],
+        "required_labels": [],
+        "blocked_labels": [],
+        "minimum_value": 0.01
+    },
+
+    "passive_transform": {
+        "transform": "clamp",
+        "minimum": 0.0,
+        "maximum": 100.0
+    },
+
+    "metadata": {}
+}

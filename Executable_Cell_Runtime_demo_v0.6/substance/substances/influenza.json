@@ -1,0 +1,114 @@
+{
+    "template_id": "influenza",
+
+    "identity": {
+
+        "substance_type": "influenza",
+
+        "category": "viral_particle",
+
+        "species": "influenza_a"
+
+    },
+
+    "runtime_defaults": {
+
+        "default_amount": 100.0,
+
+        "active": true
+
+    },
+
+    "dynamics": {
+
+        "diffusion": {
+
+            "enabled": true,
+
+            "fraction": 0.10,
+
+            "directions": 4
+
+        },
+
+        "decay": {
+
+            "enabled": true,
+
+            "rate": 0.02
+
+        },
+
+        "aggregation": {
+
+            "enabled": true,
+
+            "distance": 1.0
+
+        },
+
+        "cleanup": {
+
+            "minimum_amount": 1.0
+
+        }
+
+    },
+    
+    "projection": {
+
+        "projection_sigma": 1.0,
+
+        "projection_radius": 2,
+
+        "max_value": 5000.0
+
+    },
+
+    "interaction": {
+
+        "interaction_mode": "passive",
+
+        "interaction_rules": []
+
+    },
+
+    "runtime_params": {
+
+        "strength_scale": 1.0,
+
+        "interaction_radius": 1.0
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Influenza viral particle template.",
+
+            "Represents extracellular influenza virions.",
+
+            "Diffuses passively through the environment.",
+
+            "Does not actively infect cells.",
+
+            "Host cell internalisation behaviors determine viral entry.",
+
+            "Serves as the substrate for host-mediated infection."
+
+        ],
+
+        "biological_role": [
+
+            "viral_particle",
+
+            "infection_source"
+
+        ]
+
+    }
+
+}

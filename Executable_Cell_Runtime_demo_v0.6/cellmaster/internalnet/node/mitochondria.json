@@ -1,0 +1,36 @@
+{
+    "name": "mitochondria",
+
+    "node_type": "structure",
+
+    "default_value": 100.0,
+
+    "runtime_enabled": true,
+
+    "skeleton_formula": "damage_integrated",
+
+    "supported_contribution_categories": [
+        "activation",
+        "damage",
+        "destabilization"
+    ],
+
+    "runtime_gates": [],
+
+    "runtime_clamp": {
+        "runtime_min": 0.0,
+        "runtime_max": 100.0,
+        "soft_clamp": false,
+        "soft_limit": 100.0,
+        "soft_compression": 1.0
+    },
+
+    "self_decay": {
+        "formula": "none",
+        "rate": 0.0,
+        "baseline": 100.0,
+        "recovery_rate": 0.0
+    },
+
+    "metadata": {}
+}

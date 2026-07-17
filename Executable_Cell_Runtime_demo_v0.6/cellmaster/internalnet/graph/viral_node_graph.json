@@ -1,0 +1,36 @@
+{
+    "name": "viral_node_graph",
+
+    "graph_type": "viral_graph",
+
+    "runtime_enabled": true,
+
+    "nodes": [
+
+        "influenza",
+        "capsid_protein",
+        "viral_RNA",
+        "NS1",
+        "PA_X",
+        "M2"
+    ],
+    
+    "behaviors": [],
+
+    "edges": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Virus node registry graph.",
+
+            "Provides viral runtime node definitions for infected host cells.",
+
+            "Contains no contribution topology.",
+
+            "Behavior relationships are defined separately in viral_behavior_graph."
+
+        ]
+    }
+}

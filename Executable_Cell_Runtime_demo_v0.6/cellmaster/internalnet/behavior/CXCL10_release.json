@@ -1,0 +1,85 @@
+{
+    "name": "CXCL10_release",
+
+    "behavior_category": "secretion",
+
+    "behavior_type": "CXCL10_release",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.001,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "secretory_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5
+    },
+
+    "external_outputs": [
+
+        {
+            "request_type":"field",
+
+            "payload":{
+                "field_type":"CXCL10",
+                "amount":3.0
+            }
+        }
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Release intracellular CXCL10 into the extracellular environment.",
+
+            "Consumes ATP during chemokine secretion.",
+
+            "Generates CXCL10 secretion requests for downstream execution.",
+
+            "CXCL10 secretion is executed through IntentBuilder."
+        ],
+
+        "biological_role": [
+
+            "chemokine_release",
+            "immune_recruitment",
+            "cell_communication"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "CXCL10",
+            "ATP",
+            "cell_membrane"
+        ],
+
+        "typical_downstream_targets": [
+
+            "CXCL10_field"
+        ]
+    }
+}

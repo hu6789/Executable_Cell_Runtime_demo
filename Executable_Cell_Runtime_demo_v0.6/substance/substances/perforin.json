@@ -1,0 +1,130 @@
+{
+    "template_id": "perforin",
+
+    "identity": {
+
+        "substance_type": "perforin",
+
+        "category": "effector",
+
+        "species": "human"
+
+    },
+
+    "runtime_defaults": {
+
+        "default_amount": 100.0,
+
+        "active": true
+
+    },
+
+    "dynamics": {
+
+        "diffusion": {
+
+            "enabled": true,
+
+            "fraction": 0.20,
+
+            "directions": 4
+
+        },
+
+        "decay": {
+
+            "enabled": true,
+
+            "rate": 0.10
+
+        },
+
+        "aggregation": {
+
+            "enabled": true,
+
+            "distance": 1.0
+
+        },
+
+        "cleanup": {
+
+            "minimum_amount": 1.0
+
+        }
+
+    },
+    
+    "field_projection":{
+
+        "projection_sigma":0.5,
+
+        "projection_radius":1,
+
+        "max_value":50
+
+    },
+
+    "interaction": {
+
+        "interaction_mode": "active",
+        
+        "effect_radius":1,
+
+        "interaction_rules": [
+
+            {
+
+                "rule_id": "perforin_membrane_damage",
+
+                "target_type": "cell",
+
+                "effect_type": "membrane_damage",
+
+                "base_strength": 3.0
+
+            }
+
+        ]
+
+    },
+
+    "runtime_params": {
+
+        "strength_scale": 1.0,
+
+        "interaction_radius": 1.0
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Perforin effector molecule template.",
+
+            "Released by cytotoxic lymphocytes.",
+
+            "Diffuses locally before contacting nearby cells.",
+
+            "Actively damages the plasma membrane of target cells.",
+
+            "Does not directly induce cell death.",
+
+            "Subsequent physiological consequences are determined by InternalNet and HIR."
+
+        ],
+
+        "biological_role": [
+
+            "cytotoxic_effector",
+
+            "membrane_damage"
+
+        ]
+
+    }
+
+}

@@ -1,0 +1,84 @@
+{
+    "name": "translation",
+
+    "behavior_category": "metabolism",
+
+    "behavior_type": "translation",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.1,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "translation_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "amino_acid": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "protein": 1.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Synthesize proteins through RNA-directed translation.",
+
+            "Consumes amino acids and ATP during protein synthesis.",
+
+            "Represents basal intracellular protein biosynthesis.",
+
+            "Protein production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "protein_synthesis",
+            "gene_expression",
+            "metabolism"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "RNA",
+            "ER",
+            "ATP",
+            "amino_acid"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "protein"
+        ]
+    }
+}

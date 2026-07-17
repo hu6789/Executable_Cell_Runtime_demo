@@ -1,0 +1,115 @@
+{
+    "template_id": "cd4_t_cell",
+
+    "identity": {
+
+        "cell_type": "cd4_t",
+
+        "subtype": "default",
+
+        "lineage": "t_cell",
+
+        "species": "human"
+
+    },
+
+    "graph_refs": {
+
+        "base": [
+
+            "base_graph"
+
+        ],
+
+        "specific": [
+
+            "cd4_graph"
+
+        ],
+
+        "lineage_shared": []
+
+    },
+
+    "init_node_state": {
+
+        "ATP": 100.0,
+
+        "DNA": 100.0,
+
+        "RNA": 50.0,
+
+        "protein": 100.0,
+
+        "cell_membrane": 100.0,
+
+        "ROS": 0.0,
+
+        "Ca": 10.0,
+
+        "amino_acid": 100.0,
+
+        "ribonucleotide": 100.0,
+
+        "glucose": 100.0,
+
+        "ER": 100.0,
+
+        "mitochondria": 100.0,
+
+        "TCR": 0.09,
+
+        "IL2": 2.0,
+
+        "IL2R": 20.0,
+
+        "CXCR3": 20.0
+
+    },
+
+    "hir_capabilities": {
+
+        "hir_profile": "default_cd4"
+
+    },
+
+    "exposure_rules": {
+
+        "exposure_profile": "immune_default"
+
+    },
+
+    "runtime_params": {
+
+        "metabolic_scale": 1.0,
+
+        "signal_sensitivity": 1.0,
+
+        "volume": 1.0
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Default CD4 T cell template.",
+
+            "Provides core cellular physiology together with helper T cell behaviors.",
+
+            "Supports IL2 production, cytokine release and chemotactic migration."
+
+        ],
+
+        "graph_summary": [
+
+            "base_graph",
+
+            "cd4_graph"
+
+        ]
+
+    }
+}

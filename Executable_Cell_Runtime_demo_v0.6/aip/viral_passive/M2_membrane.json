@@ -1,0 +1,43 @@
+{
+    "name": "M2_membrane",
+
+    "passive_type": "instability",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+        "M2",
+        "cell_membrane"
+    ],
+
+    "outputs":[
+        {
+            "target":"cell_membrane",
+            "mode":"subtract"
+        }
+    ],
+
+    "formula": {
+        "type": "membrane_instability",
+        "source": "cell_membrane",
+        "stress": "M2",
+        "instability_factor": 1.0
+    },
+
+    "passive_gate": {
+        "required_nodes": [
+            "M2"
+        ],
+        "required_labels": [],
+        "blocked_labels": [],
+        "minimum_value": 0.01
+    },
+
+    "passive_transform": {
+        "transform": "clamp",
+        "minimum": 0.0,
+        "maximum": 100.0
+    },
+
+    "metadata": {}
+}

@@ -1,0 +1,69 @@
+{
+    "name": "ROS_overload",
+
+    "passive_type": "instability",
+
+    "runtime_enabled": true,
+
+    "involved_nodes": [
+
+        "ROS",
+
+        "protein",
+
+        "cell_membrane",
+
+        "mitochondria"
+
+    ],
+
+    "formula": {
+
+        "type": "membrane_instability",
+
+        "source": "cell_membrane",
+
+        "stress": "ROS",
+
+        "repair": "protein",
+
+        "instability_source": "mitochondria",
+
+        "instability_factor": 0.05
+
+    },
+
+    "outputs": [
+
+        {
+
+            "target": "cell_membrane",
+
+            "mode": "subtract"
+
+        }
+
+    ],
+
+    "passive_gate": {
+
+        "required_nodes": [],
+
+        "required_labels": [],
+
+        "blocked_labels": []
+
+    },
+
+    "passive_transform": {
+
+        "transform": "clamp",
+
+        "minimum": 0.0,
+
+        "maximum": 10.0
+
+    },
+
+    "metadata": {}
+}

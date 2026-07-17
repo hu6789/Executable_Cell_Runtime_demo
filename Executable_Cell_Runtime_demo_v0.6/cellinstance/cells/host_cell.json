@@ -1,0 +1,117 @@
+{
+    "template_id": "host_cell",
+
+    "identity": {
+
+        "cell_type": "host",
+
+        "subtype": "default",
+
+        "lineage": "host",
+
+        "species": "human"
+
+    },
+
+    "graph_refs": {
+
+        "base": [
+
+            "base_graph"
+
+        ],
+
+        "specific": [
+
+            "host_graph"
+
+        ],
+
+        "lineage_shared": []
+
+    },
+
+    "init_node_state": {
+
+        "ATP": 100.0,
+
+        "DNA": 100.0,
+
+        "RNA": 50.0,
+        
+        "pMHC": 0.51,
+
+        "protein": 100.0,
+
+        "cell_membrane": 100.0,
+
+        "ROS": 0.0,
+
+        "Ca": 0.0,
+
+        "amino_acid": 100.0,
+
+        "ribonucleotide": 100.0,
+
+        "glucose": 100.0,
+
+        "ER": 100.0,
+
+        "mitochondria": 100.0,
+
+        "pathogen_signal": 30.0,
+
+        "CXCL10": 0.0,
+
+        "influenza": 0.62
+
+    },
+
+    "hir_capabilities": {
+
+        "hir_profile": "default_host"
+
+    },
+
+    "exposure_rules": {
+
+        "exposure_profile": "host_default"
+
+    },
+
+    "runtime_params": {
+
+        "metabolic_scale": 1.0,
+
+        "signal_sensitivity": 1.0,
+
+        "volume": 1.0
+
+    },
+
+    "runtime_enabled": true,
+
+    "metadata": {
+
+        "description": [
+
+            "Default host cell template.",
+
+            "Provides core cellular physiology together with host innate response.",
+
+            "Includes viral runtime nodes for infection.",
+
+            "Viral behaviors are dynamically assembled after infection."
+
+        ],
+
+        "graph_summary": [
+
+            "base_graph",
+
+            "host_graph"
+
+        ]
+
+    }
+}

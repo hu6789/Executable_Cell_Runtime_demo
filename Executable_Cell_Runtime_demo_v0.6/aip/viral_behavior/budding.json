@@ -1,0 +1,84 @@
+{
+    "name": "budding",
+
+    "behavior_category": "proliferation",
+
+    "behavior_type": "budding",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.2,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "viral_release_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5
+    },
+
+    "external_outputs": [
+
+        {
+            "request_type": "secrete",
+
+            "payload": {
+
+                "substance": "influenza"
+            }
+        }
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Release mature influenza virions through membrane budding.",
+
+            "Consumes ATP during viral egress.",
+
+            "Generates viral release requests for downstream execution.",
+
+            "Virus budding is executed through IntentBuilder."
+        ],
+
+        "biological_role": [
+
+            "viral_release",
+            "viral_proliferation",
+            "host_to_host_transmission"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "cell_membrane",
+            "influenza",
+            "ATP"
+        ],
+
+        "typical_downstream_targets": [
+
+            "extracellular_influenza"
+        ]
+    }
+}

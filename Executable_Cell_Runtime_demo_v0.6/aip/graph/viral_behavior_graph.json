@@ -1,0 +1,361 @@
+{
+    "name": "viral_behavior_graph",
+
+    "graph_type": "behavior_graph",
+
+    "runtime_enabled": true,
+
+    "nodes": [
+
+        "influenza",
+        "capsid_protein",
+        "viral_RNA",
+        "NS1",
+        "PA_X",
+        "M2",
+
+        "ATP",
+        "ER",
+        "cell_membrane",
+        "amino_acid",
+        "ribonucleotide",
+    ],
+    
+    "behaviors": [
+        "viral_RNA_production",
+        "capsid_production",
+        "NS1_production",
+        "PA_X_production",
+        "M2_production",
+        "assemble",
+        "budding",
+        "lysis"
+    ],
+
+    "edges": [
+
+        {
+            "source": "viral_RNA",
+            "target": "viral_RNA_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "viral_RNA_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ribonucleotide",
+            "target": "viral_RNA_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "viral_RNA",
+            "target": "capsid_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ER",
+            "target": "capsid_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "capsid_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "amino_acid",
+            "target": "capsid_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "viral_RNA",
+            "target": "NS1_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ER",
+            "target": "NS1_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "NS1_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "amino_acid",
+            "target": "NS1_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "viral_RNA",
+            "target": "PA_X_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ER",
+            "target": "PA_X_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "PA_X_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "amino_acid",
+            "target": "PA_X_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "viral_RNA",
+            "target": "M2_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ER",
+            "target": "M2_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "M2_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "amino_acid",
+            "target": "M2_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "viral_RNA",
+            "target": "assemble",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "all_required",
+            "runtime_enabled": true
+        },
+        {
+            "source": "capsid_protein",
+            "target": "assemble",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "all_required",
+            "runtime_enabled": true
+        },
+        {
+            "source": "NS1",
+            "target": "assemble",
+            "edge_type": "node_to_behavior",
+            "weight": 0.5,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "PA_X",
+            "target": "assemble",
+            "edge_type": "node_to_behavior",
+            "weight": 0.5,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "M2",
+            "target": "assemble",
+            "edge_type": "node_to_behavior",
+            "weight": 0.5,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "assemble",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "influenza",
+            "target": "budding",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "cell_membrane",
+            "target": "budding",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "ATP",
+            "target": "budding",
+            "edge_type": "node_to_behavior",
+            "weight": 0.6,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "viral_RNA",
+            "target": "lysis",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+        {
+            "source": "capsid_protein",
+            "target": "lysis",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        }
+
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Influenza viral behavior graph.",
+
+            "Defines viral genome replication, viral protein synthesis, virion assembly and release.",
+
+            "Used by the Viral Behavior Engine.",
+
+            "Virus node semantics are defined by ViralNodeSchema and behavior semantics by BehaviorSchema."
+
+        ]
+    }
+}

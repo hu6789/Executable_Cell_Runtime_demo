@@ -1,0 +1,125 @@
+{
+    "name": "cd8_graph",
+
+    "graph_type": "behavior_graph",
+
+    "runtime_enabled": true,
+
+    "nodes": [
+
+        "TCR",
+        "IL2R",
+        "perforin",
+        "CXCR3"
+    ],
+    
+    "behaviors": [
+        "perforin_production",
+        "perforin_release",
+        "chemotaxis"
+    ],
+
+    "edges": [
+
+        {
+            "source": "TCR",
+            "target": "perforin_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "IL2R",
+            "target": "perforin_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "amplification",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "perforin_production",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "amino_acid",
+            "target": "perforin_production",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "perforin",
+            "target": "perforin_release",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "perforin_release",
+            "edge_type": "node_to_behavior",
+            "weight": 0.6,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "CXCR3",
+            "target": "chemotaxis",
+            "edge_type": "node_to_behavior",
+            "weight": 1.0,
+            "transform": "linear",
+            "contribution_category": "activation",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        },
+
+        {
+            "source": "ATP",
+            "target": "chemotaxis",
+            "edge_type": "node_to_behavior",
+            "weight": 0.8,
+            "transform": "linear",
+            "contribution_category": "resource",
+            "participation_requirement": "optional",
+            "runtime_enabled": true
+        }
+
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "CD8 T cell behavior graph.",
+
+            "Defines antigen-driven cytotoxic activation, perforin production, effector release and chemotactic migration.",
+
+            "Behavior and node semantics are defined by their respective schemas."
+        ]
+    }
+}

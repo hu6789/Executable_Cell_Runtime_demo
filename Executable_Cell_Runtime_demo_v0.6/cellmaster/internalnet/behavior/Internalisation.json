@@ -1,0 +1,77 @@
+{
+    "name": "Internalisation",
+
+    "behavior_category": "misc",
+
+    "behavior_type": "Internalisation",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "default"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.0001,
+
+        "minimum_ATP": 0.2,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "entry_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.2
+    },
+    
+    "internal_outputs": {
+
+        "influenza": 500.0
+
+    },
+
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Internalize extracellular influenza particles following pathogen recognition.",
+
+            "Represents host-mediated viral entry into the intracellular environment.",
+
+            "Initiates intracellular viral lifecycle.",
+
+            "Influenza internalization is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "viral_entry",
+            "host_pathogen_interaction"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "pathogen_signal"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "influenza"
+        ]
+    }
+}

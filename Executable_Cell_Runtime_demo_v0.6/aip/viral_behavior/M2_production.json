@@ -1,0 +1,83 @@
+{
+    "name": "M2_production",
+
+    "behavior_category": "proliferation",
+
+    "behavior_type": "M2_production",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.2,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "viral_translation_blocked",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+
+        "amino_acid": 1.0
+    },
+    
+    "internal_outputs": {
+
+        "M2": 1.0
+
+    },
+    
+    "external_outputs": [],
+
+    "metadata": {
+
+        "description": [
+
+            "Translate the viral M2 protein from viral RNA using the host translation machinery.",
+
+            "Consumes ATP and amino acids during viral protein synthesis.",
+
+            "Produces the influenza M2 membrane protein.",
+
+            "M2 production is executed through downstream runtime systems."
+        ],
+
+        "biological_role": [
+
+            "viral_translation",
+            "membrane_function",
+            "viral_proliferation"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "viral_RNA",
+            "ER",
+            "ATP",
+            "amino_acid"
+        ],
+
+        "typical_downstream_nodes": [
+
+            "M2"
+        ]
+    }
+}

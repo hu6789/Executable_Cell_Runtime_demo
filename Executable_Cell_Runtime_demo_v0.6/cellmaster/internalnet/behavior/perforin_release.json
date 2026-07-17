@@ -1,0 +1,84 @@
+{
+    "name": "perforin_release",
+
+    "behavior_category": "cytotoxicity",
+
+    "behavior_type": "perforin_release",
+
+    "runtime_enabled": true,
+
+    "behavior_skeleton": {
+
+        "formula": "aggressive"
+    },
+
+    "behavior_gate": {
+
+        "minimum_drive": 0.02,
+
+        "minimum_ATP": 0.5,
+
+        "required_labels": [],
+
+        "blocked_labels": [
+
+            "secretory_failure",
+            "terminal_damage"
+        ],
+
+        "blocked_fates": [
+
+            "dying",
+            "dead"
+        ]
+    },
+
+    "resource_cost": {
+
+        "ATP": 0.5,
+        "perforin": 0.1
+    },
+
+    "external_outputs":[
+    {
+        "request_type":"field",
+        "payload":{
+            "field_type":"perforin",
+            "amount":10
+        }
+    }
+    ],
+
+    "metadata": {
+
+        "description": [
+
+            "Release perforin toward target cells during cytotoxic immune responses.",
+
+            "Consumes ATP during effector granule exocytosis.",
+
+            "Generates perforin-mediated damage requests for downstream execution.",
+
+            "Perforin release is executed through IntentBuilder."
+        ],
+
+        "biological_role": [
+
+            "cytotoxicity",
+            "immune_killing",
+            "effector_function"
+        ],
+
+        "typical_upstream_nodes": [
+
+            "perforin",
+            "IL2",
+            "ATP"
+        ],
+
+        "typical_downstream_targets": [
+
+            "target_cell"
+        ]
+    }
+}
