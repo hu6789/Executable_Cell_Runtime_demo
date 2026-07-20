@@ -59,6 +59,45 @@ from visualization.snapshot import (
 
 )
 
+from visualization.event_builder import (
+    VisualizationEventBuilder
+)
+
+# =====================================================
+# Inspector Node Display Rules
+# =====================================================
+
+NODE_DISPLAY_RULES = {
+
+    "host": [
+        "ATP",
+        "pathogen_signal",
+        "influenza",
+        "CXCL10",
+        "membrane_integrity"
+    ],
+
+
+    "cd4_t": [
+        "ATP",
+        "TCR",
+        "IL2",
+        "IL2R",
+        "CXCR3",
+        "membrane_integrity"
+    ],
+
+
+    "cd8_t": [
+        "ATP",
+        "TCR",
+        "IL2R",
+        "perforin",
+        "CXCR3",
+        "membrane_integrity"
+    ]
+
+}
 
 class VisualizationSnapshotAdapter:
 
@@ -71,11 +110,15 @@ class VisualizationSnapshotAdapter:
     # =====================================================
     # Public API
     # =====================================================
+    
+    def __init__(self):
 
+        self.event_builder = VisualizationEventBuilder()
+        
     def adapt(
 
         self,
-
+        
         state_snapshot,
 
         runtime_result=None
@@ -84,6 +127,8 @@ class VisualizationSnapshotAdapter:
 
 
         return build_snapshot(
+        
+            tick=state_snapshot.tick,
 
             world=self.build_world(
 
@@ -99,9 +144,13 @@ class VisualizationSnapshotAdapter:
 
             ),
 
-            events=self.build_events(
+            events=self.event_builder.build(
 
-                runtime_result
+                tick=state_snapshot.tick,
+
+                state_snapshot=state_snapshot,
+
+                runtime_result=runtime_result
 
             ),
 
@@ -127,19 +176,57 @@ class VisualizationSnapshotAdapter:
     ):
 
 
+        if isinstance(snapshot, dict):
+ 
+            tick = snapshot.get(
+                "tick",
+                0
+            )
+
+            cells = snapshot.get(
+                "cells",
+                {}
+            )
+
+            fields = snapshot.get(
+                "fields",
+                {}
+            )
+
+            substances = snapshot.get(
+                "substances",
+                {}
+
+            )
+
+            metadata = snapshot.get(
+                "metadata",
+                {}
+
+            )
+  
+        else:
+
+            tick = snapshot.tick
+
+            cells = snapshot.cells
+
+            fields = snapshot.fields
+
+            substances = snapshot.substances
+
+            metadata = snapshot.metadata
+        
         return build_world_snapshot(
 
             tick=snapshot.tick,
 
-            width=snapshot.metadata.get(
-
+            width=metadata.get(
                 "width",
-
                 20
-
             ),
 
-            height=snapshot.metadata.get(
+            height=metadata.get(
 
                 "height",
 
@@ -374,18 +461,46 @@ class VisualizationSnapshotAdapter:
         for cell_id, cell in snapshot.cells.items():
 
 
-            nodes = self.build_nodes(
-
-                cell.get(
-
-                    "runtime_state",
-
-                    {}
-
-                )
-
+            runtime_state = cell.get(
+                "runtime_state",
+                None
             )
 
+
+            if runtime_state is None:
+
+                runtime_state = cell.get(
+                    "runtime_context",
+                    {}
+                ).get(
+                    "runtime_state",
+                    {}
+                )
+
+            identity = cell.get("identity")
+
+            if isinstance(identity,dict):
+
+                cell_type = identity.get(
+                    "cell_type",
+                    "unknown"
+                )
+
+            else:
+
+                cell_type = getattr(
+                    identity,
+                    "cell_type",
+                    "unknown"
+                )
+
+            nodes = self.build_nodes(
+
+                runtime_state,
+
+                cell_type
+
+            )
 
             behaviors = self.build_behaviors(
 
@@ -399,33 +514,11 @@ class VisualizationSnapshotAdapter:
 
             )
 
-
-            identity = cell.get(
-
-                "identity"
-
-            )
-
-
-            cell_type = "unknown"
-
-
-            if identity is not None:
-
-                cell_type = getattr(
-
-                    identity,
-
-                    "cell_type",
-
-                    "unknown"
-
-                )
-
-
             inspectors[cell_id] = build_inspector_snapshot(
 
-                cell_id=cell_id,
+                object_type="cell",
+
+                object_id=cell_id,
 
                 cell_type=cell_type,
 
@@ -445,26 +538,31 @@ class VisualizationSnapshotAdapter:
     # =====================================================
 
     def build_nodes(
-
         self,
-
-        runtime_state
-
+        runtime_state,
+        cell_type=None
     ):
 
 
         output = []
 
 
+        allowed = NODE_DISPLAY_RULES.get(
+            cell_type,
+            []
+        )
+
+
         for name, value in runtime_state.items():
 
 
+            if allowed and name not in allowed:
+                continue
+
+
             if isinstance(
-
                 value,
-
                 (int,float)
-
             ):
 
 
@@ -482,63 +580,58 @@ class VisualizationSnapshotAdapter:
 
 
         return output
-
-
-
+    
     # =====================================================
     # Behaviors
     # =====================================================
 
-    def build_behaviors(
-
-        self,
-
-        package
-
-    ):
-
+    def build_behaviors(self, package):
 
         output = []
 
 
         behavior_output = package.get(
-
             "behavior_output",
-
             {}
-
         )
 
 
-        regulated = behavior_output.get(
-
-            "regulated_behaviors",
-
-            {}
-
+        trace = behavior_output.get(
+            "behavior_trace",
+            []
         )
 
 
-        for name, strength in regulated.items():
+        if not trace:
 
+            snapshot = package.get(
+                "runtime_snapshot",
+                {}
+            )
+
+            trace = snapshot.get(
+                "behavior_trace",
+                []
+            )
+
+
+        for item in trace:
 
             output.append(
 
                 build_behavior_snapshot(
 
-                    name=name,
+                    name=item.get("behavior"),
 
-                    strength=strength
-
+                    strength=item.get(
+                        "strength",
+                        0
+                    )
                 )
-
             )
 
 
         return output
-
-
-
     # =====================================================
     # Runtime result helpers
     # =====================================================
@@ -582,63 +675,6 @@ class VisualizationSnapshotAdapter:
 
 
         return result
-
-
-
-    # =====================================================
-    # Events
-    # =====================================================
-
-    def build_events(
-
-        self,
-
-        runtime_result
-
-    ):
-
-
-        output = []
-
-
-        if runtime_result is None:
-
-            return output
-
-
-        for event in runtime_result.get(
-
-            "events",
-
-            []
-
-        ):
-
-
-            output.append(
-
-                build_event_snapshot(
-
-                    tick=event.get(
-
-                        "tick",
-
-                        0
-
-                    ),
-
-                    message=str(event),
-
-                    level="info"
-
-                )
-
-            )
-
-
-        return output
-
-
 
     # =====================================================
     # Metadata

@@ -33,6 +33,10 @@ Does NOT
 import math
 import pygame
 
+from visualization.style import (
+    get_cell_color,
+    get_field_color
+)
 
 # =========================================
 # Renderer
@@ -57,6 +61,8 @@ class WorldRenderer:
         self.cell_radius = 16
 
         self.selected_cell = None
+        
+        self.selected_object = None
 
         self.font = None
         
@@ -258,10 +264,11 @@ class WorldRenderer:
     def draw_single_field(
 
         self,
-
+ 
         screen,
 
         field
+
     ):
 
         values = field.get(
@@ -272,35 +279,128 @@ class WorldRenderer:
 
         )
 
+
+        if not values:
+
+            return
+
+
+        field_type = field.get(
+
+            "type",
+
+            ""
+
+        )
+
+
+        base_color = get_field_color(
+
+            field_type
+
+        )
+
+
+        max_strength = max(
+
+            values.values()
+
+        )
+ 
+
+        if max_strength <= 0:
+
+            return
+
+
+        overlay = pygame.Surface(
+
+            screen.get_size(),
+
+            pygame.SRCALPHA
+
+        )
+
+
         for position, strength in values.items():
 
+
+            ratio = strength / max_strength
+
+
+            #
+            # nonlinear amplification
+            #
+            # because concentration has long tail
+            #
+
+            visual = ratio ** 0.35
+
+ 
             center = self.world_to_screen(
 
                 position
 
             )
 
-            radius = max(
 
-                10,
+            #
+            # concentration -> radius
+            #
 
-                int(strength / 4)
+            radius = int(
+
+               12 + visual * 45
 
             )
+
+
+            #
+            # concentration -> alpha
+            #
+
+            alpha = int(
+  
+                20 + visual * 180
+
+            )
+
+
+            #
+            # concentration -> brightness
+            #
+
+            color = (
+ 
+                min(255, int(base_color[0] * (0.5 + visual*0.5))),
+
+                min(255, int(base_color[1] * (0.5 + visual*0.5))),
+
+                min(255, int(base_color[2] * (0.5 + visual*0.5)))
+
+            )
+
 
             pygame.draw.circle(
 
-                screen,
+                overlay,
 
-                (255,255,0),
+                color + (alpha,),
 
                 center,
 
-                radius,
-
-                2
+                radius
 
             )
+
+
+        screen.blit(
+
+            overlay,
+
+            (0,0)
+
+        )
 
     # =====================================
     # Cells
@@ -355,9 +455,14 @@ class WorldRenderer:
 
         )
 
-        color = self.get_cell_color(
 
-            cell
+        color = get_cell_color(
+
+            cell.get("type")
+
+            or
+
+            cell.get("cell_type")
 
         )
 
@@ -402,161 +507,200 @@ class WorldRenderer:
     # =====================================
 
     def draw_selection(
-
         self,
-
         screen
     ):
 
-        if self.selected_cell is None:
-
+        if not self.selected_object:
             return
 
-        world_position = self.selected_cell.get(
 
-            "position",
+        objects = self.selected_object
 
-            (0,0)
 
-        )
+        if not isinstance(objects, list):
+            objects = [objects]
 
-        position = self.world_to_screen(
 
-            world_position
+        for obj in objects:
 
-        )
+            if obj["object_type"] != "cell":
+                continue
 
-        pygame.draw.circle(
 
-            screen,
+            cell = obj["data"]
 
-            (255, 255, 255),
 
-            position,
+            position = self.world_to_screen(
+                cell.get(
+                    "position",
+                    (0,0)
+                )
+            )
 
-            self.cell_radius + 4,
 
-            2
-        )
+            pygame.draw.circle(
 
+                screen,
+
+                (255,255,255),
+
+                position,
+
+                self.cell_radius+4,
+
+                2
+
+            )
     # =====================================
     # Picking
     # =====================================
 
     def pick_cell(
-
         self,
-
         position,
-
         snapshot=None
     ):
 
         if snapshot is None:
-
             return None
 
+
         for cell in snapshot.get(
-
             "cells",
-
             []
-
         ):
 
             x, y = self.world_to_screen(
-
                 cell.get(
-
                     "position",
-
                     (0,0)
-
                 )
-
             )
-            
+
             distance = math.sqrt(
-
                 (x-position[0])**2 +
-
                 (y-position[1])**2
-
             )
 
             if distance <= self.cell_radius:
 
-                self.selected_cell = cell
-
                 return cell
 
-        self.selected_cell = None
 
         return None
-
-    # =====================================
-    # Color
-    # =====================================
-
-    def get_cell_color(
-
+        
+    def pick_fields(
         self,
-
-        cell
+        position,
+        snapshot=None
     ):
 
-        cell_type = (
+        result=[]
 
-            cell.get("type")
+        if snapshot is None:
+            return result
 
-            or
-
-            cell.get("cell_type")
- 
-            or
-
-            ""
-
+        fields = snapshot.get(
+            "fields",
+            []
         )
 
-        alive = cell.get(
+        for field in fields:
 
-            "alive",
-
-            True
-        )
-
-        if not alive:
-
-            return (
-
-                90,
-
-                90,
-
-                90
-
+            values = field.get(
+                "values",
+                {}
             )
 
-        colors = {
+            for grid_position,strength in values.items():
 
-            "host_cell":
-                (90, 170, 255),
+                if strength <=0:
+                    continue
 
-            "cd4_t_cell":
-                (90, 220, 90),
+                center=self.world_to_screen(
+                    grid_position
+                )
 
-            "cd8_t_cell":
-                (255, 120, 120),
 
-            "virus":
-                (255, 220, 80)
-        }
+                distance=math.sqrt(
+                    (center[0]-position[0])**2+
+                    (center[1]-position[1])**2
+                )
 
-        return colors.get(
 
-            cell_type,
+                radius=max(
+                    15,
+                    int(12+strength*0.5)
+                )
 
-            (180, 180, 180)
+ 
+                if distance<=radius:
 
+                    result.append(
+                        {
+                            "object_type":"field",
+                            "data":
+                            {
+                                "field_type":
+                                    field.get("type"),
+
+                                "position":
+                                    grid_position,
+
+                                "strength":
+                                    strength
+                            }
+                        }
+                    )
+
+                    break
+
+
+        return result
+        
+    def pick_object(
+        self,
+        position,
+        snapshot=None
+    ):
+
+        if snapshot is None:
+            return []
+
+
+        if "world" in snapshot:
+            snapshot = snapshot["world"]
+
+
+        objects = []
+
+        cell = self.pick_cell(
+            position,
+            snapshot
         )
+
+        if cell is not None:
+
+            objects.append(
+                {
+                    "object_type":"cell",
+                    "data":cell
+                }
+            )
+
+        fields = self.pick_fields(
+            position,
+            snapshot
+        )
+
+        objects.extend(fields)
+
+
+        objects.sort(
+            key=lambda x:
+            0 if x["object_type"]=="cell" else 1
+        )
+
+
+        return objects

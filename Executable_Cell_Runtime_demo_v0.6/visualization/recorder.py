@@ -1,5 +1,6 @@
 # visualization/recorder.py
-
+import os
+print("LOADING RECORDER:", os.path.abspath(__file__))
 from visualization.snapshot import (
     build_snapshot,
     build_world_snapshot,
@@ -12,6 +13,13 @@ from visualization.snapshot import (
     build_metadata_snapshot
 )
 
+DEBUG = False
+
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
+   
 
 # =========================================================
 # Visualization Recorder
@@ -38,9 +46,11 @@ class VisualizationRecorder:
         runtime_result=None
 
     ):
-
+        
         snapshot = build_snapshot(
 
+            tick=tick,
+            
             world=self.collect_world(
 
                 tick,
@@ -68,6 +78,7 @@ class VisualizationRecorder:
             )
 
         )
+
 
         self.snapshots.append(
 
@@ -227,7 +238,13 @@ class VisualizationRecorder:
 
                     field_type=field_type,
 
-                    values=values
+                    values=values,
+
+                    max_value=max(values.values())
+                    if values
+                    else 0,
+
+                    sources=[]
 
                 )
 
@@ -308,33 +325,39 @@ class VisualizationRecorder:
                 cell
 
             )
+            
+            package = behavior_lookup.get(
+                cell_id,
+                {}
+            )
+            
+            debug_print(
+                "RECORDER DEBUG:",
+                cell_id,
+                "package=",
+                package
+            )
+            
+            debug_print(
+                "CALL NODE EXTRACT:",
+                cell_id,
+                package.keys()
+            )
 
             inspector = build_inspector_snapshot(
 
-                cell_id=cell_id,
+                object_type="cell",
 
-                cell_type=self.get_cell_type(
+                object_id=cell_id,
 
-                    cell
+                cell_type=self.get_cell_type(cell),
 
-                ),
-
-                nodes=self.collect_nodes(
-
-                    cell
-
+                nodes=self.collect_nodes_from_runtime(
+                    package
                 ),
 
                 behaviors=self.collect_behaviors(
-
-                    behavior_lookup.get(
-
-                        cell_id,
-
-                        {}
-
-                    )
-
+                    package
                 )
 
             )
@@ -347,65 +370,49 @@ class VisualizationRecorder:
     # Nodes
     # =====================================================
 
-    def collect_nodes(
+    def collect_nodes(self, cell):
 
-        self,
-
-        cell
-
-    ):
-
-        output = []
+        output=[]
 
         runtime = getattr(
-
             cell,
-
             "runtime_state",
-
             None
+        )
 
+        print(
+            "RUNTIME:",
+            cell.id,
+            runtime.__dict__
         )
 
         if runtime is None:
+            return output
+
+
+        if isinstance(runtime, dict):
+
+            iterator = runtime.items()
+
+        elif hasattr(runtime,"__dict__"):
+
+            iterator = runtime.__dict__.items()
+
+        else:
 
             return output
 
-        if hasattr(
 
-            runtime,
+        for key,value in iterator:
 
-            "__dict__"
+            if isinstance(value,(int,float)):
 
-        ):
-
-            for key, value in runtime.__dict__.items():
-
-                if isinstance(
-
-                    value,
-
-                    (int, float)
-
-                ):
-
-                    output.append(
-
-                        build_node_snapshot(
-
-                            name=key,
-
-                            value=round(
-
-                                value,
-
-                                3
-
-                            )
-
-                        )
-
+                output.append(
+                    build_node_snapshot(
+                        name=key,
+                        value=round(value,3)
                     )
+                )
 
         return output
 
@@ -427,36 +434,33 @@ class VisualizationRecorder:
 
             return output
 
-        behavior_output = package.get(
-
-            "behavior_output",
-
-            {}
-
+        behavior_trace = package.get(
+            "behavior_trace",
+            []
         )
 
-        regulated = behavior_output.get(
-
-            "regulated_behaviors",
-
-            {}
-
-        )
-
-        for name, strength in regulated.items():
+        for item in behavior_trace:
 
             output.append(
 
                 build_behavior_snapshot(
 
-                    name=name,
+                    name=item.get(
+                        "name",
+                        item.get(
+                            "behavior",
+                            "unknown"
+                        )
+                    ),
 
                     strength=round(
-
-                        float(strength),
-
+                        float(
+                            item.get(
+                                "strength",
+                                0
+                            )
+                        ),
                         6
-
                     )
 
                 )
@@ -469,69 +473,94 @@ class VisualizationRecorder:
     # Events
     # =====================================================
 
-    def collect_events(
+    def collect_events(runtime_result):
 
-        self,
-
-        runtime_result
-
-    ):
-
-        output = []
-
+        output=[]
+        
         if not runtime_result:
-
             return output
 
-        for event in runtime_result.get(
 
-            "events",
+        tick=runtime_result.get("tick",0)
 
-            []
 
-        ):
+        # -----------------
+        # input
+        # -----------------
 
-            event_type = event.get(
+        for event in runtime_result.get("events",[]):
 
-                "event_type",
+            if event.get("event_type")=="field_exposure_event":
 
-                "event"
+                target=event.get("target_id")
 
-            )
-
-            target = event.get(
-
-                "target_id",
-
-                ""
-
-            )
-
-            message = (
-
-                f"{event_type}: {target}"
-
-            )
-
-            output.append(
-
-                build_event_snapshot(
-
-                    tick=event.get(
-
-                        "tick",
-
-                        0
-
-                    ),
-
-                    message=message,
-
-                    level="info"
-
+                field=event.get("payload",{}).get(
+                    "field_type"
                 )
 
-            )
+                output.append(
+                    build_event_snapshot(
+                        tick=tick,
+                        category="INPUT",
+                        message=
+                        f"{target} senses {field}"
+                    )
+                )
+
+
+        # -----------------
+        # behavior
+        # -----------------
+
+        for package in runtime_result.get(
+            "cell_packages",
+            []
+        ):
+
+            cell_id=package.get("cell_id")
+
+            for behavior in package.get(
+                "behavior_trace",
+                []
+            ):
+
+                name=behavior.get(
+                    "name",
+                    behavior.get("behavior")
+                )
+
+                output.append(
+                    build_event_snapshot(
+                        tick=tick,
+                        category="BEHAVIOR",
+                        message=
+                        f"{cell_id}: {name}"
+                    )
+                )
+
+
+        # -----------------
+        # substance
+        # -----------------
+
+        for request in runtime_result.get(
+            "substance_requests",
+            []
+        ):
+
+            if request.get(
+                "operation"
+            )=="membrane_damage":
+
+                output.append(
+                    build_event_snapshot(
+                        tick=tick,
+                        category="SUBSTANCE",
+                        message=
+                        f"{request.get('source_id')} damages {request.get('target_id')} membrane"
+                    )
+                )
+
 
         return output
 
@@ -624,44 +653,69 @@ class VisualizationRecorder:
             True
 
         )
+        
+    def normalize_cell_type(self, cell_type):
 
-    def get_cell_type(
+        name=str(cell_type).lower()
+ 
+        if "cd4" in name:
+            return "cd4"
 
-        self,
+        if "cd8" in name:
+            return "cd8"
 
-        cell
+        if "host" in name:
+            return "host"
 
-    ):
+        if "dead" in name:
+            return "dead"
 
-        return (
+        return name
 
-            getattr(
+    def get_cell_type(self, cell):
 
-                cell,
+        #
+        # biological identity first
+        #
 
-                "cell_type",
+        raw = (
 
-                None
-
-            )
-
-            or
-
-            getattr(
-
-                cell,
-
-                "type",
-
-                None
-
-            )
+            getattr(cell, "template_id", None)
 
             or
 
-            cell.__class__.__name__
+            getattr(cell, "cell_template", None)
+
+            or
+
+            getattr(cell, "cell_type", None)
+
+            or
+
+            getattr(cell, "type", None)
+
+            or
+
+            ""
 
         )
+
+
+        #
+        # fallback:
+        # inspect id
+        #
+
+        if not raw:
+
+            raw = getattr(
+                cell,
+                "id",
+                ""
+            )
+
+
+        return self.normalize_cell_type(raw)
 
     # =====================================================
     # Timeline
@@ -708,3 +762,44 @@ class VisualizationRecorder:
             self.snapshots
 
         )
+        
+    def collect_nodes_from_runtime(
+        self,
+        package
+    ):
+
+        output=[]
+
+        if not package:
+            return output
+
+
+        runtime_context = package.get(
+            "runtime_context",
+            {}
+        )
+
+        runtime = runtime_context.get(
+            "runtime_state",
+            {}
+        )
+
+
+        nodes = runtime.get(
+            "nodes",
+            {}
+        )
+
+
+        for name,value in nodes.items():
+ 
+            output.append(
+
+                build_node_snapshot(
+                    name=name,
+                    value=value
+                )
+
+            )
+
+        return output

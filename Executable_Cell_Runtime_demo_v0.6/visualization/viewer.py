@@ -28,7 +28,7 @@ from visualization.renderer import WorldRenderer
 from visualization.sidebar import Sidebar
 from visualization.event_panel import EventPanel
 from visualization.control_panel import ControlPanel
-
+from visualization.legend import VisualizationLegend
 
 # ==========================================================
 # Viewer
@@ -42,7 +42,7 @@ class Viewer:
 
         snapshots,
 
-        scenario_name="MacroImmunet"
+        scenario_name="Executable_Cell_Runtime"
 
     ):
 
@@ -67,6 +67,8 @@ class Viewer:
         #
 
         self.selected_cell = None
+        
+        self.selected_object = None
 
         #
         # pygame
@@ -81,6 +83,8 @@ class Viewer:
         #
 
         self.renderer = WorldRenderer()
+        
+        self.legend = VisualizationLegend()
 
         self.sidebar = Sidebar()
 
@@ -94,7 +98,7 @@ class Viewer:
 
             y=830,
 
-            width=860,
+            width=800,
 
             height=70
 
@@ -211,23 +215,22 @@ class Viewer:
             snapshot
 
         )
+        
+        self.legend.render(
 
-        self.sidebar.render(
-
-            self.screen,
-
-            snapshot,
-
-            self.renderer.selected_cell
+            self.screen
 
         )
 
-        self.event_panel.render(
-
+        self.sidebar.render(
             self.screen,
+            snapshot,
+            self.selected_object
+        )
 
-            snapshot
-
+        self.event_panel.render(
+            self.screen,
+            self.snapshots[:self.current_tick+1]
         )
 
         self.controls.draw(
@@ -255,6 +258,10 @@ class Viewer:
         snapshot = self.current_snapshot()
 
         for event in pygame.event.get():
+        
+            self.event_panel.handle_event(
+                event
+            )
 
             self.controls.handle_event(
 
@@ -312,13 +319,15 @@ class Viewer:
 
                     continue
 
-                self.renderer.pick_cell(
+                selected = self.renderer.pick_object(
 
                     event.pos,
 
                     snapshot
 
                 )
+                
+                self.selected_object = selected
 
     # ======================================================
     # Main Loop

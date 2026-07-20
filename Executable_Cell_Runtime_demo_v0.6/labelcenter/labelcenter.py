@@ -149,7 +149,7 @@ class LabelCenter:
             buckets["targeted_directed"]
         )
 
-        self._run_directed_projection(
+        self.last_effect_events = self._run_directed_projection(
             world
         )
 
@@ -274,7 +274,7 @@ class LabelCenter:
         world
     ):
 
-        apply_world_directed_effects(
+        return apply_world_directed_effects(
             world
         )
 

@@ -16,18 +16,22 @@ import pygame
 class EventPanel:
 
     def __init__(
-
         self,
-
-        rect=(20,40,180,820),
-
-        max_events=32
-
+        rect=(20,220,290,640),
+        max_events=24
     ):
 
         self.rect = pygame.Rect(*rect)
 
         self.max_events = max_events
+        
+        self.scroll_offset = 0
+        
+        self.scroll_pixels = 0
+        
+        self.auto_follow = True
+        
+        self.scroll_speed = 1
 
         pygame.font.init()
 
@@ -64,13 +68,9 @@ class EventPanel:
     # ======================================================
 
     def render(
-
         self,
-
         screen,
-
-        snapshot
-
+        snapshots
     ):
 
         pygame.draw.rect(
@@ -119,84 +119,80 @@ class EventPanel:
 
         )
 
-        y = self.rect.top + 48
-
-        tick = snapshot.get(
-
-            "tick",
-
-            0
-
+        history = self.build_event_history(
+            snapshots
         )
 
-        tick_label = self.tick_font.render(
+        y = self.rect.top + 48 - self.scroll_pixels
 
-            f"Tick {tick}",
+        for block in history:
 
-            True,
 
-            (120,210,255)
+            tick = block["tick"]
 
-        )
 
-        screen.blit(
+            tick_surface = self.tick_font.render(
 
-            tick_label,
-
-            (
-
-                self.rect.left+12,
-
-                y
-
-            )
-
-        )
-
-        y += 26
-
-        events = self.build_view_events(
-
-            snapshot
-
-        )
-
-        if len(events) > self.max_events:
-
-            events = events[-self.max_events:]
-
-        for text,color in events:
-
-            surf = self.font.render(
-
-                text,
+                f"Tick {tick}",
 
                 True,
 
-                color
+                (120,210,255)
 
             )
 
+
             screen.blit(
 
-                surf,
+                tick_surface,
 
                 (
-
-                    self.rect.left+18,
-
+                    self.rect.left+12,
                     y
-
                 )
 
             )
 
-            y += 20
 
-            if y > self.rect.bottom-20:
+            y += 22
 
-                break
 
+
+            for text,color in block["events"]:
+
+
+                surf = self.font.render(
+
+                    text,
+
+                    True,
+
+                    color
+
+                )
+
+
+                screen.blit(
+
+                    surf,
+
+                    (
+                        self.rect.left+18,
+                        y
+                    )
+
+                )
+
+
+                y += 18
+
+
+                if y > self.rect.bottom:
+
+                    break
+
+
+            y += 8
     # ======================================================
     # Build Viewer Events
     # ======================================================
@@ -216,19 +212,14 @@ class EventPanel:
         #
 
         for event in snapshot.get(
-
             "events",
-
             []
-
         ):
 
             output.append(
 
-                self.translate_runtime_event(
-
+                self.translate_visualization_event(
                     event
-
                 )
 
             )
@@ -276,95 +267,122 @@ class EventPanel:
     # ======================================================
     # Translate Runtime Event
     # ======================================================
-
-    def translate_runtime_event(
-
+    def translate_visualization_event(
         self,
-
         event
-
     ):
 
-        event_type = event.get(
+        category = event.get(
+            "category",
+            "Event"
+        )
 
-            "title",
-
+        message = event.get(
+            "message",
             ""
-
         )
 
-        payload = event.get(
-
-            "payload",
-
-            {}
-
-        )
-
-        if event_type == "field_exposure_event":
-
-            target = payload.get(
-
-                "target_id",
-
-                "cell"
-
-            )
-
-            field = (
-
-                payload
-
-                .get(
-
-                    "payload",
-
-                    {}
-
-                )
-
-                .get(
-
-                    "field_type",
-
-                    "field"
-
-                )
-
-            )
-
-            return (
-
-                f"{target} senses {field}",
-
-                (255,220,120)
-
-            )
-
-        if "virus" in event_type:
-
-            return (
-
-                event_type,
-
-                (255,180,120)
-
-            )
-
-        if "kill" in event_type:
-
-            return (
-
-                event_type,
-
-                (255,120,120)
-
-            )
 
         return (
-
-            event_type,
-
-            (220,220,220)
-
+            message,
+            self.get_event_color(category)
         )
+    
+    def get_event_color(
+        self,
+        category
+    ):
+
+        if category == "Signal":
+
+            return (
+                255,
+                220,
+                120
+            )
+
+
+        if category == "Behavior":
+
+            return (
+                120,
+                255,
+                180
+            )
+ 
+
+        if category == "Substance":
+
+            return (
+                255,
+                150,
+                150
+            )
+
+
+        return (
+            220,
+            220,
+            220
+        )
+        
+    def build_event_history(
+        self,
+        snapshots
+    ):
+
+        history = []
+
+
+        for snapshot in snapshots:
+
+
+            tick = snapshot.get(
+                "tick",
+                0
+            )
+
+
+            events = self.build_view_events(
+                snapshot
+            )
+
+            if events:
+ 
+                history.append(
+                    {
+                        "tick": tick,
+                        "events": events
+                    }
+                )
+
+        return history
+        
+    def handle_event(
+        self,
+        event
+    ):
+
+        if event.type == pygame.MOUSEWHEEL:
+        
+            self.auto_follow = False
+
+            self.scroll_pixels -= event.y * 30
+
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+
+
+            if event.button == 4:
+
+                self.scroll_offset += 1
+
+
+            elif event.button == 5:
+ 
+                self.scroll_offset -= 1
+
+
+        if self.scroll_offset < 0:
+
+            self.scroll_offset = 0

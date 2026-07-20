@@ -30,6 +30,16 @@ Does NOT
 
 import pygame
 
+from visualization.style import (
+    HOST_CELL,
+    CD4_CELL,
+    CD8_CELL,
+    DEAD_CELL,
+    INFLUENZA,
+    PMHC,
+    IL2,
+    PERFORIN
+)
 
 # =========================================
 # Legend Panel
@@ -38,11 +48,8 @@ import pygame
 class VisualizationLegend:
 
     def __init__(
-
         self,
-
-        rect=(20, 20, 260, 80)
-
+        rect=(20,20,290,180)
     ):
 
         self.rect = pygame.Rect(*rect)
@@ -63,33 +70,63 @@ class VisualizationLegend:
         self.entries = [
 
             (
-                "circle",
-                (80, 180, 255),
-                "Host Cell"
+                "title",
+                None,
+                "Cells"
             ),
 
             (
                 "circle",
-                (120, 255, 120),
-                "CD4 T Cell"
+                HOST_CELL,
+                "Host"
             ),
 
             (
                 "circle",
-                (255, 120, 120),
-                "CD8 T Cell"
+                CD4_CELL,
+                "CD4"
             ),
 
             (
-                "triangle",
-                (255, 200, 80),
-                "Virus"
+                "circle",
+                CD8_CELL,
+                "CD8"
+            ),
+
+            (
+                "circle",
+                DEAD_CELL,
+                "Dead"
+            ),
+
+            (
+                "title",
+                None,
+                "Fields"
             ),
 
             (
                 "square",
-                (180, 180, 255),
-                "Field"
+                INFLUENZA,
+                "Influenza"
+            ),
+
+            (
+                "square",
+                PMHC,
+                "pMHC"
+            ),
+
+            (
+                "square",
+                IL2,
+                "IL2"
+            ),
+
+            (
+                "square",
+                PERFORIN,
+                "Perforin"
             )
         ]
 
@@ -155,6 +192,27 @@ class VisualizationLegend:
         y = self.rect.top + 38
 
         for shape, color, label in self.entries:
+        
+            if shape == "title":
+
+                text = self.font.render(
+                    label,
+                    True,
+                    (255,255,255)
+                )
+
+                screen.blit(
+                    text,
+                    (
+                        x,
+                        y
+                    )
+                )
+
+                y += 20
+                x = self.rect.left + 14
+
+                continue
 
             self.draw_symbol(
 
@@ -205,7 +263,7 @@ class VisualizationLegend:
 
         info = self.font.render(
 
-            "Brightness: Active → Bright",
+            "Field brightness = concentration",
 
             True,
 

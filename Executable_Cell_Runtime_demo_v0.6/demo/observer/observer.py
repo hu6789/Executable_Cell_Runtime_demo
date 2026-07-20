@@ -37,8 +37,8 @@ from demo.observer.console_logger import (
     ConsoleLogger
 )
 
-from visualization.recorder import (
-    VisualizationRecorder
+from visualization.snapshot_adapter import (
+    VisualizationSnapshotAdapter
 )
 
 class SimulationObserver:
@@ -75,7 +75,11 @@ class SimulationObserver:
 
         self.statistics = Statistics()
         
-        self.visualization = VisualizationRecorder()
+        self.visualization = VisualizationSnapshotAdapter()
+        
+        self.visualization_snapshots = []
+        
+        self.visualization_event_history = []
 
         #
         # Allow external timeline
@@ -145,14 +149,16 @@ class SimulationObserver:
         # Visualization Snapshot
         #
 
-        self.visualization.record_tick(
+        visualization_snapshot = self.visualization.adapt(
 
-            tick=tick,
+            snapshot,
 
-            world=world,
+            runtime_result
 
-            runtime_result=runtime_result
+        )
 
+        self.visualization_snapshots.append(
+            visualization_snapshot
         )
 
         self.timeline.record(

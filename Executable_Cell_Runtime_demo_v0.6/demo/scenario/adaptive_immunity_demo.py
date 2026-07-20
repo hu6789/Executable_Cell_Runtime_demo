@@ -24,7 +24,7 @@ class AdaptiveImmunityDemo(BaseScenario):
 
             cell_id="host_001",
 
-            position=(6, 6),
+            position=(7, 6),
 
             runtime_state={
 
@@ -44,7 +44,7 @@ class AdaptiveImmunityDemo(BaseScenario):
 
             values={
 
-                (6,6):100.0
+                (7,6):100.0
 
             }
 
@@ -61,7 +61,7 @@ class AdaptiveImmunityDemo(BaseScenario):
 
             cell_id="cd4_001",
 
-            position=(7, 6),
+            position=(7, 7),
 
             runtime_state={
 
@@ -82,7 +82,7 @@ class AdaptiveImmunityDemo(BaseScenario):
 
             cell_id="cd8_001",
 
-            position=(6, 7),
+            position=(6, 6),
 
             runtime_state={
 

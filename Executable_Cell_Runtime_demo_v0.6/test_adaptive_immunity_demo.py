@@ -108,12 +108,11 @@ print("\nAll assertions passed.")
 
 print("\n================ DONE ================\n")
 
-
 from visualization.viewer_builder import launch_viewer
 
 launch_viewer(
 
-    demo.observer.visualization.snapshots,
+    demo.observer.visualization_snapshots,
 
     "Adaptive Immunity"
 

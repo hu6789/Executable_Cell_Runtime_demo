@@ -230,16 +230,16 @@ class SimulationRuntime:
         # LabelCenter
         # ---------------------------------------------
 
-        self._run_labelcenter(
-
+        effect_events = self._run_labelcenter(
             intents,
-
             tick
-
         )
-
+        
+        
         return {
 
+            "tick": tick,
+            
             "events": events,
 
             "node_inputs": node_inputs,
@@ -247,6 +247,8 @@ class SimulationRuntime:
             "cell_packages": cell_packages,
 
             "substance_requests": substance_requests,
+            
+            "effect_events": self.labelcenter.last_effect_events,
 
             "intents": intents
 
@@ -427,13 +429,9 @@ class SimulationRuntime:
     # =====================================================
 
     def _run_labelcenter(
-
         self,
-
         intents,
-
         tick
-
     ):
 
         self.labelcenter.collect(
@@ -441,11 +439,14 @@ class SimulationRuntime:
         )
 
         self.labelcenter.apply(
-
             self.world,
-
             tick
+        )
 
+        return getattr(
+            self.labelcenter,
+            "last_effect_events",
+            []
         )
 
     # =====================================================

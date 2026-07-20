@@ -166,44 +166,28 @@ ACCENT = (120, 210, 255)
 # Cell Colors
 # ==========================================================
 
-HOST_CELL = (90, 180, 255)
+HOST_CELL = (220, 80, 80)
 
-CD4_CELL = (100, 235, 120)
+CD4_CELL = (255, 220, 80)
 
-CD8_CELL = (255, 120, 120)
+CD8_CELL = (80, 150, 255)
 
-NK_CELL = (255, 170, 80)
+DEAD_CELL = (100, 100, 100)
 
-MACROPHAGE = (255, 210, 90)
-
-DENDRITIC = (180, 170, 255)
-
-UNKNOWN_CELL = (180, 180, 180)
+UNKNOWN_CELL = (180,180,180)
 
 
 # ==========================================================
-# Virus
+# Substance Colors
 # ==========================================================
 
-VIRUS = (255, 90, 90)
+INFLUENZA = (120, 20, 20)
 
-VIRAL_FIELD = (255, 150, 120)
+PMHC = (255, 150, 150)
 
+IL2 = (255, 240, 120)
 
-# ==========================================================
-# Cytokines
-# ==========================================================
-
-IL2 = (120, 255, 160)
-
-CXCL10 = (120, 200, 255)
-
-IFN = (255, 255, 140)
-
-PERFORIN = (255, 90, 90)
-
-PMHC = (255, 255, 120)
-
+PERFORIN = (120, 200, 255)
 
 # ==========================================================
 # Status
@@ -259,30 +243,46 @@ MAX_BRIGHTNESS = 1.00
 
 CELL_COLOR_MAP = {
 
-    "host_cell": HOST_CELL,
+    "host":
+        HOST_CELL,
 
-    "cd4_t_cell": CD4_CELL,
+    "cd4":
+        CD4_CELL,
 
-    "cd8_t_cell": CD8_CELL,
+    "cd8":
+        CD8_CELL,
 
-    "nk_cell": NK_CELL,
-
-    "macrophage": MACROPHAGE,
-
-    "dendritic_cell": DENDRITIC
+    "dead":
+        DEAD_CELL
 
 }
 
 
 FIELD_COLOR_MAP = {
 
-    "IL2": IL2,
+    "IL2":
+        IL2,
 
-    "CXCL10": CXCL10,
+    "il2":
+        IL2,
 
-    "IFN": IFN,
 
-    "influenza": VIRAL_FIELD
+    "influenza":
+        INFLUENZA,
+
+
+    "pMHC":
+        PMHC,
+
+    "pmhc":
+        PMHC,
+
+
+    "perforin":
+        PERFORIN,
+
+    "Perforin":
+        PERFORIN
 
 }
 
@@ -293,15 +293,35 @@ FIELD_COLOR_MAP = {
 
 def get_cell_color(cell_type):
 
-    return CELL_COLOR_MAP.get(
-        cell_type,
-        UNKNOWN_CELL
-    )
+    if cell_type is None:
+        return UNKNOWN_CELL
+
+
+    name=str(cell_type).lower()
+
+
+    if name.startswith("host"):
+        return HOST_CELL
+
+
+    if name.startswith("cd4"):
+        return CD4_CELL
+
+
+    if name.startswith("cd8"):
+        return CD8_CELL
+
+
+    if "dead" in name:
+        return DEAD_CELL
+
+
+    return UNKNOWN_CELL
 
 
 def get_field_color(field_type):
 
     return FIELD_COLOR_MAP.get(
-        field_type,
-        VIRAL_FIELD
+        str(field_type).lower(),
+        UNKNOWN_CELL
     )

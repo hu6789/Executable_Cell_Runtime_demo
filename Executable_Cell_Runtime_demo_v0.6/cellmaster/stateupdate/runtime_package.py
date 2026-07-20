@@ -66,6 +66,22 @@ def build_runtime_package(
             exposure_requests,
 
         # ---------------------------------
+        # behavior output
+        # ---------------------------------
+
+        "behavior_output":
+            runtime_output.get(
+                "behavior_output",
+                {}
+            ),
+            
+        "base_behaviors":
+            runtime_context.get(
+                "behaviors",
+                []
+            ),
+            
+        # ---------------------------------
         # raw runtime output
         # ---------------------------------
 

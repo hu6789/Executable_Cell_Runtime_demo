@@ -5,19 +5,34 @@ def apply_directed_effects(
     cell
 ):
 
+    events = []
+
+
     effects = list(
         cell.directed_effects
     )
 
+
     for effect in effects:
 
-        apply_single_effect(
+        result = apply_single_effect(
+
             cell,
+
             effect
+
         )
+
+
+        if result:
+
+            events.append(result)
+
 
     cell.directed_effects.clear()
 
+
+    return events
 
 def apply_single_effect(
     cell,
@@ -60,13 +75,31 @@ def apply_single_effect(
             "cell_membrane",
             new_value
         )
+        
+        return {
+
+            "type": "membrane_damage",
+
+            "source": "perforin",
+
+            "target": cell.id,
+
+            "strength": strength
+
+        }
+        
+    return None
 
 def apply_world_directed_effects(
     world
 ):
 
-    for cell in world.cells.values():
+    events = []
 
-        apply_directed_effects(
-            cell
+    for cell in world.cells.values():
+    
+        events.extend(
+            apply_directed_effects(cell)
         )
+
+    return events

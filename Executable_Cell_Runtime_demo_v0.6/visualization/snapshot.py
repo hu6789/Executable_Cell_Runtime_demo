@@ -1,5 +1,3 @@
-# visualization/snapshot.py
-
 """
 =========================================================
 Visualization Snapshot
@@ -28,23 +26,22 @@ from copy import deepcopy
 
 
 # =========================================================
-# Visualization Snapshot
+# Root Snapshot
 # =========================================================
 
 def build_snapshot(
+    tick,
     world,
-    inspectors=None,
-    events=None,
-    metadata=None
+    inspectors,
+    events,
+    metadata
 ):
-    """
-    Root visualization snapshot.
-
-    Viewer only consumes this object.
-    """
 
     return {
 
+         "tick": 
+            tick,
+        
         "world":
             deepcopy(world),
 
@@ -59,6 +56,7 @@ def build_snapshot(
     }
 
 
+
 # =========================================================
 # World Snapshot
 # =========================================================
@@ -71,9 +69,6 @@ def build_world_snapshot(
     particles=None,
     fields=None
 ):
-    """
-    Data consumed by WorldRenderer.
-    """
 
     return {
 
@@ -97,6 +92,7 @@ def build_world_snapshot(
     }
 
 
+
 # =========================================================
 # Cell Snapshot
 # =========================================================
@@ -105,12 +101,17 @@ def build_cell_snapshot(
     cell_id,
     cell_type,
     position,
-    alive=True
+    alive=True,
+    color=None
 ):
-    """
-    Lightweight world cell.
 
-    Renderer only needs these.
+    """
+    Lightweight cell representation.
+
+    Used by:
+        - WorldRenderer
+        - Cell selector
+
     """
 
     return {
@@ -125,8 +126,12 @@ def build_cell_snapshot(
             tuple(position),
 
         "alive":
-            alive
+            alive,
+
+        "color":
+            color
     }
+
 
 
 # =========================================================
@@ -156,26 +161,33 @@ def build_particle_snapshot(
     }
 
 
+
 # =========================================================
 # Field Snapshot
 # =========================================================
 
 def build_field_snapshot(
     field_type,
-    values
+    values,
+    max_value=None,
+    sources=None
 ):
+
     """
-    values:
+    Continuous field layer.
+
+    Example:
+
+        IL2 field
 
         {
-
-            (0,0):100,
-
-            (0,1):80,
-
-            ...
-
+            (0,0):10,
+            (1,0):20
         }
+
+
+    Renderer uses values
+    to generate transparency / gradient.
     """
 
     return {
@@ -184,8 +196,15 @@ def build_field_snapshot(
             field_type,
 
         "values":
-            deepcopy(values)
+            deepcopy(values),
+
+        "max_value":
+            max_value,
+
+        "sources":
+            deepcopy(sources or [])
     }
+
 
 
 # =========================================================
@@ -193,29 +212,49 @@ def build_field_snapshot(
 # =========================================================
 
 def build_inspector_snapshot(
-    cell_id,
-    cell_type,
-    nodes=None,
-    behaviors=None
+    object_type,
+    object_id,
+    **kwargs
 ):
+
     """
-    Data consumed by Sidebar.
+    Generic detail panel data.
+
+    Supports:
+
+        cell
+
+        field
+
+    Example:
+
+        {
+            type:"cell",
+            id:"cd4_1",
+            nodes:[],
+            behaviors:[]
+        }
+
     """
 
-    return {
+    snapshot = {
 
-        "cell_id":
-            cell_id,
+        "type":
+            object_type,
 
-        "cell_type":
-            cell_type,
-
-        "nodes":
-            deepcopy(nodes or []),
-
-        "behaviors":
-            deepcopy(behaviors or [])
+        "id":
+            object_id
     }
+
+
+    snapshot.update(
+
+        deepcopy(kwargs)
+
+    )
+
+    return snapshot
+
 
 
 # =========================================================
@@ -226,13 +265,6 @@ def build_node_snapshot(
     name,
     value
 ):
-    """
-    Example
-
-        ATP
-
-        86
-    """
 
     return {
 
@@ -244,6 +276,7 @@ def build_node_snapshot(
     }
 
 
+
 # =========================================================
 # Behavior Snapshot
 # =========================================================
@@ -252,13 +285,6 @@ def build_behavior_snapshot(
     name,
     strength=None
 ):
-    """
-    Example
-
-        Translation
-
-        ATP Production
-    """
 
     return {
 
@@ -270,6 +296,7 @@ def build_behavior_snapshot(
     }
 
 
+
 # =========================================================
 # Event Snapshot
 # =========================================================
@@ -277,22 +304,40 @@ def build_behavior_snapshot(
 def build_event_snapshot(
     tick,
     message,
-    level="info"
+    category=None,
+    level="info",
+    event_type=None,
+    source=None,
+    target=None
 ):
+
     """
-    Human-readable event.
+    Human readable biological event.
 
-    Example
+    Examples:
 
-        Tick 12
+        CD4_1 TCR binds pMHC
 
-        Host released CXCL10
+        CD8_1 releases perforin
+
     """
 
     return {
 
         "tick":
             tick,
+            
+        "category":
+            category,
+
+        "type":
+            event_type,
+
+        "source":
+            source,
+
+        "target":
+            target,
 
         "message":
             message,
@@ -300,6 +345,7 @@ def build_event_snapshot(
         "level":
             level
     }
+
 
 
 # =========================================================
