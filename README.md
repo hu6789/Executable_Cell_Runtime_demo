@@ -1,4 +1,4 @@
-# MacroImmunet v0.6 — Multi-Cell Simulation Core
+# Executable Cell Runtime v0.6 — Multi-Cell Simulation Core
 
 MacroImmunet is a layered immune runtime simulation framework
 that models cells as autonomous physiological systems
@@ -12,3 +12,14 @@ world topology scanning,
 semantic perception translation,
 intracellular runtime computation,
 and unified world execution.
+
+
+The v0.6 prototype is now available.
+
+This release represents an early milestone toward an executable cell-state framework, featuring:
+- runtime-based cellular state representation
+- signal-to-behavior processing
+- intent-based world updates
+- interpretable simulation visualization
+
+Documentation is currently being prepared. Detailed explanations of the architecture, simulation workflow, and future development directions will be added progressively.
