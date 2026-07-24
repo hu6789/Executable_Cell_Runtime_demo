@@ -1,0 +1,32 @@
+Adaptive Immune Response Scenario
+
+This demo provides an example application of Executable Cell Runtime for modeling dynamic immune interactions through an executable, spatially resolved simulation framework.
+The current scenario focuses on a simplified antiviral immune response, demonstrating how extracellular stimuli, intracellular state transitions, cellular decision processes, and intercellular communication can be represented and tracked within the simulation environment.
+
+Visualization Interface
+The visualization system integrates multiple levels of information during simulation.
+The central 2D environment represents the spatial organization of cells and extracellular signals, allowing observation of dynamic changes in cellular interactions and signal distribution.
+The left panel records the temporal sequence of simulation events, providing a chronological view of state transitions and biological responses.
+The right panel provides entity-level inspection, including intracellular molecular states and behavior activation levels for individual cells, as well as concentration information for extracellular signaling fields.
+Together, these views connect system-level dynamics with cell-level and molecular-level changes.
+
+Simulation Scenario
+The demonstration follows a sequential immune response process:
+
+1. External stimulus and host state transition
+An influenza-associated extracellular signal is introduced as an environmental perturbation. The host cell responds through signal recognition and intracellular state changes, leading to activation of internalization behavior.
+Following intracellular accumulation of viral-associated components, antigen processing is represented through the generation of pMHC signals, which are released into the extracellular environment.
+
+2. Signal-mediated immune cell activation
+The released pMHC signal forms a spatially distributed antigenic cue. CD4 T cells respond through TCR-mediated recognition, resulting in activation of cytokine production and IL-2 release.
+The extracellular IL-2 field provides an additional communication signal within the environment.
+
+3. Adaptive response amplification and effector activation
+The combined antigenic and cytokine signals contribute to CD8 T cell activation through TCR and IL-2 receptor-associated signaling.
+Activated CD8 T cells subsequently initiate an effector program, represented by perforin production and release.
+
+4. Cellular response outcome
+The released effector signal interacts with the target host cell and induces progressive membrane integrity reduction, representing the transition from immune recognition to cellular outcome.
+Purpose of the Demonstration
+
+This scenario is intended to illustrate the capability of Executable Cell Runtime to represent biological processes as executable state transitions, where environmental signals, intracellular conditions, cellular behaviors, and multicellular interactions are dynamically connected within a unified simulation framework.
