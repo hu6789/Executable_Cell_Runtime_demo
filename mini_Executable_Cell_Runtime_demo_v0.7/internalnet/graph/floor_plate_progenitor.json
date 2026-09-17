@@ -1,0 +1,43 @@
+{
+  "name": "floor_plate_progenitor",
+  "type": "cell_specific",
+  "nodes": [
+    "FOXA2",
+    "SHH",
+    "H3K27ac"
+  ],
+  "genes": [
+    "FOXA2",
+    "SHH"
+  ],
+  "edges": [
+    {
+      "name": "H3K27ac_FOXA2",
+      "type": "node-gene",
+      "source": "H3K27ac",
+      "target": "FOXA2",
+      "required": true
+    },
+    {
+      "name": "FOXA2_production",
+      "type": "gene-behavior",
+      "source": "FOXA2",
+      "target": "production",
+      "required": true
+    },
+    {
+      "name": "SHH_production",
+      "type": "gene-behavior",
+      "source": "SHH",
+      "target": "production",
+      "required": true
+    },
+    {
+      "name": "SHH_release",
+      "type": "node-behavior",
+      "source": "SHH",
+      "target": "release",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "common_shh_signaling",
+  "type": "common",
+  "nodes": [
+    "PTCH1",
+    "SMO",
+    "GLI2",
+    "ATP",
+    "enzyme",
+    "molecule"
+  ],
+  "behaviors": [
+    "production",
+    "release"
+  ],
+  "edges": [
+    {
+      "name": "PTCH1_SMO",
+      "type": "node-node",
+      "source": "PTCH1",
+      "target": "SMO",
+      "required": true
+    },
+    {
+      "name": "SMO_GLI2",
+      "type": "node-node",
+      "source": "SMO",
+      "target": "GLI2",
+      "required": true
+    }
+  ]
+}

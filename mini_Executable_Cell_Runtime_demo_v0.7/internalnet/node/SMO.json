@@ -1,0 +1,29 @@
+{
+  "name": "SMO",
+  "category": "functional_protein",
+  "polymorphism": [
+    "unrecruited",
+    "recruited"
+  ],
+  "half_life": null,
+  "diffusion": null,
+  "formulation": {
+    "type": "hill_inhibition",
+    "input": "PTCH1",
+    "state_mapping": {
+      "active": 1.0,
+      "inactive": 0.0
+    },
+    "equation": "A_SMO = 1 / (1 + (I_PTCH1 / K_PTCH1)^n)",
+    "parameters": {
+      "K_PTCH1": 0.5,
+      "n": 2.0,
+      "theta_SMO": 0.5
+    },
+    "transition": {
+      "from": "unrecruited",
+      "to": "recruited",
+      "condition": "A_SMO >= theta_SMO"
+    }
+  }
+}

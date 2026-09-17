@@ -1,0 +1,25 @@
+{
+  "name": "release",
+  "category": null,
+  "formula": {
+    "equation": "v = k_r × X_source",
+    "parameters": {
+      "k_r": "release_rate",
+      "X_source": "source_node.free"
+    }
+  },
+  "resources": {
+    "consumption": {
+      "ATP": 0.2
+    },
+    "occupancy": {
+      "enzyme": 0.05
+    }
+  },
+  "outputs": {
+    "extracellular": {
+      "target": "source_name",
+      "amount": 1.0
+    }
+}
+}

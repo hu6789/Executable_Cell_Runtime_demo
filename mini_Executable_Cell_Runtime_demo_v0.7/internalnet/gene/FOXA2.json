@@ -1,0 +1,29 @@
+{
+  "name": "FOXA2",
+  "category": null,
+
+  "polymorphism": [
+    "unmodified",
+    "lysine_modified"
+  ],
+
+  "elements": [
+    {
+      "name": "FOXA2_Gli_Response_Enhancer",
+      "category": "enhancer",
+      "effect": "activation",
+      "value": 1.0,
+      "distance": 1000
+    }
+  ],
+
+  "formula": {
+    "equation": "R = H_nuclear^n / (K_H^n + H_nuclear^n)",
+    "parameters": {
+      "H_nuclear": "H3K27ac.states.nuclear",
+      "K_H": 0.5,
+      "n": 2
+    },
+    "output": "lysine_modification"
+  }
+}

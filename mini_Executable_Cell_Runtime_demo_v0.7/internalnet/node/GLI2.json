@@ -1,0 +1,27 @@
+{
+  "name": "GLI2",
+  "category": "TF",
+  "polymorphism": [
+    "SUFU_bound",
+    "free",
+    "nuclear"
+  ],
+  "half_life": 60,
+  "diffusion": 0.5,
+  "formulation": {
+    "type": "SMO_dependent_dissociation",
+    "input": "SMO",
+    "equation": "D_GLI = k_diss * A_SMO^n / (K_SMO^n + A_SMO^n)",
+    "parameters": {
+      "k_diss": 1.0,
+      "K_SMO": 0.5,
+      "n": 2.0,
+      "theta_diss": 0.5
+    },
+    "transition": {
+      "from": "SUFU_bound",
+      "to": "free",
+      "condition": "D_GLI >= theta_diss"
+    }
+  }
+}

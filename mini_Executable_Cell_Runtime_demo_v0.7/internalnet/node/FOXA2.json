@@ -1,0 +1,11 @@
+{
+  "name": "FOXA2",
+  "category": "TF",
+  "polymorphism": [
+    "free",
+    "nuclear"
+  ],
+  "half_life": 60,
+  "diffusion": 0.5,
+  "formulation": null
+}

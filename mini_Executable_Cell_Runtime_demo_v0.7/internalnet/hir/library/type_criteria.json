@@ -1,0 +1,26 @@
+{
+  "criteria": [
+    {
+      "type": "floor_plate_progenitor",
+      "required": [
+        {
+          "name": "FOXA2",
+          "source": "gene",
+          "threshold": 1.0
+        },
+        {
+          "name": "SHH",
+          "source": "node",
+          "threshold": 1.0
+        }
+      ],
+      "supporting": [
+        {
+          "name": "H3K27ac",
+          "source": "node",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

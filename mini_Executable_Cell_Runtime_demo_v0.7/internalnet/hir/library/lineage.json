@@ -1,0 +1,10 @@
+{
+  "name": "neural_lineage",
+  "nodes": [
+    {
+      "name": "floor_plate_progenitor",
+      "parent": null,
+      "children": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "sufu_binding",
+  "applies_to": ["GLI2"],
+  "formula": {
+    "equation": "Δ = min(k_bind × X_free × Δt, X_free)",
+    "parameters": {
+      "k_bind": 0.5
+    }
+  },
+  "update": {
+    "source_state": "free",
+    "target_state": "SUFU_bound"
+  }
+}

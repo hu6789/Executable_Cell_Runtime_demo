@@ -1,0 +1,14 @@
+{
+  "name": "diffusion",
+  "applies_to": ["GLI2"],
+  "formula": {
+    "equation": "Δ = min(D × X_free × Δt, X_free)",
+    "parameters": {
+      "D": "node.diffusion"
+    }
+  },
+  "update": {
+    "source_state": "free",
+    "target_state": "nuclear"
+  }
+}

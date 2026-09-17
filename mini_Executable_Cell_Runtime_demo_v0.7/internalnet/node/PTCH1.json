@@ -1,0 +1,11 @@
+{
+  "name": "PTCH1",
+  "category": "receptor",
+  "polymorphism": [
+    "active",
+    "inactive"
+  ],
+  "half_life": null,
+  "diffusion": null,
+  "formulation": null
+}

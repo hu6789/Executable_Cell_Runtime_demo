@@ -1,0 +1,20 @@
+{
+  "relations": [
+    {
+      "name": "FOXA2_SFPE2_regulation",
+      "tf": "FOXA2",
+      "element": "SFPE2",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    },
+    {
+      "name": "GLI2_FOXA2_Gli_Response_Enhancer_regulation",
+      "tf": "GLI2",
+      "element": "FOXA2_Gli_Response_Enhancer",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    }
+  ]
+}

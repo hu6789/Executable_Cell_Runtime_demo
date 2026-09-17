@@ -1,0 +1,13 @@
+{
+  "name": "half_life_decay",
+  "formula": {
+    "equation": "Δ = X_total × (1 - exp(-ln(2) × Δt / t_half))",
+    "parameters": {
+      "t_half": "node.half_life"
+    }
+  },
+  "update": {
+    "target": "all_states",
+    "mode": "proportional_decay"
+  }
+}

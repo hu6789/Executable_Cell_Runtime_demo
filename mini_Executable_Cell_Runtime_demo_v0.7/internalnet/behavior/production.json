@@ -1,0 +1,26 @@
+{
+  "name": "production",
+  "category": null,
+  "formula": {
+    "equation": "v = α × R",
+    "parameters": {
+      "α": "production_rate",
+      "R": "gene_behavior_signal"
+    }
+  },
+  "resources": {
+    "consumption": {
+      "ATP": 2.0,
+      "molecule": 1.0
+    },
+    "occupancy": {
+      "enzyme": 0.1
+    }
+  },
+  "internal_outputs": {
+    "node": {
+      "target": "source_name",
+      "state": "free"
+    }
+  }
+}
