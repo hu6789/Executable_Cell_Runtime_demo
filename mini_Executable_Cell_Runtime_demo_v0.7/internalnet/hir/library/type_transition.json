@@ -1,0 +1,33 @@
+{
+  "rules": [
+    {
+      "name": "complete_identity",
+      "condition": {
+        "evidence": "complete"
+      },
+      "result": {
+        "state": "primary_type"
+      }
+    },
+    {
+      "name": "partial_descendant_identity",
+      "condition": {
+        "evidence": "partial",
+        "lineage_relation": "descendant"
+      },
+      "result": {
+        "state": "tendency"
+      }
+    },
+    {
+      "name": "partial_ancestor_identity",
+      "condition": {
+        "evidence": "partial",
+        "lineage_relation": "ancestor"
+      },
+      "result": {
+        "state": "legacy"
+      }
+    }
+  ]
+}

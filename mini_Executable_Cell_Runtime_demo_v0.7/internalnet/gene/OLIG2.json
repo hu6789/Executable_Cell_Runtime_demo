@@ -1,0 +1,32 @@
+{
+  "name": "OLIG2",
+  "category": null,
+
+  "polymorphism": [],
+
+  "elements": [
+    {
+      "name": "OLIG2_-33kb_CRM",
+      "category": "enhancer",
+      "effect": "activation",
+      "value": 1.0,
+      "distance": -33000
+    },
+    {
+      "name": "OLIG2_PAX6_promoter",
+      "category": "promoter",
+      "effect": "repression",
+      "value": 1.0,
+      "distance": 0
+    },
+    {
+      "name": "OLIG2_NKX6.1_fake",
+      "category": "enhancer",
+      "effect": "activation",
+      "value": 1.0,
+      "distance": null
+    }
+  ],
+
+  "formula": {}
+}

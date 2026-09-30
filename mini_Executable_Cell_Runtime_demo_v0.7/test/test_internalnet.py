@@ -1,3 +1,4 @@
+from pathlib import Path
 from internalnet.compute_plan.builder import ComputePlanBuilder
 from internalnet.graph_engine.engine import GraphEngine
 from internalnet.graph_engine.repository import GraphRepository
@@ -27,6 +28,11 @@ from internalnet.hir.schema import (
     HIROutput,
 )
 from internalnet.hir.engine import HIREngine
+from internalnet.hir.type.determination import TypeDetermination, TypeEvidenceStatus
+from internalnet.hir.type.selection import TypeSelection
+from internalnet.hir.type.repository import LineageRepository
+LIBRARY = Path("internalnet/hir/library")
+
 
 def test_internalnet_runs_node_dependency_chain():
     graph = GraphDefinition(
@@ -621,6 +627,7 @@ def test_internalnet_runs_diffusion_passive_stage():
                 name="GLI2",
                 category="functional_protein",
                 diffusion=0.5,
+                diffusion_source_states=["free"],
             ),
         ]
     )
@@ -636,7 +643,6 @@ def test_internalnet_runs_diffusion_passive_stage():
                     },
                 },
                 update={
-                    "source_state": "free",
                     "target_state": "nuclear",
                 },
             )
@@ -811,6 +817,7 @@ def test_internalnet_runs_hir_stage_from_current_runtime():
             plan,
             node_states,
             gene_states,
+            current_type,
             gene_definitions,
             node_definitions,
             behavior_parameters,
@@ -916,6 +923,7 @@ def test_internalnet_hir_stage_receives_latest_gene_state():
             plan,
             node_states,
             gene_states,
+            current_type,
             gene_definitions,
             node_definitions,
             behavior_parameters,
@@ -1156,17 +1164,35 @@ def test_internalnet_runs_real_hir_engine():
 
         def determine(
             self,
-            criteria,
+            evidence_list,
             node_states,
-            gene_states,
         ):
-            return "floor_plate_progenitor"
-
-    class FakeTypeCriteriaRepository:
+            return [
+                TypeEvidenceStatus(
+                    type_name="floor_plate_progenitor",
+                    upstream_complete=True,
+                    regulatory_complete=True,
+                    output_complete=True,
+                    complete=True,
+                    matched_count=3,
+                    total_count=3,
+                )
+            ]
+    class FakeTypeEvidenceRepository:
 
         def all(self):
             return []
+        
+    class FakeTypeTransition:
 
+        def resolve(
+            self,
+            current_type,
+            statuses,
+        ):
+            return []
+            
+            
     hir_engine = HIREngine(
         behavior_engine=FakeBehaviorEngine(),
         tf_regulator=FakeTFRegulator(),
@@ -1175,7 +1201,13 @@ def test_internalnet_runs_real_hir_engine():
         behavior_state_merger=FakeBehaviorStateMerger(),
         label_determination=FakeLabelDetermination(),
         type_determination=FakeTypeDetermination(),
-        type_criteria_repository=FakeTypeCriteriaRepository(),
+        type_evidence_repository=FakeTypeEvidenceRepository(),
+        type_transition=FakeTypeTransition(),
+                type_selection=TypeSelection(
+            lineage_repository=LineageRepository(
+                LIBRARY / "lineage.json"
+            )
+        ),
     )
 
     graph = GraphDefinition(
@@ -1282,6 +1314,7 @@ def test_internalnet_runs_node_gene_hir_chain():
             plan,
             node_states,
             gene_states,
+            current_type,
             gene_definitions,
             node_definitions,
             behavior_parameters,
@@ -1481,6 +1514,7 @@ def test_internalnet_runs_full_pipeline():
             plan,
             node_states,
             gene_states,
+            current_type,
             gene_definitions,
             node_definitions,
             behavior_parameters,

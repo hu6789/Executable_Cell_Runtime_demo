@@ -40,7 +40,15 @@ from internalnet.hir.regulation.repository import (
 )
 from internalnet.hir.regulation.tf_regulator import TFRegulator
 from internalnet.hir.type.determination import TypeDetermination
-from internalnet.hir.type.repository import TypeCriteriaRepository
+from internalnet.hir.type.repository import (
+    TypeEvidenceRepository,
+    TypeTransitionRepository,
+    LineageRepository,
+    TypeDefinitionRepository,
+)
+from internalnet.hir.type.selection import TypeSelection
+from demo.scenario_loader import load_scenario
+from internalnet.hir.type.transition import TypeTransition
 
 from internalnet.runtime.merger import RuntimeMerger
 from shell.apply import apply_hir_output
@@ -56,7 +64,10 @@ GENE_DIR = PROJECT_ROOT / "internalnet" / "gene"
 BEHAVIOR_DIR = PROJECT_ROOT / "internalnet" / "behavior"
 PASSIVE_DIR = PROJECT_ROOT / "internalnet" / "passive"
 HIR_LIBRARY_DIR = PROJECT_ROOT / "internalnet" / "hir" / "library"
-
+TYPE_DEFINITION_PATH = (
+    HIR_LIBRARY_DIR / "type_definitions.json"
+)
+SCENARIO_DIR = PROJECT_ROOT / "demo" / "scenario"
 
 class DemoCellConfig:
     def __init__(
@@ -72,31 +83,41 @@ class DemoCellConfig:
         self.position = position
 
 
-CELL_CONFIGS = (
-    DemoCellConfig(
-        cell_id="A",
-        cell_type="neural_progenitor",
-        graph_ids=("common_shh_signaling",),
-        position=0.0,
-    ),
-    DemoCellConfig(
-        cell_id="B",
-        cell_type="floor_plate_progenitor",
-        graph_ids=(
-            "common_shh_signaling",
-            "floor_plate_progenitor",
-        ),
-        position=1.0,
-    ),
-    DemoCellConfig(
-        cell_id="C",
-        cell_type="motor_neuron_progenitor",
-        graph_ids=("floor_plate_progenitor",),
-        position=2.0,
-    ),
+def build_demo_cell_configs(
+    scenario_name: str,
+):
+    scenario = load_scenario(
+        SCENARIO_DIR / scenario_name
+    )
+
+    type_repository = TypeDefinitionRepository(
+        TYPE_DEFINITION_PATH
+    )
+
+    configs = []
+
+    for cell in scenario.cells:
+        definition = type_repository.find_by_type(
+            cell.type
+        )
+
+        configs.append(
+            DemoCellConfig(
+                cell_id=cell.name,
+                cell_type=cell.type,
+                graph_ids=tuple(
+                    definition.current_graphs
+                ),
+                position=cell.position,
+            )
+        )
+
+    return tuple(configs)
+
+
+CELL_CONFIGS = build_demo_cell_configs(
+    "abc_same_environment.json"
 )
-
-
 def load_graph_definition(path: Path) -> GraphDefinition:
     with path.open("r") as handle:
         data = json.load(handle)
@@ -131,6 +152,10 @@ def load_node_definition(path: Path) -> NodeDefinition:
         polymorphism=data.get("polymorphism", []),
         half_life=data.get("half_life"),
         diffusion=data.get("diffusion"),
+        diffusion_source_states=data.get(
+            "diffusion_source_states",
+            [],
+        ),
         formulation=data.get("formulation"),
     )
 
@@ -176,7 +201,9 @@ def build_graph_engine() -> GraphEngine:
 
     for graph_name in (
         "common_shh_signaling",
+        "neural_progenitor_core",
         "floor_plate_progenitor",
+        "motor_neuron_progenitor",
     ):
         path = GRAPH_DIR / "{}.json".format(graph_name)
         graph = load_graph_definition(path)
@@ -246,6 +273,17 @@ def build_demo_world() -> World:
                     "nuclear": 0.0,
                 },
             )
+            
+            nodes["GLI3"] = NodeState(
+                name="GLI3",
+                total=1.0,
+                states={
+                    "SUFU_bound": 0.5,
+                    "free": 0.0,
+                    "repressor": 0.5,
+                    "nuclear": 0.0,
+                },
+            )
 
             nodes["ATP"] = NodeState(
                 name="ATP",
@@ -288,6 +326,12 @@ def build_demo_world() -> World:
                     "nuclear": 0.5,
                 },
             )
+            
+            nodes["CORIN"] = NodeState(
+                name="CORIN",
+                total=0.0,
+                states={},
+            )
 
             genes["FOXA2"] = GeneState(
                 name="FOXA2",
@@ -302,6 +346,112 @@ def build_demo_world() -> World:
                 name="SHH",
                 baseline=0.5,
                 value=0.5,
+                modifications={},
+            )
+            
+            genes["CORIN"] = GeneState(
+                name="CORIN",
+                baseline=0.3,
+                value=0.3,
+                modifications={},
+            )
+
+        # Neural-progenitor-specific nodes and genes.
+        if "neural_progenitor_core" in config.graph_ids:
+            nodes["PAX6"] = NodeState(
+                name="PAX6",
+                total=1.0,
+                states={
+                    "free": 1.0,
+                    "nuclear": 0.0,
+                },
+            )
+
+            nodes["RA"] = NodeState(
+                name="RA",
+                total=1.0,
+                states={
+                    "free": 1.0,
+                },
+            )
+
+            nodes["RAR"] = NodeState(
+                name="RAR",
+                total=1.0,
+                states={
+                    "free": 0.5,
+                    "RXR_bound": 0.5,
+                    "nuclear": 0.0,
+                },
+            )
+
+            genes["PAX6"] = GeneState(
+                name="PAX6",
+                baseline=0.0,
+                value=0.0,
+                modifications={},
+            )
+
+        # Motor-neuron-progenitor-specific nodes and genes.
+        if "motor_neuron_progenitor" in config.graph_ids:
+            nodes["NKX6.1"] = NodeState(
+                name="NKX6.1",
+                total=1.0,
+                states={
+                    "free": 1.0,
+                    "nuclear": 0.0,
+                },
+            )
+
+            nodes["OLIG2"] = NodeState(
+                name="OLIG2",
+                total=1.0,
+                states={
+                    "free": 1.0,
+                    "nuclear": 0.0,
+                },
+            )
+
+            nodes["NEUROG2"] = NodeState(
+                name="NEUROG2",
+                total=1.0,
+                states={
+                    "free": 1.0,
+                    "nuclear": 0.0,
+                },
+            )
+
+            nodes["TUBB3"] = NodeState(
+                name="TUBB3",
+                total=0.0,
+                states={},
+            )
+
+            genes["NKX6.1"] = GeneState(
+                name="NKX6.1",
+                baseline=0.3,
+                value=0.3,
+                modifications={},
+            )
+
+            genes["OLIG2"] = GeneState(
+                name="OLIG2",
+                baseline=0.3,
+                value=0.3,
+                modifications={},
+            )
+
+            genes["NEUROG2"] = GeneState(
+                name="NEUROG2",
+                baseline=0.2,
+                value=0.2,
+                modifications={},
+            )
+
+            genes["TUBB3"] = GeneState(
+                name="TUBB3",
+                baseline=0.2,
+                value=0.2,
                 modifications={},
             )
 
@@ -380,8 +530,7 @@ def print_compute_plans(plans) -> None:
     print("Compute Plans")
     print("=" * 60)
 
-    for cell_id in ("A", "B", "C"):
-        plan = plans[cell_id]
+    for cell_id, plan in plans.items():
 
         print()
         print("Cell {}".format(cell_id))
@@ -482,12 +631,25 @@ def build_internalnet(trace=None) -> InternalNet:
     label_determination = LabelDetermination()
     type_determination = TypeDetermination()
 
-    type_criteria_repository = TypeCriteriaRepository(
-        PROJECT_ROOT
-        / "internalnet"
-        / "hir"
-        / "library"
-        / "type_criteria.json"
+    type_evidence_repository = TypeEvidenceRepository(
+        PROJECT_ROOT / "internalnet" / "hir" / "library" / "type_evidence.json"
+    )
+
+    type_transition_repository = TypeTransitionRepository(
+        PROJECT_ROOT / "internalnet" / "hir" / "library" / "type_transition.json"
+    )
+
+    lineage_repository = LineageRepository(
+        PROJECT_ROOT / "internalnet" / "hir" / "library" / "lineage.json"
+    )
+
+    type_transition = TypeTransition(
+        lineage_repository=lineage_repository,
+        transition_repository=type_transition_repository,
+    )
+    
+    type_selection = TypeSelection(
+        lineage_repository=lineage_repository,
     )
 
     hir_engine = HIREngine(
@@ -498,7 +660,9 @@ def build_internalnet(trace=None) -> InternalNet:
         behavior_state_merger=behavior_state_merger,
         label_determination=label_determination,
         type_determination=type_determination,
-        type_criteria_repository=type_criteria_repository,
+        type_evidence_repository=type_evidence_repository,
+        type_transition=type_transition,
+        type_selection=type_selection,
         trace=trace,
     )
 
@@ -543,7 +707,7 @@ def main() -> None:
         outputs = {}
 
         # 1. Run InternalNet for all cells.
-        for cell_id in ("A", "B", "C"):
+        for cell_id in world.state.cells:
             print()
             print("Running Cell {}".format(cell_id))
 
@@ -564,6 +728,10 @@ def main() -> None:
                     },
                     "release": {
                         "release_rate": 1.0,
+                    },
+                    "GLI3_truncation": {
+                        "truncation_rate": 2.0,
+                        "truncation_Km": 4.0,
                     },
                 },
                 resource_coefficients={
@@ -587,7 +755,7 @@ def main() -> None:
             print("  output: {}".format(output))
 
         # 2. Apply all HIR outputs to World.
-        for cell_id in ("A", "B", "C"):
+        for cell_id in world.state.cells:
             apply_hir_output(
                 world=world,
                 cell_id=cell_id,

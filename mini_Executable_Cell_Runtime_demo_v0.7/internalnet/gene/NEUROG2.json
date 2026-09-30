@@ -1,0 +1,18 @@
+{
+  "name": "NEUROG2",
+  "category": null,
+
+  "polymorphism": [],
+
+  "elements": [
+    {
+      "name": "NEUROG2_OLIG2_simplified_CRM",
+      "category": "enhancer",
+      "effect": "activation",
+      "value": 1.0,
+      "distance": null
+    }
+  ],
+
+  "formula": {}
+}

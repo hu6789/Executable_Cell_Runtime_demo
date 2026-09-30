@@ -42,6 +42,12 @@ class FormulationEngine:
                 formulation,
                 node_input,
             )
+            
+        if formulation_type == "RA_dependent_activation":
+            return self._evaluate_ra_dependent_activation(
+                formulation,
+                node_input,
+            )
 
         raise ValueError(
             f"Unsupported formulation type: {formulation_type}"
@@ -149,4 +155,55 @@ class FormulationEngine:
 
         return {
             "D_GLI": dissociation,
+        }
+        
+    def _evaluate_ra_dependent_activation(
+        self,
+        formulation: Dict[str, Any],
+        node_input: NodeInput,
+    ) -> Dict[str, float]:
+
+        input_name = formulation["input"]
+
+        related = node_input.related_inputs.get(input_name)
+
+        if related is None:
+            raise KeyError(
+                f"Related input not found: {input_name}"
+            )
+
+        states = related.get("states", {})
+
+        # For the current v0.7 mini-demo,
+        # RA activity is represented by the "free" quantity.
+        ra_activity = states.get(
+            "free",
+            0.0,
+        )
+
+        parameters = formulation["parameters"]
+
+        k_ra = parameters["K_RA"]
+        n = parameters["n"]
+
+        if k_ra is None:
+            raise ValueError(
+                "K_RA is not configured"
+            )
+
+        if k_ra <= 0:
+            raise ValueError(
+                "K_RA must be greater than zero"
+            )
+
+        activation = (
+            ra_activity ** n
+            / (
+                k_ra ** n
+                + ra_activity ** n
+            )
+        )
+
+        return {
+            "A_RAR": activation,
         }

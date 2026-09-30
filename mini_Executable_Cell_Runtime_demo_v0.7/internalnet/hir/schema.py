@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Set
+from internalnet.runtime.schema import Runtime
 from internalnet.runtime.state import GeneState, NodeState
 
 @dataclass(frozen=True)
@@ -80,7 +81,13 @@ class BehaviorExternalEffect:
 class HIROutput:
     """
     Public output of HIR for the current tick.
+
+    ``runtime`` is the final InternalNet runtime snapshot after
+    Node, Passive, and Gene stages. HIR does not modify or construct
+    this runtime; InternalNet attaches it when the complete pipeline
+    finishes.
     """
+    runtime: Optional[Runtime] = None
     behaviors: Dict[str, BehaviorRuntimeState] = field(default_factory=dict)
     external_effects: Dict[str, BehaviorExternalEffect] = field(
         default_factory=dict

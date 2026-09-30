@@ -1,0 +1,10 @@
+{
+  "name": "RA",
+  "category": "signal",
+  "polymorphism": [
+    "free"
+  ],
+  "half_life": null,
+  "diffusion": null,
+  "formulation": null
+}

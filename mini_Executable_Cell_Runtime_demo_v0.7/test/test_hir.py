@@ -1,5 +1,5 @@
 import pytest
-
+from pathlib import Path
 from internalnet.hir.schema import (
     TFRegulationDelta,
     ResourceAllocation,
@@ -9,6 +9,18 @@ from internalnet.hir.schema import (
     HIROutput,
 )
 from internalnet.behavior_engine.schema import BehaviorIntention
+from internalnet.runtime.state import GeneState, NodeState
+from internalnet.compute_plan.schema import CellComputePlan
+from internalnet.graph_engine.schema import GraphEdge
+from internalnet.hir.type.determination import TypeEvidenceStatus
+from internalnet.hir.type.transition import TypeTransitionResult
+from internalnet.hir.regulation.repository import (
+    TFElementRelation,
+    TFElementRelationRepository,
+)
+from internalnet.hir.type.selection import TypeSelection
+from internalnet.hir.type.repository import LineageRepository
+LIBRARY = Path("internalnet/hir/library")
 
 def test_behavior_intention():
     intention = BehaviorIntention(
@@ -158,7 +170,14 @@ def test_tf_element_relation_repository_loads_relations():
 
     relations = repository.find_by_tf("FOXA2")
 
-    assert len(relations) == 1
+    assert len(relations) == 2
+
+    elements = {relation.element for relation in relations}
+
+    assert elements == {
+        "SFPE2",
+        "Corin_E1",
+    }
 
     relation = relations[0]
 
@@ -612,6 +631,43 @@ def test_hir_engine_orchestrates_behavior_tf_resource_and_merge():
             )
             
             
+    class FakeTypeDetermination:
+
+        def determine(
+            self,
+            evidence_list,
+            node_states,
+        ):
+            return [
+                TypeEvidenceStatus(
+                    type_name="floor_plate_progenitor",
+                    upstream_complete=True,
+                    regulatory_complete=True,
+                    output_complete=True,
+                    complete=True,
+                    matched_count=3,
+                    total_count=3,
+                )
+            ]
+    
+    class FakeTypeTransition:
+
+        def resolve(
+            self,
+            current_type,
+            statuses,
+        ):
+            return [
+                TypeTransitionResult(
+                    type_name="floor_plate_progenitor",
+                    state="primary_type",
+                )
+            ]
+
+    class FakeTypeEvidenceRepository:
+        def all(self):
+            return []
+
     class FakeLabelDetermination:
 
         def determine(
@@ -621,20 +677,6 @@ def test_hir_engine_orchestrates_behavior_tf_resource_and_merge():
         ):
             return {"PTCH1"}
 
-    class FakeTypeDetermination:
-
-        def determine(
-            self,
-            criteria,
-            node_states,
-            gene_states,
-        ):
-            return "floor_plate_progenitor"
-
-    class FakeTypeCriteriaRepository:
-
-        def all(self):
-            return []
 
     plan = CellComputePlan(
         cell_id="cell_1",
@@ -665,7 +707,13 @@ def test_hir_engine_orchestrates_behavior_tf_resource_and_merge():
         behavior_state_merger=FakeBehaviorStateMerger(),
         label_determination=FakeLabelDetermination(),
         type_determination=FakeTypeDetermination(),
-        type_criteria_repository=FakeTypeCriteriaRepository(),
+        type_evidence_repository=FakeTypeEvidenceRepository(),
+        type_transition=FakeTypeTransition(),
+        type_selection=TypeSelection(
+            lineage_repository=LineageRepository(
+                LIBRARY / "lineage.json"
+            )
+        ),
     )
     
     
@@ -684,6 +732,7 @@ def test_hir_engine_orchestrates_behavior_tf_resource_and_merge():
                 value=1.0,
             ),
         },
+        current_type="neural_progenitor",
         gene_definitions={},
         node_definitions={},
         behavior_parameters={
@@ -1078,266 +1127,6 @@ def test_label_determination_hides_receptor_without_runtime_state():
 
     assert labels == set()
     
-from internalnet.hir.type.determination import TypeDetermination
-from internalnet.runtime.state import GeneState, NodeState
-from internalnet.compute_plan.schema import CellComputePlan
-from internalnet.graph_engine.schema import GraphEdge
-
-def test_type_determination_returns_matching_type():
-    determination = TypeDetermination()
-
-    criteria = [
-        TypeCriterion(
-            type_name="floor_plate_progenitor",
-            required=[
-                {
-                    "name": "FOXA2",
-                    "source": "gene",
-                    "threshold": 1.0,
-                },
-                {
-                    "name": "SHH",
-                    "source": "node",
-                    "threshold": 1.0,
-                },
-            ],
-        )
-    ]
-
-    node_states = {
-        "SHH": NodeState(
-            name="SHH",
-            total=1.0,
-        ),
-    }
-
-    gene_states = {
-        "FOXA2": GeneState(
-            name="FOXA2",
-            baseline=0.0,
-            value=1.0,
-        ),
-    }
-
-    result = determination.determine(
-        criteria=criteria,
-        node_states=node_states,
-        gene_states=gene_states,
-    )
-
-    assert result == "floor_plate_progenitor"
-
-
-def test_type_determination_returns_none_when_required_evidence_is_missing():
-    determination = TypeDetermination()
-
-    criteria = [
-        TypeCriterion(
-            type_name="floor_plate_progenitor",
-            required=[
-                {
-                    "name": "FOXA2",
-                    "source": "gene",
-                    "threshold": 1.0,
-                },
-                {
-                    "name": "SHH",
-                    "source": "node",
-                    "threshold": 1.0,
-                },
-            ],
-        )
-    ]
-
-    node_states = {
-        "SHH": NodeState(
-            name="SHH",
-            total=0.5,
-        ),
-    }
-
-    gene_states = {
-        "FOXA2": GeneState(
-            name="FOXA2",
-            baseline=0.0,
-            value=1.0,
-        ),
-    }
-
-    result = determination.determine(
-        criteria=criteria,
-        node_states=node_states,
-        gene_states=gene_states,
-    )
-
-    assert result is None
-
-
-def test_type_determination_does_not_require_supporting_evidence():
-    determination = TypeDetermination()
-
-    criteria = [
-        TypeCriterion(
-            type_name="floor_plate_progenitor",
-            required=[
-                {
-                    "name": "FOXA2",
-                    "source": "gene",
-                    "threshold": 1.0,
-                },
-                {
-                    "name": "SHH",
-                    "source": "node",
-                    "threshold": 1.0,
-                },
-            ],
-            supporting=[
-                {
-                    "name": "H3K27ac",
-                    "source": "node",
-                    "threshold": 1.0,
-                },
-            ],
-        )
-    ]
-
-    node_states = {
-        "SHH": NodeState(
-            name="SHH",
-            total=1.0,
-        ),
-    }
-
-    gene_states = {
-        "FOXA2": GeneState(
-            name="FOXA2",
-            baseline=0.0,
-            value=1.0,
-        ),
-    }
-
-    result = determination.determine(
-        criteria=criteria,
-        node_states=node_states,
-        gene_states=gene_states,
-    )
-
-    assert result == "floor_plate_progenitor"
-    
-from internalnet.hir.type.repository import (
-    TypeCriteriaRepository,
-    TypeCriterion,
-)
-
-def test_type_criteria_repository_loads_criteria():
-    path = Path(
-        "internalnet/hir/library/type_criteria.json"
-    )
-
-    repository = TypeCriteriaRepository(path)
-
-    criterion = repository.find_by_type(
-        "floor_plate_progenitor"
-    )
-
-    assert isinstance(criterion, TypeCriterion)
-
-    assert criterion.type_name == "floor_plate_progenitor"
-
-    assert criterion.required == [
-        {
-            "name": "FOXA2",
-            "source": "gene",
-            "threshold": 1.0,
-        },
-        {
-            "name": "SHH",
-            "source": "node",
-            "threshold": 1.0,
-        },
-    ]
-
-    assert criterion.supporting == [
-        {
-            "name": "H3K27ac",
-            "source": "node",
-            "threshold": 1.0,
-        }
-    ]
-    
-def test_type_criteria_repository_raises_for_unknown_type():
-    path = Path(
-        "internalnet/hir/library/type_criteria.json"
-    )
-
-    repository = TypeCriteriaRepository(path)
-
-    with pytest.raises(KeyError):
-        repository.find_by_type("unknown_type")
-        
-def test_type_determination_respects_evidence_source():
-    determination = TypeDetermination()
-
-    criteria = [
-        TypeCriterion(
-            type_name="floor_plate_progenitor",
-            required=[
-                {
-                    "name": "FOXA2",
-                    "source": "gene",
-                    "threshold": 1.0,
-                },
-            ],
-        )
-    ]
-
-    node_states = {
-        "FOXA2": NodeRuntimeState(
-            node_name="FOXA2",
-            total=10.0,
-        ),
-    }
-
-    result = determination.determine(
-        criteria=criteria,
-        node_states=node_states,
-        gene_states={},
-    )
-
-    assert result is None
-    
-def test_type_determination_works_with_repository():
-    repository = TypeCriteriaRepository(
-        Path("internalnet/hir/library/type_criteria.json")
-    )
-
-    determination = TypeDetermination()
-
-    criteria = repository.all()
-
-    node_states = {
-        "SHH": NodeState(
-            name="SHH",
-            total=1.0,
-        ),
-    }
-
-    gene_states = {
-        "FOXA2": GeneState(
-            name="FOXA2",
-            baseline=0.0,
-            value=1.0,
-        ),
-    }
-
-    result = determination.determine(
-        criteria=criteria,
-        node_states=node_states,
-        gene_states=gene_states,
-    )
-
-    assert result == "floor_plate_progenitor"
-    
     
 def test_behavior_runtime_state_keeps_internal_outputs():
     state = BehaviorRuntimeState(
@@ -1443,7 +1232,6 @@ def test_hir_engine_resolves_release_external_output_from_behavior_definition():
             )
 
     class FakeLabelDetermination:
-
         def determine(
             self,
             node_states,
@@ -1455,15 +1243,25 @@ def test_hir_engine_resolves_release_external_output_from_behavior_definition():
 
         def determine(
             self,
-            criteria,
+            evidence_list,
             node_states,
-            gene_states,
         ):
-            return None
+            return []
 
-    class FakeTypeCriteriaRepository:
+
+    class FakeTypeEvidenceRepository:
 
         def all(self):
+            return []
+
+
+    class FakeTypeTransition:
+
+        def resolve(
+            self,
+            current_type,
+            statuses,
+        ):
             return []
 
     plan = CellComputePlan(
@@ -1487,7 +1285,13 @@ def test_hir_engine_resolves_release_external_output_from_behavior_definition():
         behavior_state_merger=FakeBehaviorStateMerger(),
         label_determination=FakeLabelDetermination(),
         type_determination=FakeTypeDetermination(),
-        type_criteria_repository=FakeTypeCriteriaRepository(),
+        type_evidence_repository=FakeTypeEvidenceRepository(),
+        type_transition=FakeTypeTransition(),
+        type_selection=TypeSelection(
+            lineage_repository=LineageRepository(
+                LIBRARY / "lineage.json"
+            )
+        ),
     )
 
     output = engine.run(
@@ -1499,6 +1303,7 @@ def test_hir_engine_resolves_release_external_output_from_behavior_definition():
             ),
         },
         gene_states={},
+        current_type="floor_plate_progenitor",
         gene_definitions={},
         node_definitions={},
         behavior_parameters={
@@ -1512,3 +1317,308 @@ def test_hir_engine_resolves_release_external_output_from_behavior_definition():
     assert output.external_effects["release:SHH"].effect_type == "extracellular"
     assert output.external_effects["release:SHH"].target == "SHH"
     assert output.external_effects["release:SHH"].value == 2.0
+    
+    
+def test_hir_resolves_multiple_internal_node_outputs():
+    internal_outputs = {
+        "node": [
+            {
+                "target": "GLI3",
+                "state": "free",
+                "mode": "consume",
+            },
+            {
+                "target": "GLI3",
+                "state": "repressor",
+                "mode": "produce",
+            },
+        ]
+    }
+
+    resolved = HIREngine._resolve_internal_output_target(
+        internal_outputs=internal_outputs,
+        source_name="GLI3",
+    )
+
+    assert resolved == [
+        {
+            "target": "GLI3",
+            "state": "free",
+            "mode": "consume",
+        },
+        {
+            "target": "GLI3",
+            "state": "repressor",
+            "mode": "produce",
+        },
+    ]
+    
+    
+def test_hir_engine_preserves_multiple_internal_outputs():
+    class FakeBehaviorEngine:
+
+        def run_execution(
+            self,
+            execution,
+            parameters,
+        ):
+            return BehaviorIntention(
+                behavior_name=execution.behavior_name,
+                value=1.0,
+                internal_outputs={
+                    "node": [
+                        {
+                            "target": "GLI3",
+                            "state": "free",
+                            "mode": "consume",
+                        },
+                        {
+                            "target": "GLI3",
+                            "state": "repressor",
+                            "mode": "produce",
+                        },
+                    ]
+                },
+            )
+
+    class FakeTFRegulator:
+
+        def regulate(
+            self,
+            intention,
+            behavior_genes,
+            node_states,
+            gene_definitions,
+        ):
+            return TFRegulationDelta(
+                behavior_name=intention.behavior_name,
+                delta=0.0,
+            )
+
+    class FakeResourceAllocator:
+
+        def allocate(
+            self,
+            behavior_name,
+            behavior_value,
+            resource_coefficients,
+        ):
+            return ResourceAllocation(
+                behavior_name=behavior_name,
+                resources={},
+            )
+
+    class FakeResourceRealizer:
+
+        def realize(
+            self,
+            intention,
+            allocation,
+            available_resources,
+        ):
+            return ResourceDelta(
+                behavior_name=intention.behavior_name,
+                delta=0.0,
+            )
+
+    class FakeBehaviorStateMerger:
+
+        def merge(
+            self,
+            intention,
+            tf_delta,
+            resource_delta,
+            node_states,
+            gene_states,
+            source_type,
+            source_name,
+            internal_outputs=None,
+        ):
+            return BehaviorRuntimeState(
+                behavior_name=intention.behavior_name,
+                source_type=source_type,
+                source_name=source_name,
+                node_states=dict(node_states),
+                gene_states=dict(gene_states),
+                value=intention.value + resource_delta.delta,
+                internal_outputs=internal_outputs or {},
+            )
+
+    class FakeLabelDetermination:
+        def determine(
+            self,
+            node_states,
+            node_definitions,
+        ):
+            return set()
+
+    class FakeTypeDetermination:
+
+        def determine(
+            self,
+            evidence_list,
+            node_states,
+        ):
+            return []
+
+
+    class FakeTypeEvidenceRepository:
+
+        def all(self):
+            return []
+
+
+    class FakeTypeTransition:
+
+        def resolve(
+            self,
+            current_type,
+            statuses,
+        ):
+            return []
+
+    plan = CellComputePlan(
+        cell_id="cell_1",
+        candidate_behaviors=("GLI3_truncation",),
+        edges=(
+            GraphEdge(
+                name="GLI3_truncation",
+                type="node-behavior",
+                source="GLI3",
+                target="GLI3_truncation",
+            ),
+        ),
+    )
+
+    engine = HIREngine(
+        behavior_engine=FakeBehaviorEngine(),
+        tf_regulator=FakeTFRegulator(),
+        resource_allocator=FakeResourceAllocator(),
+        resource_realizer=FakeResourceRealizer(),
+        behavior_state_merger=FakeBehaviorStateMerger(),
+        label_determination=FakeLabelDetermination(),
+        type_determination=FakeTypeDetermination(),
+        type_evidence_repository=FakeTypeEvidenceRepository(),
+        type_transition=FakeTypeTransition(),
+        type_selection=TypeSelection(
+            lineage_repository=LineageRepository(
+                LIBRARY / "lineage.json"
+            )
+        ),
+    )
+
+    output = engine.run(
+        plan=plan,
+        node_states={
+            "GLI3": NodeState(
+                name="GLI3",
+                total=10.0,
+                states={
+                    "free": 4.0,
+                    "repressor": 2.0,
+                },
+            ),
+        },
+        gene_states={},
+        current_type="floor_plate_progenitor",
+        gene_definitions={},
+        node_definitions={},
+        behavior_parameters={
+            "GLI3_truncation": {},
+        },
+        resource_coefficients={
+            "GLI3_truncation": {},
+        },
+        available_resources={},
+    )
+
+    state = output.behaviors["GLI3_truncation:GLI3"]
+
+    assert state.value == 1.0
+
+    assert state.internal_outputs == [
+        {
+            "target": "GLI3",
+            "state": "free",
+            "mode": "consume",
+        },
+        {
+            "target": "GLI3",
+            "state": "repressor",
+            "mode": "produce",
+        },
+    ]
+    
+    
+def test_regulate_with_null_distance_uses_neutral_distance_factor(
+    tmp_path,
+):
+    relation_path = tmp_path / "tf_element_relations.json"
+
+    relation_path.write_text(
+        """
+{
+  "relations": [
+    {
+      "name": "test_relation",
+      "tf": "GLI2",
+      "element": "TEST_CRM",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    relation_repository = TFElementRelationRepository(
+        relation_path
+    )
+
+    regulator = TFRegulator(relation_repository)
+
+    intention = BehaviorIntention(
+        behavior_name="production",
+        value=1.0,
+        inputs={},
+    )
+
+    node_states = {
+        "GLI2": NodeRuntimeState(
+            node_name="GLI2",
+            total=1.0,
+            states={
+                "nuclear": 0.5,
+            },
+        )
+    }
+
+    gene_definitions = {
+        "TEST_GENE": GeneDefinition(
+            name="TEST_GENE",
+            category=None,
+            polymorphism=[],
+            elements=[
+                {
+                    "name": "TEST_CRM",
+                    "category": "enhancer",
+                    "effect": "activation",
+                    "value": 1.0,
+                    "distance": None,
+                }
+            ],
+            formula={},
+        )
+    }
+
+    result = regulator.regulate(
+        intention=intention,
+        behavior_genes=["TEST_GENE"],
+        node_states=node_states,
+        gene_definitions=gene_definitions,
+    )
+
+    assert result.behavior_name == "production"
+    assert result.delta == 0.5

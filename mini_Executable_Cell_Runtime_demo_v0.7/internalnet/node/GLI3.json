@@ -1,15 +1,16 @@
 {
-  "name": "GLI2",
+  "name": "GLI3",
   "category": "TF",
   "polymorphism": [
     "SUFU_bound",
     "free",
+    "repressor",
     "nuclear"
   ],
   "half_life": 60,
   "diffusion": 0.5,
   "diffusion_source_states": [
-    "free"
+    "repressor"
   ],
   "formulation": {
     "type": "SMO_dependent_dissociation",
@@ -18,8 +19,7 @@
     "parameters": {
       "k_diss": 1.0,
       "K_SMO": 0.5,
-      "n": 2.0,
-      "theta_diss": 0.5
+      "n": 2.0
     },
     "transition": {
       "type": "fractional",

@@ -1,0 +1,30 @@
+{
+  "name": "RAR",
+  "category": "TF",
+  "polymorphism": [
+    "free",
+    "RXR_bound",
+    "nuclear"
+  ],
+  "half_life": null,
+  "diffusion": 0.5,
+  "diffusion_source_states": [
+    "free",
+    "RXR_bound"
+  ],
+  "formulation": {
+    "type": "RA_dependent_activation",
+    "input": "RA",
+    "equation": "A_RAR = I_RA^n / (K_RA^n + I_RA^n)",
+    "parameters": {
+      "K_RA": 0.5,
+      "n": 2.0,
+      "theta_RAR": 0.5
+    },
+    "transition": {
+      "from": "RXR_bound",
+      "to": "nuclear",
+      "condition": "A_RAR >= theta_RAR"
+    }
+  }
+}

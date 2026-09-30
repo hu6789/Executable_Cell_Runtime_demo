@@ -1,8 +1,40 @@
 {
   "types": [
     {
+      "name": "neural_progenitor",
+      "graphs": {
+        "current": [
+          "common_shh_signaling",
+          "neural_progenitor_core"
+        ],
+        "latent": [
+          "floor_plate_progenitor",
+          "motor_neuron_progenitor"
+        ],
+        "legacy": []
+      }
+    },
+    {
       "name": "floor_plate_progenitor",
-      "graph": "floor_plate_progenitor"
+      "graphs": {
+        "current": [
+          "common_shh_signaling",
+          "floor_plate_progenitor"
+        ],
+        "latent": [],
+        "legacy": []
+      }
+    },
+    {
+      "name": "motor_neuron_progenitor",
+      "graphs": {
+        "current": [
+          "common_shh_signaling",
+          "motor_neuron_progenitor"
+        ],
+        "latent": [],
+        "legacy": []
+      }
     }
   ]
 }

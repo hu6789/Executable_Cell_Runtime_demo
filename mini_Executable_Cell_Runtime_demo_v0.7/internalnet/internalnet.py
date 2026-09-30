@@ -71,6 +71,7 @@ class InternalNet:
                 related_inputs=related_inputs,
             )
 
+
             before_state = current_runtime.get_node(
                 node_name
             )
@@ -319,6 +320,7 @@ class InternalNet:
             plan=plan,
             node_states=dict(runtime.node_states),
             gene_states=dict(runtime.gene_states),
+            current_type=runtime.type,
             gene_definitions=gene_definitions,
             node_definitions=node_definitions,
             behavior_parameters=behavior_parameters,
@@ -353,7 +355,7 @@ class InternalNet:
             plan,
         )
 
-        return self.run_hir_stage(
+        hir_output = self.run_hir_stage(
             current_runtime,
             plan,
             gene_definitions,
@@ -361,4 +363,12 @@ class InternalNet:
             behavior_parameters,
             resource_coefficients,
             available_resources,
+        )
+
+        return HIROutput(
+            runtime=current_runtime,
+            behaviors=hir_output.behaviors,
+            external_effects=hir_output.external_effects,
+            labels=hir_output.labels,
+            type_name=hir_output.type_name,
         )

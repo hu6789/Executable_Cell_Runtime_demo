@@ -1,0 +1,34 @@
+{
+  "name": "GLI3_truncation",
+  "category": "special",
+  "formula": {
+    "equation": "v = V_max × X_free / (K_m + X_free)",
+    "parameters": {
+      "V_max": "truncation_rate",
+      "K_m": "truncation_Km",
+      "X_free": "GLI3.free"
+    }
+  },
+  "resources": {
+    "consumption": {
+      "ATP": 0.5
+    },
+    "occupancy": {
+      "enzyme": 0.1
+    }
+  },
+  "internal_outputs": {
+    "node": {
+      "source": {
+        "target": "GLI3",
+        "state": "free",
+        "mode": "consume"
+      },
+      "product": {
+        "target": "GLI3",
+        "state": "repressor",
+        "mode": "produce"
+      }
+    }
+  }
+}

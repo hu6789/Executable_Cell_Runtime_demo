@@ -1,0 +1,66 @@
+{
+  "name": "shh_patterning",
+  "type": "patterning",
+  "cells": [
+    {
+      "name": "A1",
+      "type": "neural_progenitor",
+      "position": 0.0
+    },
+    {
+      "name": "A2",
+      "type": "neural_progenitor",
+      "position": 1.0
+    },
+    {
+      "name": "A3",
+      "type": "neural_progenitor",
+      "position": 2.0
+    },
+    {
+      "name": "A4",
+      "type": "neural_progenitor",
+      "position": 3.0
+    },
+    {
+      "name": "A5",
+      "type": "neural_progenitor",
+      "position": 4.0
+    },
+    {
+      "name": "B",
+      "type": "floor_plate_progenitor",
+      "position": 5.0
+    },
+    {
+      "name": "A6",
+      "type": "neural_progenitor",
+      "position": 6.0
+    },
+    {
+      "name": "A7",
+      "type": "neural_progenitor",
+      "position": 7.0
+    },
+    {
+      "name": "A8",
+      "type": "neural_progenitor",
+      "position": 8.0
+    },
+    {
+      "name": "A9",
+      "type": "neural_progenitor",
+      "position": 9.0
+    },
+    {
+      "name": "A10",
+      "type": "neural_progenitor",
+      "position": 10.0
+    },
+    {
+      "name": "A11",
+      "type": "neural_progenitor",
+      "position": 11.0
+    }
+  ]
+}

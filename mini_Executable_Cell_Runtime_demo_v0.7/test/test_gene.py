@@ -132,7 +132,96 @@ def test_gene_formulation_hill_activation():
         "lysine_modified": pytest.approx(0.5),
     }
 
+def test_gene_formulation_value_output():
+    gene = GeneDefinition(
+        name="PAX6",
+        formula={
+            "equation": (
+                "R = R_max × RAR_nuclear^n / "
+                "(K_RAR^n + RAR_nuclear^n)"
+            ),
+            "parameters": {
+                "RAR_nuclear": "RAR.states.nuclear",
+                "R_max": 1.0,
+                "K_RAR": 0.5,
+                "n": 2,
+            },
+            "output": "value",
+        },
+    )
 
+    gene_state = GeneState(
+        name="PAX6",
+        baseline=0.0,
+        value=0.0,
+    )
+
+    node_states = {
+        "RAR": NodeState(
+            name="RAR",
+            total=1.0,
+            states={
+                "free": 0.0,
+                "RXR_bound": 0.0,
+                "nuclear": 1.0,
+            },
+        )
+    }
+
+    engine = GeneFormulationEngine()
+
+    result = engine.evaluate(
+        gene,
+        gene_state,
+        node_states,
+    )
+
+    assert result.source == "gene_engine"
+    assert result.gene_name == "PAX6"
+    assert result.value_delta == pytest.approx(0.8)
+    assert result.modification_deltas == {}
+    
+def test_gene_formulation_value_output_uses_current_gene_value():
+    gene = GeneDefinition(
+        name="PAX6",
+        formula={
+            "parameters": {
+                "RAR_nuclear": "RAR.states.nuclear",
+                "R_max": 1.0,
+                "K_RAR": 0.5,
+                "n": 2,
+            },
+            "output": "value",
+        },
+    )
+
+    gene_state = GeneState(
+        name="PAX6",
+        baseline=0.0,
+        value=0.2,
+    )
+
+    node_states = {
+        "RAR": NodeState(
+            name="RAR",
+            total=1.0,
+            states={
+                "nuclear": 1.0,
+            },
+        )
+    }
+
+    engine = GeneFormulationEngine()
+
+    result = engine.evaluate(
+        gene,
+        gene_state,
+        node_states,
+    )
+
+    assert result.value_delta == pytest.approx(0.8 - 0.2)
+    assert result.modification_deltas == {}
+    
 def test_gene_formulation_uses_new_node_state():
     gene = GeneDefinition(
         name="FOXA2",

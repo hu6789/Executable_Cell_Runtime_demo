@@ -8,7 +8,6 @@
     }
   },
   "update": {
-    "source_state": "free",
     "target_state": "nuclear"
   }
 }

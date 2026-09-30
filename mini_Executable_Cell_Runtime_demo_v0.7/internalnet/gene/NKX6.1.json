@@ -1,0 +1,18 @@
+{
+  "name": "NKX6.1",
+  "category": null,
+
+  "polymorphism": [],
+
+  "elements": [
+    {
+      "name": "NKX6.1_+540kb_CRM",
+      "category": "enhancer",
+      "effect": "activation",
+      "value": 1.0,
+      "distance": 540000
+    }
+  ],
+
+  "formula": {}
+}

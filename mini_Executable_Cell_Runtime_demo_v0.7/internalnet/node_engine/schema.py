@@ -11,6 +11,9 @@ class NodeDefinition:
     polymorphism: List[str] = field(default_factory=list)
     half_life: Optional[float] = None
     diffusion: Optional[float] = None
+    diffusion_source_states: List[str] = field(
+        default_factory=list
+    )
     formulation: Optional[Dict[str, Any]] = None
 
 

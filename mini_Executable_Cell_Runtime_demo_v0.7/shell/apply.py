@@ -23,18 +23,60 @@ def apply_hir_output(
     cell = world.get_cell(cell_id)
 
     # ---------------------------------------------------------
+    # 0. Final InternalNet Runtime -> World state
+    #
+    # Runtime contains the final states after:
+    # Node -> Passive -> Gene.
+    # ---------------------------------------------------------
+    if output.runtime is not None:
+        for node_name, node_state in output.runtime.node_states.items():
+            cell.nodes[node_name] = node_state
+
+        for gene_name, gene_state in output.runtime.gene_states.items():
+            cell.genes[gene_name] = gene_state
+
+    # ---------------------------------------------------------
     # 1. BehaviorRuntimeState -> World state
     # ---------------------------------------------------------
     for runtime_state in output.behaviors.values():
         internal_output = runtime_state.internal_outputs
- 
+
         if not internal_output:
             continue
 
-        target = internal_output.get("target")
-        state = internal_output.get("state")
+        # -----------------------------------------------------
+        # Normalize single-output and multi-output forms.
+        #
+        # Single output:
+        # {
+        #     "target": "SHH",
+        #     "state": "total",
+        # }
+        #
+        # Multiple outputs:
+        # [
+        #     {
+        #         "target": "GLI3",
+        #         "state": "free",
+        #         "mode": "consume",
+        #     },
+        #     {
+        #         "target": "GLI3",
+        #         "state": "repressor",
+        #         "mode": "produce",
+        #     },
+        # ]
+        # -----------------------------------------------------
+        if isinstance(internal_output, list):
+            internal_outputs = internal_output
+        else:
+            internal_outputs = [internal_output]
 
-        if state == "total":
+        for item in internal_outputs:
+            target = item.get("target")
+            state = item.get("state")
+            mode = item.get("mode")
+
             if target not in cell.nodes:
                 raise KeyError(
                     "Node target not found in cell: {}".format(target)
@@ -42,36 +84,66 @@ def apply_hir_output(
 
             current_node = cell.nodes[target]
 
-            cell.nodes[target] = NodeState(
-                name=current_node.name,
-                total=runtime_state.value,
-                states=dict(current_node.states),
-            )
+            # -------------------------------------------------
+            # Legacy/default behavior:
+            # overwrite the target state with runtime value.
+            # -------------------------------------------------
+            if mode is None:
+                if state == "total":
+                    cell.nodes[target] = NodeState(
+                        name=current_node.name,
+                        total=runtime_state.value,
+                        states=dict(current_node.states),
+                    )
 
-        elif state == "free":
-            if target not in cell.nodes:
-                raise KeyError(
-                    "Node target not found in cell: {}".format(target)
+                elif state == "free":
+                    states = dict(current_node.states)
+                    states["free"] = runtime_state.value
+
+                    cell.nodes[target] = NodeState(
+                        name=current_node.name,
+                        total=current_node.total,
+                        states=states,
+                    )
+
+            # -------------------------------------------------
+            # Explicit consume / produce behavior.
+            # -------------------------------------------------
+            elif mode == "consume":
+                states = dict(current_node.states)
+
+                current_value = states.get(state, 0.0)
+                states[state] = max(
+                    current_value - runtime_state.value,
+                    0.0,
                 )
 
-            current_node = cell.nodes[target]
-            states = dict(current_node.states)
-            states["free"] = runtime_state.value
-
-            cell.nodes[target] = NodeState(
-                name=current_node.name,
-                total=current_node.total,
-                states=states,
-            )
-            
-            print(
-                "  [WORLD UPDATE] Cell {}: {}.{} <- {:.4f}".format(
-                    cell_id,
-                    target,
-                    state,
-                    runtime_state.value,
+                cell.nodes[target] = NodeState(
+                    name=current_node.name,
+                    total=current_node.total,
+                    states=states,
                 )
-            )
+
+            elif mode == "produce":
+                states = dict(current_node.states)
+
+                current_value = states.get(state, 0.0)
+                states[state] = (
+                    current_value + runtime_state.value
+                )
+
+                cell.nodes[target] = NodeState(
+                    name=current_node.name,
+                    total=current_node.total,
+                    states=states,
+                )
+
+            else:
+                raise ValueError(
+                    "Unsupported internal output mode: {}".format(
+                        mode
+                    )
+                )
             
     # ---------------------------------------------------------
     # 2. Labels -> current-tick labels
@@ -121,5 +193,8 @@ def apply_hir_output(
     # ---------------------------------------------------------
     # 4. Type update
     #
-    # Deferred until AC is implemented.
+    # HIR provides the current primary type.
+    # Shell persists it to World.
     # ---------------------------------------------------------
+    if output.type_name is not None:
+        cell.type = output.type_name

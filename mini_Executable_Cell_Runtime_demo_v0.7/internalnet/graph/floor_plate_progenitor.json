@@ -1,14 +1,17 @@
+
 {
   "name": "floor_plate_progenitor",
   "type": "cell_specific",
   "nodes": [
     "FOXA2",
     "SHH",
-    "H3K27ac"
+    "H3K27ac",
+    "CORIN"
   ],
   "genes": [
     "FOXA2",
-    "SHH"
+    "SHH",
+    "CORIN"
   ],
   "edges": [
     {
@@ -33,6 +36,13 @@
       "required": true
     },
     {
+      "name": "CORIN_production",
+      "type": "gene-behavior",
+      "source": "CORIN",
+      "target": "production",
+      "required": true
+    },
+    {
       "name": "SHH_release",
       "type": "node-behavior",
       "source": "SHH",
@@ -41,3 +51,4 @@
     }
   ]
 }
+

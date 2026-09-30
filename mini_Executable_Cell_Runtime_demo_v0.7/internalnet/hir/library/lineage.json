@@ -2,8 +2,21 @@
   "name": "neural_lineage",
   "nodes": [
     {
-      "name": "floor_plate_progenitor",
+      "name": "neural_progenitor",
       "parent": null,
+      "children": [
+        "floor_plate_progenitor",
+        "motor_neuron_progenitor"
+      ]
+    },
+    {
+      "name": "floor_plate_progenitor",
+      "parent": "neural_progenitor",
+      "children": []
+    },
+    {
+      "name": "motor_neuron_progenitor",
+      "parent": "neural_progenitor",
       "children": []
     }
   ]

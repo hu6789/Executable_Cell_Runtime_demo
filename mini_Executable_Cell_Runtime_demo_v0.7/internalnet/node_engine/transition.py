@@ -65,6 +65,15 @@ class TransitionEngine:
 
         if transition is None:
             return runtime_state
+            
+        transition_type = transition.get("type")
+
+        if transition_type == "fractional":
+            return self._apply_fractional_transition(
+                runtime_state=runtime_state,
+                transition=transition,
+                computed_values=computed_values,
+            )
 
         if not self.evaluate_condition(
             node,
@@ -145,4 +154,51 @@ class TransitionEngine:
 
         raise ValueError(
             f"Unsupported transition operator: {operator}"
+        )
+        
+
+    def _apply_fractional_transition(
+        self,
+        runtime_state: NodeRuntimeState,
+        transition: Dict[str, Any],
+        computed_values: Dict[str, float],
+    ) -> NodeRuntimeState:
+
+        source_state = transition["source"]
+        target_state = transition["target"]
+        fraction_name = transition["fraction"]
+
+        if fraction_name not in computed_values:
+            raise KeyError(
+                f"Computed value not found: {fraction_name}"
+            )
+
+        fraction = computed_values[fraction_name]
+  
+        if fraction < 0.0 or fraction > 1.0:
+            raise ValueError(
+                f"Transition fraction must be between 0 and 1: {fraction}"
+            )
+
+        states = dict(runtime_state.states)
+
+        if source_state not in states:
+            raise KeyError(
+                f"Transition source state not found: {source_state}"
+            )
+
+        if target_state not in states:
+            raise KeyError(
+                f"Transition target state not found: {target_state}"
+           )
+
+        total = runtime_state.total
+
+        states[target_state] = total * fraction
+        states[source_state] = total * (1.0 - fraction)
+
+        return NodeRuntimeState(
+            node_name=runtime_state.node_name,
+            total=runtime_state.total,
+            states=states,
         )

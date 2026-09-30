@@ -558,6 +558,7 @@ def test_shell_runs_full_internalnet_tick():
             plan,
             node_states,
             gene_states,
+            current_type,
             gene_definitions,
             node_definitions,
             behavior_parameters,
@@ -904,3 +905,70 @@ def test_apply_hir_output_applies_multiple_behavior_outputs():
 
     assert world.get_cell("B").nodes["FOXA2"].total == 0.75
     assert world.get_cell("B").nodes["SHH"].total == 0.40
+    
+    
+def test_apply_hir_output_applies_multiple_internal_outputs():
+    world = World()
+
+    cell = CellState(
+        id="B",
+        type="floor_plate_progenitor",
+        nodes={
+            "GLI3": NodeState(
+                name="GLI3",
+                total=10.0,
+                states={
+                    "free": 4.0,
+                    "repressor": 2.0,
+                },
+            ),
+        },
+    )
+
+    world.add_cell(cell)
+
+    output = HIROutput(
+        behaviors={
+            "GLI3_truncation:GLI3": BehaviorRuntimeState(
+                behavior_name="GLI3_truncation",
+                source_type="node",
+                source_name="GLI3",
+                node_states={
+                    "GLI3": NodeState(
+                        name="GLI3",
+                        total=10.0,
+                        states={
+                            "free": 4.0,
+                            "repressor": 2.0,
+                        },
+                    ),
+                },
+                gene_states={},
+                value=1.0,
+                internal_outputs=[
+                    {
+                        "target": "GLI3",
+                        "state": "free",
+                        "mode": "consume",
+                    },
+                    {
+                        "target": "GLI3",
+                        "state": "repressor",
+                        "mode": "produce",
+                    },
+                ],
+            )
+        }
+    )
+
+    apply_hir_output(
+        world=world,
+        cell_id="B",
+        output=output,
+    )
+
+    gli3 = world.get_cell("B").nodes["GLI3"]
+
+    assert gli3.total == 10.0
+    assert gli3.states["free"] == 3.0
+    assert gli3.states["repressor"] == 3.0

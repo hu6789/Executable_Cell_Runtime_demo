@@ -19,8 +19,13 @@ from .schema import (
     HIROutput,
 )
 from .type.determination import TypeDetermination
-from .type.repository import TypeCriteriaRepository
-
+from .type.repository import (
+    TypeEvidenceRepository,
+    TypeTransitionRepository,
+    LineageRepository,
+)
+from .type.transition import TypeTransition
+from .type.selection import TypeSelection
 
 class HIREngine:
     """
@@ -52,8 +57,10 @@ class HIREngine:
         behavior_state_merger: BehaviorStateMerger,
         label_determination: LabelDetermination,
         type_determination: TypeDetermination,
-        type_criteria_repository: TypeCriteriaRepository,
-            trace: Optional[Any] = None,
+        type_evidence_repository: TypeEvidenceRepository,
+        type_transition: TypeTransition,
+        type_selection: TypeSelection,
+        trace: Optional[Any] = None,
     ) -> None:
         self._behavior_engine = behavior_engine
         self._behavior_input_resolver = BehaviorInputResolver()
@@ -63,7 +70,9 @@ class HIREngine:
         self._behavior_state_merger = behavior_state_merger
         self._label_determination = label_determination
         self._type_determination = type_determination
-        self._type_criteria_repository = type_criteria_repository
+        self._type_evidence_repository = type_evidence_repository
+        self._type_transition = type_transition
+        self._type_selection = type_selection
         self._trace = trace
 
     def run(
@@ -71,6 +80,7 @@ class HIREngine:
         plan: CellComputePlan,
         node_states: Dict[str, NodeState],
         gene_states: Dict[str, GeneState],
+        current_type: Optional[str],
         gene_definitions: Dict[str, GeneDefinition],
         node_definitions: Dict[str, Dict],
         behavior_parameters: Dict[str, Dict[str, float]],
@@ -241,14 +251,23 @@ class HIREngine:
         # 8. Type determination
         #
         # Type is determined from current node/gene evidence and
-        # TypeCriteria. It is independent from behavior runtime state.
         # -------------------------------------------------------------
-        criteria = self._type_criteria_repository.all()
+        type_evidence = self._type_evidence_repository.all()
 
-        type_name = self._type_determination.determine(
-            criteria=criteria,
+        type_statuses = self._type_determination.determine(
+            evidence_list=type_evidence,
             node_states=node_states,
-            gene_states=gene_states,
+        )
+        
+        type_transitions = self._type_transition.resolve(
+            current_type=current_type,
+            statuses=type_statuses,
+        )
+        
+
+        type_name = self._type_selection.select(
+            current_type=current_type,
+            statuses=type_statuses,
         )
 
         if self._trace is not None:
@@ -292,12 +311,40 @@ class HIREngine:
         if not node_output:
             return None
 
-        target = node_output.get("target")
+        def resolve_item(item):
+            target = item.get("target")
 
-        if target == "source_name":
-            target = source_name
+            if target == "source_name":
+                target = source_name
 
-        return {
-            "target": target,
-            "state": node_output.get("state"),
-        }
+            resolved = {
+                "target": target,
+                "state": item.get("state"),
+            }
+
+            if "mode" in item:
+                resolved["mode"] = item.get("mode")
+
+            return resolved
+
+        if isinstance(node_output, list):
+            return [resolve_item(item) for item in node_output]
+
+        # New structure:
+        # {
+        #     "source": {...},
+        #     "product": {...}
+        # }
+        if "source" in node_output or "product" in node_output:
+            resolved = []
+
+            for key in ("source", "product"):
+                item = node_output.get(key)
+
+                if item is not None:
+                    resolved.append(resolve_item(item))
+ 
+            return resolved
+
+        # Legacy single-node structure.
+        return resolve_item(node_output)

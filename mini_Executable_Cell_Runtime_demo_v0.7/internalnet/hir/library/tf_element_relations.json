@@ -15,6 +15,70 @@
       "category": "transcriptional_regulation",
       "effect": "activation",
       "value": 1.0
+    },
+    {
+      "name": "FOXA2_Corin_E1_regulation",
+      "tf": "FOXA2",
+      "element": "Corin_E1",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    },
+    {
+      "name": "GLI2_NKX6.1_+540kb_CRM_regulation",
+      "tf": "GLI2",
+      "element": "NKX6.1_+540kb_CRM",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    },
+    {
+      "name": "GLI3_NKX6.1_+540kb_CRM_regulation",
+      "tf": "GLI3",
+      "element": "NKX6.1_+540kb_CRM",
+      "category": "transcriptional_regulation",
+      "effect": "repression",
+      "value": -1.0
+    },
+    {
+      "name": "GLI3_OLIG2_-33kb_CRM_regulation",
+      "tf": "GLI3",
+      "element": "OLIG2_-33kb_CRM",
+      "category": "transcriptional_regulation",
+      "effect": "repression",
+      "value": -1.0
+    },
+    {
+      "name": "NKX6.1_OLIG2_simplified_CRM_regulation",
+      "tf": "NKX6.1",
+      "element": "OLIG2_NKX6.1_fake",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    },
+    {
+      "name": "PAX6_OLIG2_promoter_regulation",
+      "tf": "PAX6",
+      "element": "OLIG2_PAX6_promoter",
+      "category": "transcriptional_regulation",
+      "effect": "repression",
+      "value": -1.0
+    },
+    {
+      "name": "OLIG2_NEUROG2_simplified_CRM_regulation",
+      "tf": "OLIG2",
+      "element": "NEUROG2_OLIG2_simplified_CRM",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
+    },
+    {
+      "name": "NEUROG2_TUBB3_simplified_CRM_regulation",
+      "tf": "NEUROG2",
+      "element": "TUBB3_NEUROG2_simplified_CRM",
+      "category": "transcriptional_regulation",
+      "effect": "activation",
+      "value": 1.0
     }
   ]
 }

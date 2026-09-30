@@ -1,5 +1,5 @@
 # test/test_passive.py
-
+import pytest
 from internalnet.passive_engine.schema import (
     PassiveDefinition,
     PassiveRuntimeState,
@@ -26,7 +26,6 @@ def test_passive_definition_stores_formula_and_update():
             },
         },
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -36,7 +35,6 @@ def test_passive_definition_stores_formula_and_update():
         "Δ = min(D × X_free × Δt, X_free)"
     )
     assert passive.formula["parameters"]["D"] == "node.diffusion"
-    assert passive.update["source_state"] == "free"
     assert passive.update["target_state"] == "nuclear"
 
 
@@ -44,6 +42,7 @@ def test_passive_runtime_state_defaults():
     runtime_state = PassiveRuntimeState(
         node_name="FOXA2",
         passive_name="diffusion",
+        
     )
 
     assert runtime_state.node_name == "FOXA2"
@@ -225,7 +224,6 @@ def test_diffusion():
             "equation": "Δ = min(D × X_free × Δt, X_free)",
         },
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -234,6 +232,7 @@ def test_diffusion():
         name="FOXA2",
         category="TF",
         diffusion=0.5,
+        diffusion_source_states=["free"],
     )
 
     runtime_state = NodeRuntimeState(
@@ -262,7 +261,6 @@ def test_diffusion_does_not_exceed_source_state():
     passive = PassiveDefinition(
         name="diffusion",
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -271,6 +269,7 @@ def test_diffusion_does_not_exceed_source_state():
         name="FOXA2",
         category="TF",
         diffusion=10.0,
+        diffusion_source_states=["free"],
     )
 
     runtime_state = NodeRuntimeState(
@@ -299,7 +298,6 @@ def test_diffusion_with_zero_dt():
     passive = PassiveDefinition(
         name="diffusion",
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -308,6 +306,7 @@ def test_diffusion_with_zero_dt():
         name="FOXA2",
         category="TF",
         diffusion=0.5,
+        diffusion_source_states=["free"],
     )
 
     runtime_state = NodeRuntimeState(
@@ -336,7 +335,6 @@ def test_diffusion_with_no_coefficient_raises():
     passive = PassiveDefinition(
         name="diffusion",
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -562,6 +560,186 @@ def test_half_life_decay_requires_positive_half_life():
             "Non-positive half-life should raise ValueError"
         )
 
+def test_sufu_binding():
+    passive = PassiveDefinition(
+        name="sufu_binding",
+        applies_to=["GLI2"],
+        formula={
+            "equation": "Δ = min(k_bind × X_free × Δt, X_free)",
+            "parameters": {
+                "k_bind": 0.5,
+            },
+        },
+        update={
+            "source_state": "free",
+            "target_state": "SUFU_bound",
+        },
+    )
+
+    node = NodeDefinition(
+        name="GLI2",
+        category="TF",
+        polymorphism=(
+            "SUFU_bound",
+            "free",
+            "nuclear",
+        ),
+        half_life=60,
+        diffusion=0.5,
+        diffusion_source_states=("free",),
+    )
+
+    runtime_state = NodeRuntimeState(
+        node_name="GLI2",
+        total=1.0,
+        states={
+            "SUFU_bound": 0.2,
+            "free": 0.8,
+            "nuclear": 0.0,
+        },
+    )
+
+    engine = PassiveFormulationEngine()
+
+    delta = engine.evaluate(
+        passive=passive,
+        node=node,
+        runtime_state=runtime_state,
+        dt=1.0,
+    )
+
+    assert delta["free"] == -0.4
+    assert delta["SUFU_bound"] == 0.4
+    
+    
+def test_sufu_binding_does_not_exceed_free_state():
+    passive = PassiveDefinition(
+        name="sufu_binding",
+        applies_to=["GLI2"],
+        formula={
+            "equation": "Δ = min(k_bind × X_free × Δt, X_free)",
+            "parameters": {
+                "k_bind": 0.5,
+            },
+        },
+        update={
+            "source_state": "free",
+            "target_state": "SUFU_bound",
+        },
+    )
+
+    node = NodeDefinition(
+        name="GLI2",
+        category="TF",
+        polymorphism=("SUFU_bound", "free"),
+        half_life=60,
+        diffusion=None,
+        diffusion_source_states=(),
+    )
+
+    runtime_state = NodeRuntimeState(
+        node_name="GLI2",
+        total=1.0,
+        states={
+            "SUFU_bound": 0.9,
+            "free": 0.1,
+        },
+    )
+
+    engine = PassiveFormulationEngine()
+
+    delta = engine.evaluate(
+        passive=passive,
+        node=node,
+        runtime_state=runtime_state,
+        dt=10.0,
+    )
+
+    assert delta["free"] == -0.1
+    assert delta["SUFU_bound"] == 0.1
+    
+    
+def test_sufu_binding_with_zero_dt():
+    passive = PassiveDefinition(
+        name="sufu_binding",
+        applies_to=["GLI2"],
+        formula={
+            "equation": "Δ = min(k_bind × X_free × Δt, X_free)",
+            "parameters": {
+                "k_bind": 0.5,
+            },
+        },
+        update={
+            "source_state": "free",
+            "target_state": "SUFU_bound",
+        },
+    )
+
+    node = NodeDefinition(
+        name="GLI2",
+        category="TF",
+        polymorphism=("SUFU_bound", "free"),
+    )
+
+    runtime_state = NodeRuntimeState(
+        node_name="GLI2",
+        total=1.0,
+        states={
+            "SUFU_bound": 0.2,
+            "free": 0.8,
+        },
+    )
+
+    engine = PassiveFormulationEngine()
+
+    delta = engine.evaluate(
+        passive=passive,
+        node=node,
+        runtime_state=runtime_state,
+        dt=0.0,
+    )
+
+    assert delta["free"] == 0.0
+    assert delta["SUFU_bound"] == 0.0
+    
+
+def test_sufu_binding_requires_source_and_target_states():
+    passive = PassiveDefinition(
+        name="sufu_binding",
+        applies_to=["GLI2"],
+        formula={
+            "parameters": {
+                "k_bind": 0.5,
+            },
+        },
+        update={},
+    )
+
+    node = NodeDefinition(
+        name="GLI2",
+        category="TF",
+        polymorphism=("SUFU_bound", "free"),
+    )
+
+    runtime_state = NodeRuntimeState(
+        node_name="GLI2",
+        total=1.0,
+        states={
+            "SUFU_bound": 0.2,
+            "free": 0.8,
+        },
+    )
+
+    engine = PassiveFormulationEngine()
+
+    with pytest.raises(ValueError):
+        engine.evaluate(
+            passive=passive,
+            node=node,
+            runtime_state=runtime_state,
+            dt=1.0,
+        )
+
 
 def test_unsupported_passive_raises():
     passive = PassiveDefinition(
@@ -602,7 +780,6 @@ def test_negative_dt_raises():
     passive = PassiveDefinition(
         name="diffusion",
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -611,6 +788,7 @@ def test_negative_dt_raises():
         name="FOXA2",
         category="TF",
         diffusion=0.5,
+        diffusion_source_states=["free"],
     )
 
     runtime_state = NodeRuntimeState(
@@ -653,6 +831,8 @@ def test_passive_engine_evaluate():
         category="TF",
         polymorphism=["free", "nuclear"],
         diffusion=0.5,
+        diffusion_source_states=["free"],
+
     )
 
     passive = PassiveDefinition(
@@ -664,7 +844,6 @@ def test_passive_engine_evaluate():
             },
         },
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -711,6 +890,7 @@ def test_passive_engine_run():
         category="TF",
         polymorphism=["free", "nuclear"],
         diffusion=0.5,
+        diffusion_source_states=["free"],
     )
 
     passive = PassiveDefinition(
@@ -722,7 +902,6 @@ def test_passive_engine_run():
             },
         },
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )
@@ -765,13 +944,13 @@ def test_passive_engine_run_does_not_mutate_original_state():
         category="TF",
         polymorphism=["free", "nuclear"],
         diffusion=0.5,
+        diffusion_source_states=["free"],
     )
 
     passive = PassiveDefinition(
         name="diffusion",
         formula={},
         update={
-            "source_state": "free",
             "target_state": "nuclear",
         },
     )

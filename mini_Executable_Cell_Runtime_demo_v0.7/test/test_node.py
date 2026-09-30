@@ -20,6 +20,7 @@ class TestNodeDefinition:
             polymorphism=["unrecruited", "recruited"],
             half_life=60.0,
             diffusion=0.5,
+            diffusion_source_states=["free"],
         )
 
         assert node.name == "SMO"
@@ -463,7 +464,83 @@ class TestFormulationEngine:
                 node,
                 node_input,
             )
+    def test_ra_dependent_activation(self):
+        node = NodeDefinition(
+            name="RAR",
+            category="TF",
+            formulation={
+                "type": "RA_dependent_activation",
+                "input": "RA",
+                "equation": (
+                    "A_RAR = I_RA^n / "
+                    "(K_RA^n + I_RA^n)"
+                ),
+                "parameters": {
+                    "K_RA": 0.5,
+                    "n": 2.0,
+                    "theta_RAR": 0.5,
+                },
+            },
+        )
 
+        node_input = NodeInput(
+            node_name="RAR",
+            total=1.0,
+            states={
+                "free": 0.5,
+                "RXR_bound": 0.5,
+                "nuclear": 0.0,
+            },
+            related_inputs={
+                "RA": {
+                    "total": 1.0,
+                    "states": {
+                        "free": 1.0,
+                    },
+                }
+            },
+        )
+
+        engine = FormulationEngine()
+
+        result = engine.evaluate(
+            node,
+            node_input,
+        )
+
+        assert result["A_RAR"] == pytest.approx(0.8)
+
+    def test_ra_dependent_activation_missing_related_input_raises(self):
+        node = NodeDefinition(
+            name="RAR",
+            category="TF",
+            formulation={
+                "type": "RA_dependent_activation",
+                "input": "RA",
+                "parameters": {
+                    "K_RA": 0.5,
+                    "n": 2.0,
+                    "theta_RAR": 0.5,
+                },
+            },
+        )
+
+        node_input = NodeInput(
+            node_name="RAR",
+            total=1.0,
+        )
+
+        engine = FormulationEngine()
+
+        with pytest.raises(
+            KeyError,
+            match="Related input not found: RA",
+        ):
+            engine.evaluate(
+                node,
+                node_input,
+            )
+            
     def test_gli2_missing_parameters_raises(self):
         node = NodeDefinition(
             name="GLI2",

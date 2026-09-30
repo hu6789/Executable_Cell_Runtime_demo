@@ -1,0 +1,35 @@
+{
+  "name": "neural_progenitor_core",
+  "type": "common",
+  "nodes": [
+    "PAX6",
+    "RA",
+    "RAR"
+  ],
+  "genes": [
+    "PAX6"
+  ],
+  "edges": [
+    {
+      "name": "RA_RAR",
+      "type": "node-node",
+      "source": "RA",
+      "target": "RAR",
+      "required": true
+    },
+    {
+      "name": "RAR_PAX6",
+      "type": "node-gene",
+      "source": "RAR",
+      "target": "PAX6",
+      "required": true
+    },
+    {
+      "name": "PAX6_production",
+      "type": "gene-behavior",
+      "source": "PAX6",
+      "target": "production",
+      "required": true
+    }
+  ]
+}

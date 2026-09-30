@@ -43,13 +43,14 @@ class TFRegulator:
                     element.get("value", 1.0)
                 )
 
-                distance = float(
-                    element.get("distance", 0.0)
-                )
+                distance = element.get("distance")
 
-                distance_factor = self._distance_factor(
-                    distance
-                )
+                if distance is None:
+                    distance_factor = 1.0
+                else:
+                    distance_factor = self._distance_factor(
+                        float(distance)
+                    )
 
                 relations = (
                     self._relations.find_by_element(

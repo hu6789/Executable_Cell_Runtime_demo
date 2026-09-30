@@ -1,0 +1,22 @@
+{
+  "name": "PAX6",
+  "category": null,
+
+  "polymorphism": [
+    "unmodified",
+    "modified"
+  ],
+
+  "elements": [],
+
+  "formula": {
+    "equation": "R = R_max × RAR_nuclear^n / (K_RAR^n + RAR_nuclear^n)",
+    "parameters": {
+      "RAR_nuclear": "RAR.states.nuclear",
+      "R_max": 1.0,
+      "K_RAR": 0.5,
+      "n": 2
+    },
+    "output": "value"
+  }
+}

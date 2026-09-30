@@ -1,3 +1,7 @@
+import json
+import pytest
+from pathlib import Path
+
 from internalnet.behavior_engine.schema import (
     BehaviorDefinition,
     BehaviorIntention,
@@ -7,6 +11,8 @@ from internalnet.behavior_engine.input_resolver import (
     BehaviorExecution,
     BehaviorInputs,
 )
+from internalnet.runtime.state import NodeState
+
 
 def test_behavior_definition_defaults():
     behavior = BehaviorDefinition(name="production")
@@ -426,14 +432,14 @@ def test_production_formula_uses_gene_value_and_parameter():
     assert intention.inputs["gene_behavior_signal"] == 2.0
 
 
-def test_release_formula_uses_node_total_and_parameter():
+def test_release_formula_uses_node_free_and_parameter():
     behavior = BehaviorDefinition(
         name="release",
         formula={
             "equation": "v = k_r × X_source",
             "parameters": {
                 "k_r": "release_rate",
-                "X_source": "source_node.total",
+                "X_source": "source_node.free",
             },
         },
     )
@@ -442,8 +448,10 @@ def test_release_formula_uses_node_total_and_parameter():
         nodes={
             "SHH": NodeRuntimeState(
                 node_name="SHH",
-                total=4.0,
-                states={},
+                total=0.0,
+                states={
+                    "free": 4.0,
+                },
             )
         }
     )
@@ -460,7 +468,7 @@ def test_release_formula_uses_node_total_and_parameter():
 
     assert intention.behavior_name == "release"
     assert intention.value == 1.0
-    assert intention.inputs["source_node.total"] == 4.0
+    assert intention.inputs["source_node.free"] == 4.0
 
 
 def test_production_requires_production_rate():
@@ -700,7 +708,7 @@ def test_behavior_engine_runs_release():
             "equation": "v = k_r × X_source",
             "parameters": {
                 "k_r": "release_rate",
-                "X_source": "source_node.total",
+                "X_source": "source_node.free",
             },
         },
     )
@@ -725,8 +733,10 @@ def test_behavior_engine_runs_release():
     node_states = {
         "SHH": NodeRuntimeState(
             node_name="SHH",
-            total=4.0,
-            states={},
+            total=0.0,
+            states={
+                "free": 4.0,
+            },
         )
     }
 
@@ -1228,3 +1238,238 @@ def test_behavior_engine_passes_output_declarations():
         }
     }
     assert intention.outputs == {}
+    
+def test_gli3_truncation_calculates_michaelis_menten_rate():
+    behavior = BehaviorDefinition(
+        name="GLI3_truncation",
+        category="special",
+        formula={
+            "equation": "v = V_max × X_free / (K_m + X_free)"
+        },
+        internal_outputs={
+            "node": [
+                {
+                    "target": "GLI3",
+                    "state": "free",
+                    "mode": "consume",
+                },
+                {
+                    "target": "GLI3",
+                    "state": "repressor",
+                    "mode": "produce",
+                },
+            ]
+        },
+    )
+
+    inputs = BehaviorInputs(
+        nodes={
+            "GLI3": NodeState(
+                name="GLI3",
+                total=10.0,
+                states={
+                    "free": 4.0,
+                    "repressor": 2.0,
+                },
+            )
+        }
+    )
+
+    engine = BehaviorFormulationEngine()
+
+    intention = engine.evaluate(
+        behavior=behavior,
+        inputs=inputs,
+        parameters={
+            "truncation_rate": 2.0,
+            "truncation_Km": 4.0,
+        },
+    )
+
+    assert intention is not None
+
+    # v = 2 × 4 / (4 + 4) = 1
+    assert intention.value == 1.0
+
+    assert intention.inputs["GLI3.free"] == 4.0
+    
+    
+def test_gli3_truncation_returns_zero_when_free_is_zero():
+    behavior = BehaviorDefinition(
+        name="GLI3_truncation",
+    )
+
+    inputs = BehaviorInputs(
+        nodes={
+            "GLI3": NodeState(
+                name="GLI3",
+                total=10.0,
+                states={
+                    "free": 0.0,
+                    "repressor": 5.0,
+                },
+            )
+        }
+    )
+
+    engine = BehaviorFormulationEngine()
+
+    intention = engine.evaluate(
+        behavior=behavior,
+        inputs=inputs,
+        parameters={
+            "truncation_rate": 2.0,
+            "truncation_Km": 4.0,
+        },
+    )
+
+    assert intention is not None
+    assert intention.value == 0.0
+    
+def test_gli3_truncation_requires_truncation_rate():
+    behavior = BehaviorDefinition(
+        name="GLI3_truncation",
+    )
+
+    inputs = BehaviorInputs(
+        nodes={
+            "GLI3": NodeState(
+                name="GLI3",
+                total=10.0,
+                states={"free": 4.0},
+            )
+        }
+    )
+
+    engine = BehaviorFormulationEngine()
+
+    with pytest.raises(KeyError, match="truncation_rate"):
+        engine.evaluate(
+            behavior=behavior,
+            inputs=inputs,
+            parameters={
+                "truncation_Km": 4.0,
+            },
+        )
+        
+        
+def test_gli3_truncation_requires_truncation_Km():
+    behavior = BehaviorDefinition(
+        name="GLI3_truncation",
+    )
+
+    inputs = BehaviorInputs(
+        nodes={
+            "GLI3": NodeState(
+                name="GLI3",
+                total=10.0,
+                states={"free": 4.0},
+            )
+        }
+    )
+
+    engine = BehaviorFormulationEngine()
+
+    with pytest.raises(KeyError, match="truncation_Km"):
+        engine.evaluate(
+            behavior=behavior,
+            inputs=inputs,
+            parameters={
+                "truncation_rate": 2.0,
+            },
+        )
+        
+def test_gli3_truncation_returns_none_without_gli3_input():
+    behavior = BehaviorDefinition(
+        name="GLI3_truncation",
+    )
+
+    inputs = BehaviorInputs()
+
+    engine = BehaviorFormulationEngine()
+
+    intention = engine.evaluate(
+        behavior=behavior,
+        inputs=inputs,
+        parameters={
+            "truncation_rate": 2.0,
+            "truncation_Km": 4.0,
+        },
+    )
+
+    assert intention is None
+    
+    
+def test_gli3_truncation_preserves_multiple_internal_outputs():
+    behavior = BehaviorDefinition(
+        name="GLI3_truncation",
+        formula={
+            "equation": "v = V_max × X_free / (K_m + X_free)",
+            "parameters": {
+                "V_max": "truncation_rate",
+                "K_m": "truncation_Km",
+                "X_free": "GLI3.free",
+            },
+        },
+        internal_outputs={
+            "node": [
+                {
+                    "target": "GLI3",
+                    "state": "free",
+                    "mode": "consume",
+                },
+                {
+                    "target": "GLI3",
+                    "state": "repressor",
+                    "mode": "produce",
+                },
+            ]
+        },
+    )
+
+    repository = BehaviorRepository([behavior])
+    engine = BehaviorEngine(repository=repository)
+
+    execution = BehaviorExecution(
+        behavior_name="GLI3_truncation",
+        source_type="node",
+        source_name="GLI3",
+        inputs=BehaviorInputs(
+            nodes={
+                "GLI3": NodeState(
+                    name="GLI3",
+                    total=10.0,
+                    states={
+                        "free": 4.0,
+                        "repressor": 2.0,
+                    },
+                )
+            }
+        ),
+    )
+
+    intention = engine.run_execution(
+        execution=execution,
+        parameters={
+            "truncation_rate": 2.0,
+            "truncation_Km": 4.0,
+        },
+    )
+
+    assert intention is not None
+    assert intention.value == 1.0
+
+    assert intention.internal_outputs == {
+        "node": [
+            {
+                "target": "GLI3",
+                "state": "free",
+                "mode": "consume",
+            },
+            {
+                "target": "GLI3",
+                "state": "repressor",
+                "mode": "produce",
+            },
+        ]
+    }

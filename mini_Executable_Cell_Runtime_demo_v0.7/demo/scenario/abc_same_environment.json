@@ -1,0 +1,21 @@
+{
+  "name": "abc_same_environment",
+  "type": "static",
+  "cells": [
+    {
+      "name": "A",
+      "type": "neural_progenitor",
+      "position": 0.0
+    },
+    {
+      "name": "B",
+      "type": "floor_plate_progenitor",
+      "position": 1.0
+    },
+    {
+      "name": "C",
+      "type": "motor_neuron_progenitor",
+      "position": 2.0
+    }
+  ]
+}

@@ -5,6 +5,7 @@
     "PTCH1",
     "SMO",
     "GLI2",
+    "GLI3",
     "ATP",
     "enzyme",
     "molecule"
@@ -26,6 +27,13 @@
       "type": "node-node",
       "source": "SMO",
       "target": "GLI2",
+      "required": true
+    },
+    {
+      "name": "SMO_GLI3",
+      "type": "node-node",
+      "source": "SMO",
+      "target": "GLI3",
       "required": true
     }
   ]

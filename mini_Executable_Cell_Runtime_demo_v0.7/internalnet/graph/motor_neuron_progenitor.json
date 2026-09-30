@@ -1,0 +1,56 @@
+{
+  "name": "motor_neuron_progenitor",
+  "type": "cell_specific",
+  "nodes": [
+    "NKX6.1",
+    "OLIG2",
+    "NEUROG2",
+    "TUBB3"
+  ],
+  "genes": [
+    "NKX6.1",
+    "OLIG2",
+    "NEUROG2",
+    "TUBB3"
+  ],
+  "behaviors": [
+    "GLI3_truncation"
+  ],
+  "edges": [
+    {
+      "name": "GLI3_GLI3_truncation",
+      "type": "node-behavior",
+      "source": "GLI3",
+      "target": "GLI3_truncation",
+      "required": true
+    },
+    {
+      "name": "NKX6.1_production",
+      "type": "gene-behavior",
+      "source": "NKX6.1",
+      "target": "production",
+      "required": true
+    },
+    {
+      "name": "OLIG2_production",
+      "type": "gene-behavior",
+      "source": "OLIG2",
+      "target": "production",
+      "required": true
+    },
+    {
+      "name": "NEUROG2_production",
+      "type": "gene-behavior",
+      "source": "NEUROG2",
+      "target": "production",
+      "required": true
+    },
+    {
+      "name": "TUBB3_production",
+      "type": "gene-behavior",
+      "source": "TUBB3",
+      "target": "production",
+      "required": true
+    }
+  ]
+}

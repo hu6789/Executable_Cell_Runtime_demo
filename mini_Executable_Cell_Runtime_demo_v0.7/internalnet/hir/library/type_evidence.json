@@ -1,0 +1,48 @@
+{
+  "types": [
+    {
+      "name": "neural_progenitor",
+      "identity": {
+        "upstream": [
+          "RA"
+        ],
+        "regulatory": [
+          "RAR"
+        ],
+        "output": [
+          "PAX6"
+        ]
+      }
+    },
+    {
+      "name": "floor_plate_progenitor",
+      "identity": {
+        "upstream": [
+          "SHH"
+        ],
+        "regulatory": [
+          "H3K27ac"
+        ],
+        "output": [
+          "CORIN"
+        ]
+      }
+    },
+    {
+      "name": "motor_neuron_progenitor",
+      "identity": {
+        "upstream": [
+          "GLI3"
+        ],
+        "regulatory": [
+          "NKX6.1",
+          "OLIG2",
+          "NEUROG2"
+        ],
+        "output": [
+          "TUBB3"
+        ]
+      }
+    }
+  ]
+}

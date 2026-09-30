@@ -29,6 +29,13 @@ class BehaviorFormulationEngine:
                 inputs,
                 parameters,
             )
+            
+        if behavior.name == "GLI3_truncation":
+            return self._evaluate_gli3_truncation(
+                behavior,
+                inputs,
+                parameters,
+            )
 
         raise ValueError(
             f"Unsupported behavior formulation: {behavior.name}"
@@ -77,17 +84,57 @@ class BehaviorFormulationEngine:
 
         # v = k_r × X_source
         # Current v0.7 convention:
-        # NodeRuntimeState.total is the source amount X_source.
+        # NodeRuntimeState.states["free"] is the source amount X_source.
         node_name, node_state = next(iter(inputs.nodes.items()))
-        source_node_total = node_state.total
+        source_node_free = node_state.states.get("free", 0.0)
 
         release_rate = parameters["release_rate"]
-        value = release_rate * source_node_total
+        value = release_rate * source_node_free
 
         return BehaviorIntention(
             behavior_name=behavior.name,
             value=value,
             inputs={
-                "source_node.total": source_node_total,
+                "source_node.free": source_node_free,
+            },
+        )
+        
+    def _evaluate_gli3_truncation(
+        self,
+        behavior: BehaviorDefinition,
+        inputs: BehaviorInputs,
+        parameters: Dict[str, float],
+    ) -> Optional[BehaviorIntention]:
+
+        if "truncation_rate" not in parameters:
+            raise KeyError(
+                "Missing behavior parameter: truncation_rate"
+            )
+
+        if "truncation_Km" not in parameters:
+            raise KeyError(
+                "Missing behavior parameter: truncation_Km"
+            )
+ 
+        if "GLI3" not in inputs.nodes:
+            return None
+
+        gli3 = inputs.nodes["GLI3"]
+        x_free = gli3.states.get("free", 0.0)
+
+        vmax = parameters["truncation_rate"]
+        km = parameters["truncation_Km"]
+
+        value = (
+            vmax * x_free / (km + x_free)
+            if x_free > 0.0
+            else 0.0
+        )
+
+        return BehaviorIntention(
+            behavior_name=behavior.name,
+            value=value,
+            inputs={
+                "GLI3.free": x_free,
             },
         )

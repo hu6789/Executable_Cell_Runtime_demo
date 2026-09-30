@@ -142,40 +142,22 @@ class PassiveFormulationEngine:
         runtime_state: NodeRuntimeState,
         dt: float,
     ) -> dict[str, float]:
-        if dt < 0:
-            raise ValueError(
-                "dt must be non-negative"
-            )
-
         source_state = passive.update.get("source_state")
         target_state = passive.update.get("target_state")
 
         if source_state is None or target_state is None:
             raise ValueError(
-                "SUFU binding passive requires source_state "
-                "and target_state"
+                "SUFU binding passive requires "
+                "source_state and target_state"
             )
 
-        k_bind = passive.formula.get(
-            "parameters",
-            {}
-        ).get("k_bind")
-
-        if k_bind is None:
-            raise ValueError(
-                "SUFU binding passive requires k_bind"
-        )
-
-        if k_bind < 0:
-            raise ValueError(
-                "k_bind must be non-negative"
-            )
+        k_bind = passive.formula["parameters"]["k_bind"]
 
         source_value = runtime_state.states.get(
             source_state,
             0.0,
         )
-        
+
         delta = min(
             k_bind * source_value * dt,
             source_value,
@@ -185,3 +167,53 @@ class PassiveFormulationEngine:
             source_state: -delta,
             target_state: +delta,
         }
+    
+    @staticmethod
+    def _evaluate_diffusion(
+        passive: PassiveDefinition,
+        node: NodeDefinition,
+        runtime_state: NodeRuntimeState,
+        dt: float,
+    ) -> dict[str, float]:
+        if node.diffusion is None:
+            raise ValueError(
+                f"Node has no diffusion coefficient: {node.name}"
+            )
+
+        source_states = node.diffusion_source_states
+        target_state = passive.update.get("target_state")
+
+        if not source_states:
+            raise ValueError(
+                f"Node has no diffusion source states: {node.name}"
+            )
+
+        if target_state is None:
+            raise ValueError(
+                "Diffusion passive requires target_state"
+            )
+
+        state_changes: dict[str, float] = {}
+
+        for source_state in source_states:
+            source_value = runtime_state.states.get(
+                source_state,
+                0.0,
+            )
+
+            delta = min(
+                node.diffusion * source_value * dt,
+                source_value,
+            )
+
+            state_changes[source_state] = (
+                state_changes.get(source_state, 0.0)
+                - delta
+            )
+
+            state_changes[target_state] = (
+                state_changes.get(target_state, 0.0)
+                + delta
+            )
+
+        return state_changes
